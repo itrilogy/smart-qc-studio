@@ -1,0 +1,610 @@
+
+export enum QCToolType {
+  DASHBOARD = 'DASHBOARD',
+  FISHBONE = 'FISHBONE',
+  PARETO = 'PARETO',
+  CONTROL = 'CONTROL',
+  AFFINITY = 'AFFINITY',
+  HISTOGRAM = 'HISTOGRAM',
+  SCATTER = 'SCATTER',
+  RELATION = 'RELATION',
+  MATRIX = 'MATRIX',
+  MATRIX_PLOT = 'MATRIX_PLOT',
+  PDPC = 'PDPC',
+  ARROW = 'ARROW'
+}
+
+export interface FishboneNode {
+  id: string;
+  label: string;
+  type: 'root' | 'main' | 'sub' | 'detail' | 'anchor' | 'tail';
+  children?: FishboneNode[];
+}
+
+export interface FishboneChartStyles {
+  boneLine?: string;
+  caseLine?: string;
+  caseColor?: string;
+  endColor?: string;
+  rootColor?: string;
+  rootTextColor?: string;
+  mainColor?: string;
+  mainTextColor?: string;
+}
+
+export const DEFAULT_FISHBONE_STYLES: Required<FishboneChartStyles> = {
+  boneLine: '#334155',
+  caseLine: '#64748b',
+  caseColor: '#1e293b',
+  endColor: '#94a3b8',
+  rootColor: '#2563eb',
+  rootTextColor: '#ffffff',
+  mainColor: '#3b82f6',
+  mainTextColor: '#ffffff'
+};
+
+export interface RelationNode {
+  id: string;
+  label: string;
+  type?: 'root' | 'middle' | 'end';
+}
+
+export interface RelationLink {
+  source: string;
+  target: string;
+}
+
+export interface RelationChartStyles {
+  title: string;
+  titleFontSize: number;
+  // Node Styles
+  rootColor: string;
+  rootTextColor: string;
+  middleColor: string;
+  middleTextColor: string;
+  endColor: string;
+  endTextColor: string;
+  // Line Styles
+  lineColor: string;
+  // Font Sizes (Consistent with others)
+  // Font Sizes (Consistent with others)
+  nodeFontSize: number;
+  layout: RelationLayoutType;
+}
+
+export type RelationLayoutType = 'Centralized' | 'Directional' | 'Free';
+
+export const DEFAULT_RELATION_STYLES: RelationChartStyles = {
+  title: '关联图分析',
+  titleFontSize: 24,
+  rootColor: '#2563eb',
+  rootTextColor: '#ffffff',
+  middleColor: '#3b82f6',
+  middleTextColor: '#ffffff',
+  endColor: '#93c5fd',
+  endTextColor: '#1e3a8a',
+  lineColor: '#64748b',
+  nodeFontSize: 14,
+  layout: 'Directional'
+};
+
+export interface HistogramChartStyles {
+  title?: string;
+  usl?: number;
+  lsl?: number;
+  target?: number;
+  bins?: number | 'auto';
+  showCurve?: boolean;
+  barColor?: string;
+  curveColor?: string;
+  uslColor?: string;
+  lslColor?: string;
+  targetColor?: string;
+  titleColor?: string;
+  titleFontSize?: number;
+  baseFontSize?: number;
+  barFontSize?: number;
+}
+
+export const DEFAULT_HISTOGRAM_STYLES: Required<HistogramChartStyles> = {
+  title: '质量分布直方图',
+  usl: undefined as any,
+  lsl: undefined as any,
+  target: undefined as any,
+  bins: 'auto',
+  showCurve: true,
+  barColor: '#3b82f6',
+  curveColor: '#f97316',
+  uslColor: '#ef4444',
+  lslColor: '#ef4444',
+  targetColor: '#22c55e',
+  titleColor: '#1e293b',
+  titleFontSize: 18,
+  baseFontSize: 12,
+  barFontSize: 10
+};
+
+export interface ParetoItem {
+  id: string;
+  name: string;
+  value: number;
+}
+
+export interface ParetoChartStyles {
+  title?: string;
+  titleColor?: string;
+  titleFontSize?: number;
+  barColor?: string;
+  lineColor?: string;
+  markLineColor?: string;
+  barFontSize?: number;
+  lineFontSize?: number;
+  baseFontSize?: number;
+  decimals?: number;
+}
+
+export const DEFAULT_PARETO_STYLES: ParetoChartStyles = {
+  title: '排列图 (Pareto Chart)',
+  titleColor: '#0f172a',
+  titleFontSize: 20,
+  barColor: '#3b82f6',
+  lineColor: '#f59e0b',
+  markLineColor: '#ef4444',
+  barFontSize: 12,
+  lineFontSize: 12,
+  baseFontSize: 12,
+  decimals: 1
+};
+
+export interface ScatterPoint {
+  id: string;
+  x: number;
+  y: number;
+  z?: number;
+}
+
+export interface ScatterChartStyles {
+  title?: string;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
+  zAxisLabel?: string;
+  pointColor?: string;
+  trendColor?: string;
+  baseSize?: number;
+  opacity?: number;
+  showTrend?: boolean;
+  titleFontSize?: number;
+  baseFontSize?: number;
+  is3D?: boolean;
+  renderMode3D?: 'scatter' | 'surface' | 'wireframe';
+}
+
+export const DEFAULT_SCATTER_STYLES: Required<ScatterChartStyles> = {
+  title: '散点图分析',
+  xAxisLabel: 'X轴',
+  yAxisLabel: 'Y轴',
+  zAxisLabel: 'Z轴',
+  pointColor: '#3b82f6',
+  trendColor: '#f97316',
+  baseSize: 10,
+  opacity: 0.8,
+  showTrend: false,
+  titleFontSize: 16,
+  baseFontSize: 12,
+  is3D: false,
+  renderMode3D: 'scatter'
+};
+
+// --- Affinity Diagram Types (Legacy Compatible) ---
+export interface AffinityItem {
+  id: string;
+  label: string;
+  children?: AffinityItem[];
+  parentId?: string; // For flat DSL parsing
+}
+
+export type AffinityType = 'Card' | 'Label';
+export type AffinityLayout = 'Horizontal' | 'Vertical';
+
+export interface AffinityChartStyles {
+  title: string;
+  type: AffinityType;
+  layout: AffinityLayout;
+
+  // New Strict Style Keys
+  titleBackgroundColor: string;
+  titleTextColor: string;
+  titleFontSize: number;
+
+  groupHeaderBackgroundColor: string;
+  groupHeaderTextColor: string;
+  groupHeaderFontSize: number;
+
+  itemBackgroundColor: string;
+  itemTextColor: string;
+  itemFontSize: number;
+
+  borderColor: string;
+  lineColor: string; // Tree only
+
+  // Layout
+  itemGap: number;
+
+  // Legacy support keys (optional, for backward compat if needed, but we prefer new keys)
+  background?: string;
+}
+
+export const DEFAULT_AFFINITY_STYLES: AffinityChartStyles = {
+  title: '亲和图分析',
+  type: 'Card',
+  layout: 'Horizontal',
+
+  titleBackgroundColor: '#ffffff',
+  titleTextColor: '#1e293b',
+  titleFontSize: 24,
+
+  groupHeaderBackgroundColor: '#eff6ff', // Was headerColor/cardColor mix
+  groupHeaderTextColor: '#1e293b',
+  groupHeaderFontSize: 16,
+
+  itemBackgroundColor: '#ffffff',
+  itemTextColor: '#334155',
+  itemFontSize: 14,
+
+  borderColor: '#cbd5e1',
+  lineColor: '#64748b',
+
+  itemGap: 16,
+  background: '#ffffff'
+};
+
+// --- Control Chart Types (New) ---
+
+export type ControlChartType =
+  | 'I-MR'
+  | 'X-bar-R'
+  | 'X-bar-S'
+  | 'P'
+  | 'NP'
+  | 'C'
+  | 'U';
+
+export type ControlRule = 'Basic' | 'Western-Electric' | 'Nelson';
+
+export interface ControlSeries {
+  name: string;
+  data: number[];
+}
+
+export interface ControlChartStyles {
+  title: string;
+  type: ControlChartType;
+  subgroupSize: number; // Size: N
+  rules: ControlRule[];
+
+  // 限制线 (可选)
+  ucl?: number;
+  lcl?: number;
+  cl?: number;
+
+  // 视觉配置
+  titleColor: string;
+  lineColor: string;
+  uclColor: string;
+  clColor: string;
+  pointColor: string;
+  background: string;
+
+  titleFontSize: number;
+  baseFontSize: number;
+  labelFontSize: number;
+
+  decimals: number;
+}
+
+export const DEFAULT_CONTROL_STYLES: Required<ControlChartStyles> = {
+  title: '控制图 (Control Chart)',
+  type: 'I-MR',
+  subgroupSize: 1,
+  rules: ['Basic'],
+  ucl: 0,
+  lcl: 0,
+  cl: 0,
+  titleColor: '#1e293b',
+  lineColor: '#3b82f6',
+  uclColor: '#ef4444',
+  clColor: '#22c55e',
+  pointColor: '#1d4ed8',
+  background: '#ffffff',
+  titleFontSize: 20,
+  baseFontSize: 12,
+  labelFontSize: 10,
+  decimals: 2
+};
+
+export const INITIAL_CONTROL_DSL = `// 示例：轴类零件外径加工过程监控
+// 包含 25 个连续观测值，若子组大小为 5，则自动计算 5 个子组的均值与极差
+Title: 活塞销外径加工过程监控（高频采样）
+Type: X-bar-R
+Size: 5
+Rules: Western-Electric,Nelson
+Decimals: 3
+Color[Line]: #3b82f6
+Color[Point]: #1d4ed8
+
+[series]: 测量观测值
+12.012, 11.985, 12.053, 12.001, 11.974
+12.022, 11.991, 12.035, 12.011, 12.042
+11.988, 12.005, 12.021, 11.995, 12.018
+12.031, 11.978, 11.999, 12.015, 12.024
+12.008, 12.026, 11.984, 12.041, 11.992
+[/series]`;
+// --- Matrix Diagram Types ---
+
+export type MatrixType = 'L' | 'T' | 'Y' | 'X' | 'C';
+export type MatrixSymbolType = 'Strong' | 'Medium' | 'Weak' | 'None';
+
+export interface MatrixAxisItem {
+  id: string;
+  label: string;
+  weight?: number;
+}
+
+export interface MatrixDiagramProps {
+  data: MatrixData;
+  styles: MatrixChartStyles;
+  onCellClick?: (rowId: string, colId: string, currentSymbol: MatrixSymbolType, rowAxisId?: string, colAxisId?: string) => void;
+}
+
+export interface MatrixAxis {
+  id: string;
+  label: string;
+  items: MatrixAxisItem[];
+}
+
+export interface MatrixCell {
+  rowId: string;
+  colId: string;
+  symbol: MatrixSymbolType;
+}
+
+export interface MatrixData {
+  title: string;
+  type: MatrixType;
+  axes: MatrixAxis[];
+  matrices: {
+    rowAxisId: string;
+    colAxisId: string;
+    cells: MatrixCell[];
+  }[];
+}
+
+export interface MatrixChartStyles {
+  title: string;
+  titleFontSize: number;
+  type: MatrixType;
+
+  // Colors
+  axisColor: string;
+  gridColor: string;
+  symbolColorStrong: string;
+  symbolColorMedium: string;
+  symbolColorWeak: string;
+
+  // Weights (Symbols)
+  weightStrong: number;
+  weightMedium: number;
+  weightWeak: number;
+
+  // Layout
+  cellSize: number;
+  fontSize: number;
+  showScores: boolean;
+}
+
+export const DEFAULT_MATRIX_STYLES: MatrixChartStyles = {
+  title: '矩阵图分析',
+  titleFontSize: 14,
+  type: 'L',
+
+  axisColor: '#1e293b',
+  gridColor: '#cbd5e1',
+  symbolColorStrong: '#2563eb', // Blue
+  symbolColorMedium: '#475569', // Slate
+  symbolColorWeak: '#94a3b8',   // Light Slate
+
+  weightStrong: 5,
+  weightMedium: 3,
+  weightWeak: 1,
+
+  cellSize: 40,
+  fontSize: 10,
+  showScores: true
+};
+
+// --- Matrix Plot (Graph Matrix) Types ---
+
+export interface MatrixPlotData {
+  title: string;
+  mode: 'matrix' | 'yvsx';
+  yDimensions: string[];
+  xDimensions: string[];
+  groupVariable?: string;
+  showSmoother: boolean;
+  smootherMethod?: 'MovingAverage' | 'Lowess';
+  data: Array<Record<string, number | string>>;
+}
+
+export interface MatrixPlotStyles {
+  title: string;
+  titleFontSize: number;
+  baseFontSize: number;
+  pointSize: number;
+  pointOpacity: number;
+  colorPalette: 'Industrial' | 'Vibrant' | 'Pastel';
+  displayMode: 'Lower' | 'Upper' | 'Full';
+  diagonal: 'Histogram' | 'Boxplot' | 'Label' | 'None';
+  subplotGap: number;
+  showTicks: 'Outer' | 'All' | 'None';
+  smootherColor: string;
+  smootherWeight: number;
+  axisColor: string;
+  gridColor: string;
+}
+
+export const DEFAULT_MATRIX_PLOT_STYLES: MatrixPlotStyles = {
+  title: '图矩阵相关性分析',
+  titleFontSize: 14,
+  baseFontSize: 10,
+  pointSize: 4,
+  pointOpacity: 0.7,
+  colorPalette: 'Industrial',
+  displayMode: 'Full',
+  diagonal: 'Label',
+  subplotGap: 2,
+  showTicks: 'Outer',
+  smootherColor: '#ef4444',
+  smootherWeight: 2,
+  axisColor: '#1e293b',
+  gridColor: '#cbd5e1'
+};
+
+
+// --- PDPC (Process Decision Program Chart) Types ---
+
+export type PDPCNodeType = 'start' | 'end' | 'step' | 'countermeasure';
+export type PDPCMarkerType = 'OK' | 'NG' | 'None';
+
+export interface PDPCNode {
+  id: string;
+  label: string;
+  type: PDPCNodeType;
+  groupId?: string;
+}
+
+export interface PDPCLink {
+  source: string;
+  target: string;
+  marker: PDPCMarkerType;
+}
+
+export interface PDPCGroup {
+  id: string;
+  label: string;
+  parentId?: string | null;
+}
+
+export interface PDPCData {
+  title: string;
+  nodes: PDPCNode[];
+  links: PDPCLink[];
+  groups: PDPCGroup[];
+}
+
+export interface PDPCChartStyles {
+  title: string;
+  titleFontSize: number;
+  layout: 'Directional' | 'Standard';
+
+  // Colors
+  startColor: string;
+  startTextColor: string;
+  endColor: string;
+  endTextColor: string;
+  stepColor: string;
+  stepTextColor: string;
+  countermeasureColor: string;
+  countermeasureTextColor: string;
+  lineColor: string;
+  lineWidth: number;
+
+  // Font Sizes
+  nodeFontSize: number;
+}
+
+export const DEFAULT_PDPC_STYLES: PDPCChartStyles = {
+  title: '过程决策程序图 (PDPC)',
+  layout: 'Directional',
+
+  startColor: '#2563eb',
+  startTextColor: '#ffffff',
+  endColor: '#ef4444',
+  endTextColor: '#ffffff',
+  stepColor: '#3b82f6',
+  stepTextColor: '#ffffff',
+  countermeasureColor: '#10b981',
+  countermeasureTextColor: '#ffffff',
+  lineColor: '#64748b',
+  lineWidth: 2,
+
+  nodeFontSize: 12,
+  titleFontSize: 20
+};
+
+// --- Arrow Diagram (AoA/PERT) Types ---
+
+export interface ArrowNode {
+  id: string;
+  label: string;
+  // CPM Calculated Fields
+  es?: number; // Earliest Start
+  ls?: number; // Latest Start
+  rank?: number; // Topological Rank
+  // Layout
+  x?: number;
+  y?: number;
+}
+
+export interface ArrowLink {
+  source: string;
+  target: string;
+  duration: number;
+  label: string;
+  isDummy: boolean;
+  // CPM Calculated Fields
+  ef?: number; // Earliest Finish
+  lf?: number; // Latest Finish
+  tf?: number; // Total Float
+  ff?: number; // Free Float
+  isCritical?: boolean;
+}
+
+export interface ArrowData {
+  title: string;
+  nodes: ArrowNode[];
+  links: ArrowLink[];
+}
+
+export interface ArrowChartStyles {
+  title: string;
+  titleFontSize: number;
+  showCriticalPath: boolean;
+
+  // Colors
+  nodeColor: string;
+  nodeTextColor: string;
+  lineColor: string;
+  criticalLineColor: string;
+  textColor: string;
+
+  // Sizes
+  nodeRadius: number;
+  lineWidth: number;
+  fontSize: number;
+}
+
+export const DEFAULT_ARROW_STYLES: ArrowChartStyles = {
+  title: '矢线图 (PERT/CPM)',
+  titleFontSize: 24,
+  showCriticalPath: true,
+
+  nodeColor: '#ffffff',
+  nodeTextColor: '#0f172a',
+  lineColor: '#64748b',
+  criticalLineColor: '#ef4444',
+  textColor: '#475569',
+
+  nodeRadius: 30, // Increased from 18
+  lineWidth: 3,   // Increased from 2
+  fontSize: 14    // Increased from 12
+};

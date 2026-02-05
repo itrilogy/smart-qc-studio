@@ -1,0 +1,397 @@
+{
+    "project": "Smart QC Studio",
+    "version": "1.0.0",
+    "description": "Chart specification and few-shot examples for LLM-driven automated charting.",
+    "ai_config": {
+        "active_profile": "deepseek_public",
+        "profiles": {
+            "deepseek_public": {
+                "name": "DeepSeek",
+                "endpoint": "https://api.deepseek.com/v1/chat/completions",
+                "model": "deepseek-chat"
+            },
+            "local_qwen": {
+                "name": "内网 Qwen3-VL-8B 服务",
+                "endpoint": "http://10.37.87.15:4000/v1/chat/completions",
+                "model": "qwen3-vl-8b"
+            }
+        }
+    },
+    "chart_grammars": {
+        "fishbone": {
+            "type": "logic",
+            "intent_trigger": [
+                "原因分析",
+                "因果",
+                "为什么",
+                "root cause",
+                "fishbone"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Color[Root/RootText/Main/MainText/Bone/Line/Text/End]: #HEX - 色彩配置",
+                    "Title: [文字] - 定义中心问题",
+                    "# 大骨(L1) ## 中骨(L2) ### 小骨(L3) - 最高6级递归",
+                    "经典维度: 人机料法环(5M1E), 4P, 系统分层"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "工业制造 - 质量异常",
+                        "input": "分析造成“注塑件表面缩水”的原因，按人机料法环维度展开。",
+                        "output": "Title: 注塑件表面缩水故障\nColor[Root]: #ef4444\nColor[RootText]: #ffffff\n\n# 人 (Man)\n## 调机参数设置不当\n### 保压压力过低\n## 巡检不及时\n\n# 机 (Machine)\n## 料筒加热温度偏移\n## 模具冷却水道阻塞\n\n# 料 (Material)\n## 材料缩水率不均匀"
+                    },
+                    {
+                        "scenario": "互联网 - 系统故障",
+                        "input": "分析“支付系统响应缓慢”的根因。",
+                        "output": "Title: 支付系统响应延迟\nColor[Bone]: #ef4444\n\n# 服务层\n## 依赖接口超时\n### 银行网关响应慢\n## 内存泄露\n\n# 数据库层\n## 慢SQL查询\n### 缺少覆盖索引\n## 死锁"
+                    }
+                ]
+            }
+        },
+        "pareto": {
+            "type": "statistical",
+            "intent_trigger": [
+                "二八定律",
+                "重点分析",
+                "主要原因",
+                "频数排名",
+                "pareto"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字]",
+                    "Color[Bar/Line/MarkLine]: #HEX",
+                    "Font[Title/Base/Bar]: [Size]",
+                    "- [Name]: [Value] - 数据行 (无需排序, 系统自动降序)"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "客诉分析",
+                        "input": "统计本月客诉原因：物流破损45起，发错货12起，质量问题8起，其他5起。",
+                        "output": "Title: 本月客诉原因分析\nColor[Bar]: #3b82f6\nColor[Line]: #f59e0b\nDecimals: 1\n\n- 物流破损: 45\n- 发错货: 12\n- 质量问题: 8\n- 其他: 5"
+                    },
+                    {
+                        "scenario": "成本分布",
+                        "input": "研发费用占比最大(120万)，其次是市场推广(50万)和行政支出(15万)。",
+                        "output": "Title: 部门费用支出分析\nColor[Bar]: #10b981\nColor[MarkLine]: #ef4444\n\n- 研发费用: 120\n- 市场推广: 50\n- 行政支出: 15"
+                    }
+                ]
+            }
+        },
+        "histogram": {
+            "type": "statistical",
+            "intent_trigger": [
+                "分布",
+                "能力分析",
+                "正态",
+                "histogram",
+                "CPK"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字]",
+                    "USL/LSL/Target: [Value] - 规格线",
+                    "Bins: auto/N - 分组数",
+                    "ShowCurve: true/false - 正态曲线",
+                    "- [Value] - 原始数据只需数值"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "尺寸测量",
+                        "input": "抽检10个产品直径，规格10.0±0.5。数据：10.1, 9.9, 10.2, 9.8, 10.0, 10.3, 9.7, 10.1, 9.9, 10.0",
+                        "output": "Title: 产品直径分布分析\nTarget: 10.0\nUSL: 10.5\nLSL: 9.5\nBins: auto\nShowCurve: true\nColor[Bar]: #6366f1\n\n# 样本数据\n- 10.1\n- 9.9\n- 10.2\n- 9.8\n- 10.0\n- 10.3\n- 9.7\n- 10.1\n- 9.9\n- 10.0"
+                    }
+                ]
+            }
+        },
+        "scatter": {
+            "type": "statistical",
+            "intent_trigger": [
+                "相关性",
+                "回归",
+                "散点",
+                "气泡",
+                "scatter"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字]",
+                    "XAxis/YAxis/ZAxis: [Label]",
+                    "ShowTrend: true/false - 趋势线",
+                    "Font[Title/Base]: [Size] - 字号控制",
+                    "- x, y, [z] - 数据行 (z为气泡大小)"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "相关性分析",
+                        "input": "分析门店客流(X)和销售额(Y)的关系。A店(100人, 5000元), B店(150人, 7000元), C店(80人, 3000元)。",
+                        "output": "Title: 客流与销售额相关性分析\nXAxis: 客流量 (人)\nYAxis: 销售额 (元)\nShowTrend: true\nColor[Point]: #3b82f6\nColor[Trend]: #ef4444\n\n- 100, 5000\n- 150, 7000\n- 80, 3000"
+                    },
+                    {
+                        "scenario": "多维气泡图",
+                        "input": "对比竞品参数：价格(X) vs 性能分(Y) vs 市场份额(Size)。A(200, 80, 15%), B(150, 70, 30%), C(300, 95, 10%)。",
+                        "output": "Title: 竞品市场格局分析\nXAxis: 价格 (元)\nYAxis: 性能评分\nZAxis: 市场份额 (%)\nOpacity: 0.8\nSize[Base]: 10\n\n- 200, 80, 15\n- 150, 70, 30\n- 300, 95, 10"
+                    }
+                ]
+            }
+        },
+        "affinity": {
+            "type": "logic",
+            "intent_trigger": [
+                "系统图",
+                "亲和图",
+                "KJ法",
+                "归纳分组",
+                "头脑风暴",
+                "分类汇总",
+                "affinity"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 主标题",
+                    "Type: Label/Card - 图表类型 (Label=树状层级, Card=卡片分组)",
+                    "Layout: Vertical/Horizontal - 布局方向",
+                    "Color[TitleBg/TitleText]: #HEX - 标题样式",
+                    "Color[GroupHeaderBg/GroupHeaderText]: #HEX - 分组头样式",
+                    "Color[ItemBg/ItemText]: #HEX - 事项卡片样式",
+                    "Color[Line/Border]: #HEX - 线条与边框",
+                    "Font[Title/GroupHeader/Item]: [Size] - 字号控制",
+                    "Item: {ID}, {内容}, {父ID?} - 精确定义语法"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "团队管理 - 效率提升",
+                        "input": "用亲和图整理提升团队效率的想法：简化审批流程、引入自动化工具、每日站会、定期回顾、内部培训。",
+                        "output": "Title: 如何提升团队效率\nType: Card\nLayout: Horizontal\nColor[GroupHeaderBg]: #f59e0b\nColor[GroupHeaderText]: #ffffff\n\nItem: root, 如何提升团队效率, null\nItem: g1, 流程优化, root\nItem: i1, 简化审批流程, g1\nItem: i2, 引入自动化工具, g1\nItem: g2, 沟通改进, root\nItem: i3, 每日站会, g2\nItem: i4, 定期回顾, g2\nItem: g3, 技能提升, root\nItem: i5, 内部培训, g3"
+                    },
+                    {
+                        "scenario": "产品规划 - 需求梳理",
+                        "input": "整理新产品功能需求：用户登录、权限管理、数据导出、报表生成、消息通知。",
+                        "output": "Title: 新产品功能需求梳理\nType: Card\nLayout: Horizontal\nColor[GroupHeaderBg]: #3b82f6\nColor[ItemBg]: #dbeafe\nColor[ItemText]: #1e40af\n\nItem: root, 新产品功能需求梳理, null\nItem: g1, 用户系统, root\nItem: i1, 用户登录, g1\nItem: i2, 权限管理, g1\nItem: g2, 数据功能, root\nItem: i3, 数据导出, g2\nItem: i4, 报表生成, g2\nItem: g3, 消息中心, root\nItem: i5, 消息通知, g3"
+                    }
+                ]
+            }
+        },
+        "relation": {
+            "type": "logic",
+            "intent_trigger": [
+                "关联图",
+                "系统图",
+                "复杂因果",
+                "关系图",
+                "relation diagram",
+                "interrelationship"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 定义根节点标题 (L0)",
+                    "Color[Root/Middle/End/Line]: #HEX - 节点背景与连线颜色",
+                    "Color[RootText/MiddleText/EndText]: #HEX - 节点文字颜色",
+                    "Node: [ID], [Label] - 定义因素节点 (自动判定End/Middle)",
+                    "Rel: [SourceID] -> [TargetID] - 定义因果关系 (末端会自动连向根)"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "复杂问题归因分析",
+                        "input": "分析造成“产品良率低”的根本原因。原材料不稳定导致注塑成型差；设备老化导致注塑成型差；操作员培训不足导致设备维护不当；设备维护不当导致设备故障多。所有这些最终导致产品良率低。",
+                        "output": "Title: 产品良率低关联图分析\nColor[Root]: #be185d\nColor[RootText]: #ffffff\nColor[Middle]: #db2777\nColor[MiddleText]: #ffffff\nColor[End]: #fbcfe8\nColor[EndText]: #831843\nColor[Line]: #f472b6\n\nNode: n1, 原材料不稳定\nNode: n2, 注塑成型差\nNode: n3, 设备老化\nNode: n4, 操作员培训不足\nNode: n5, 设备维护不当\nNode: n6, 设备故障多\n\nRel: n1 -> n2\nRel: n3 -> n2\nRel: n4 -> n5\nRel: n5 -> n6"
+                    }
+                ]
+            }
+        },
+        "control": {
+            "type": "statistical",
+            "intent_trigger": [
+                "控制图",
+                "SPC",
+                "稳定性分析",
+                "过程能力",
+                "异常预警",
+                "Western-Electric",
+                "Nelson Rules",
+                "control chart"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 图表主标题",
+                    "Type: [I-MR/X-bar-R/X-bar-S/P/NP/C/U] - 控制图类型",
+                    "Size: [N] - 子组样本容量 (计量图: 2-10, 计数图: 每次抽检数)",
+                    "Rules: [Nelson/Western-Electric/Basic] - 判异规则启用",
+                    "Decimals: [N] - 数值精度 (默认2)",
+                    "UCL/LCL/CL: [Value] - 手动指定控制限 (可选)",
+                    "Color[Line/Point/UCL/CL]: #HEX - 样式定制",
+                    "[series]: [名称] ... [/series] - 数据序列定义块"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "计量型数据 - 均值极差图 (X-bar-R)",
+                        "input": "监控发动机缸盖螺栓孔径，每组5个样件，共抽样20组。数据如下：12.01, 12.02, 11.99, 12.00, 12.01...",
+                        "output": "Title: 缸盖螺栓孔径 X-bar-R 控制图\nType: X-bar-R\nSize: 5\nRules: Nelson\nDecimals: 3\nColor[Line]: #2563eb\nColor[Point]: #1d4ed8\nColor[UCL]: #ef4444\n\n[series]: 孔径测量值 (mm)\n12.01, 12.02, 11.99, 12.00, 12.01\n12.03, 11.98, 12.01, 12.02, 11.99\n12.00, 12.01, 12.04, 11.97, 12.02\n12.01, 11.99, 12.00, 12.03, 12.01\n11.98, 12.02, 12.01, 11.99, 12.00\n[/series]"
+                    },
+                    {
+                        "scenario": "计数型数据 - 不合格率图 (P-Chart)",
+                        "input": "统计注塑车间3月份各班次的不合格率。抽检数固定为500，次品数序列为：5, 3, 8, 12, 4, 6, 2, 7, 5, 4。",
+                        "output": "Title: 车间不合格率 P 控制图\nType: P\nSize: 500\nRules: Western-Electric\nDecimals: 4\nColor[Line]: #10b981\n\n[series]: 不合格品数\n5, 3, 8, 12, 4, 6, 2, 7, 5, 4\n[/series]"
+                    }
+                ]
+            }
+        },
+        "matrix": {
+            "type": "logic",
+            "intent_trigger": [
+                "矩阵图",
+                "量化评价",
+                "交叉分析",
+                "系统约束",
+                "matrix diagram",
+                "L型",
+                "T型",
+                "Y型",
+                "X型",
+                "C型",
+                "关联度打分"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 图表标题",
+                    "Type: [L/T/Y/X/C] - 布局要求:",
+                    "  - L型: 需 2 个 Axis, 1 个 Matrix (Row x Col)",
+                    "  - T型: 需 3 个 Axis, 2 个 Matrix (主轴 A 对接 B, C)",
+                    "  - Y型: 需 3 个 Axis, 3 个 Matrix (A-B, B-C, C-A)",
+                    "  - X型: 需 4 个 Axis, 4 个 Matrix (W-N, N-E, E-S, S-W)",
+                    "  - C型: 需 1 个 Axis, 1 个 Matrix (Axis_T x Axis_T 自相关)",
+                    "Orientation: [Top/Bottom] - Y/T轴渲染方向",
+                    "Weight[Strong/Medium/Weak]: [N] - 全局符号权重 (默认 9,3,1)",
+                    "ShowScores: [true/false] - 显示加权分值",
+                    "Axis: [ID], [Label] - 定义维度轴",
+                    "- [ItemID], [Label], [Weight] - 定义项目 (权重可选)",
+                    "Matrix: [ID1] x [ID2] - 声明轴间的映射对",
+                    "[RowID]: [ColID]:[Symbol] - 填充单元格 (Symbol: ◎/○/△)"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "L型矩阵 - 零件与故障模式分析",
+                        "input": "分析零件(1. 齿轮, 2. 轴承, 3. 密封圈)与故障模式(A. 磨损, B. 裂纹, C. 泄漏)的关系。齿轮与磨损强相关，与裂纹中相关；轴承与磨损强相关；密封圈与泄漏强相关。",
+                        "output": "Title: 零件与故障模式 L型矩阵\nType: L\nShowScores: true\nFont[Title]: 14\nFont[Base]: 10\n\nAxis: P, 零件\n- p1, 齿轮, 5\n- p2, 轴承, 3\n- p3, 密封圈, 2\n\nAxis: F, 故障模式\n- f1, 磨损\n- f2, 裂纹\n- f3, 泄漏\n\nMatrix: P x F\np1: f1:◎, f2:○\np2: f1:◎\np3: f3:◎"
+                    },
+                    {
+                        "scenario": "T型矩阵 - 车型-配置-供应商三向映射",
+                        "input": "垂直轴为车型(SUV, 轿车)，左轴为配置(雷达, 摄像头)，右轴为供应商(博世, 大陆)。SUV配置雷达(强)，雷达由博世供应(强)；轿车配置摄像头(强)，摄像头由大陆供应(强)。",
+                        "output": "Title: 车型-配置-供应商 T型矩阵\nType: T\nFont[Title]: 14\nFont[Base]: 10\n\nAxis: A, 目标车型\n- a1, 豪华型SUV\n- a2, 运动型轿车\n\nAxis: B, 核心配置\n- b1, 毫米波雷达\n- b2, 高清摄像头\n\nAxis: C, 合作伙伴\n- c1, 博世 (Bosch)\n- c2, 大陆 (Continental)\n\nMatrix: A x B\na1: b1:◎\na2: b2:◎\n\nMatrix: B x C\nb1: c1:◎\nb2: c2:◎"
+                    },
+                    {
+                        "scenario": "Y型矩阵 - 需求-功能-零件闭环分析",
+                        "input": "展示 A(需求) -> B(功能) -> C(零件) 的三维因果闭环。需求包括“轻量化”和“高强度”；功能包括“结构优选”和“材料刚度”；零件包括“铝合金车架”和“高碳钢支撑”。三者互相制约。",
+                        "output": "Title: 需求-功能-零件 Y型系统矩阵\nType: Y\nOrientation: Top\nFont[Title]: 14\nFont[Base]: 10\n\nAxis: A, 核心需求\n- a1, 轻量化, 10\n- a2, 高强度, 8\n\nAxis: B, 技术功能\n- b1, 结构拓扑优化\n- b2, 静态刚度增强\n\nAxis: C, 关键零部件\n- c1, 铝合金一体车架\n- c2, 高碳钢结构件\n\nMatrix: A x B\na1: b1:◎\na2: b2:◎\n\nMatrix: B x C\nb1: c1:◎\nb2: c2:○\n\nMatrix: C x A\nc1: a1:◎\nc2: a2:○"
+                    },
+                    {
+                        "scenario": "X型矩阵 - 任务-流程-部门匹配",
+                        "input": "分析北(N)-岗位、东(E)-流程、南(S)-资源、西(W)-风险的交叉关系。岗位有经理和主管；流程有采购和质检；资源有系统和资金；风险有合规和效率。",
+                        "output": "Title: 组织治理 X型全维矩阵\nType: X\nOrder: POS, PROC, RES, RISK\nFont[Title]: 14\nFont[Base]: 10\n\nAxis: POS, 关键岗位\n- p1,经理\n- p2, 主管\n\nAxis: PROC, 业务流程\n- e1, 采购申请\n- e2, 到货质检\n\nAxis: RES, 资源支持\n- s1, OA系统\n- s2, 专项资金\n\nAxis: RISK, 潜在风险\n- w1, 合规性风险\n- w2, 响应延迟\n\nMatrix: POS x PROC\np1: e1:◎\np2: e2:◎\n\nMatrix: PROC x RES\ne1: s2:◎\ne2: s1:◎\n\nMatrix: RES x RISK\ns1: w2:○\ns2: w1:◎\n\nMatrix: RISK x POS\nw1: p1:◎\nw2: p2:○"
+                    },
+                    {
+                        "scenario": "C型矩阵 - 技术指标自相关分析(屋顶图)",
+                        "input": "分析 HOQ 质量屋顶部的技术指标自相关性。指标包括：车重、风阻、马力。车重与风阻中度正相关，车重与马力强正相关，风阻与马力弱负相关。",
+                        "output": "Title: 技术指标自相关 C型矩阵\nType: C\nFont[Title]: 14\nFont[Base]: 10\n\nAxis: T, 技术指标\n- t1, 车重\n- t2, 风阻\n- t3, 马力\n\nMatrix: T x T\nt1: t2:○, t3:◎\nt2: t3:△"
+                    }
+                ]
+            }
+        },
+        "matrix_plot": {
+            "type": "statistical",
+            "intent_trigger": [
+                "散点图矩阵",
+                "变量关系",
+                "全维度分析",
+                "图矩阵",
+                "matrix plot",
+                "pair plot",
+                "multivariate scatter"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 图表标题",
+                    "Mode: [Matrix/YvsX] - 布局模式 (变量自相关或交叉分析)",
+                    "Dimensions: [A, B, C] - 变量维度 (Matrix 模式)",
+                    "Y-Dimensions: [Y1, Y2] - Y 轴变量 (YvsX 模式)",
+                    "X-Dimensions: [X1, X2] - X 轴变量 (YvsX 模式)",
+                    "Group: [变量名] - 分类变量 (用于颜色/形状区分)",
+                    "Smoother: [Lowess/MovingAverage/false] - 平滑算法",
+                    "Data: - 之后使用 - { K: V, ... } 定义样本",
+                    "Styles: - 之后定义视觉参数 (Diagonal: Histogram/Boxplot/Label)"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "多变量全矩阵分析 - 制程稳定性",
+                        "input": "分析生产线上的温度、压力、良率和转速四个变量的相关性，按照不同批次(Batch)变色，并显示 Lowess 平滑曲线。对角线显示直方图。",
+                        "output": "Title: 制程参数多变量关联分析\nMode: Matrix\nDimensions: [温度, 压力, 良率, 转速]\nGroup: 批次\nSmoother: Lowess\n\nData:\n- { 温度: 200, 压力: 10.2, 良率: 98, 转速: 1200, 批次: \"A\" }\n- { 温度: 210, 压力: 11.5, 良率: 95, 转速: 1250, 批次: \"A\" }\n- { 温度: 220, 压力: 12.1, 良率: 92, 转速: 1180, 批次: \"B\" }\n\nStyles:\n- Diagonal: Histogram\n- DisplayMode: Full\n- ColorPalette: Industrial"
+                    },
+                    {
+                        "scenario": "Y vs X 交叉分析 - 绩效与环境",
+                        "input": "对比销售额(Y)与客流量(X1)、广告投入(X2)的关系。显示滑动平均平滑线。",
+                        "output": "Title: 销售额驱动因素深度分析\nMode: YvsX\nY-Dimensions: [销售额]\nX-Dimensions: [客流量, 广告投入]\nSmoother: MovingAverage\n\nData:\n- { 销售额: 5000, 客流量: 100, 广告投入: 500 }\n- { 销售额: 7000, 客流量: 150, 广告投入: 800 }\n- { 销售额: 3000, 客流量: 80, 广告投入: 300 }"
+                    }
+                ]
+            }
+        },
+        "pdpc": {
+            "type": "logic",
+            "intent_trigger": [
+                "过程决策程序图",
+                "风险预判",
+                "应对方案",
+                "路径演化",
+                "万一",
+                "pdpc"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 图表标题",
+                    "Layout: Directional/Standard - 布局方向 (Standard为树状, Directional为流图)",
+                    "Color[Start/End/Step/Countermeasure]: #HEX - 节点背景色",
+                    "Color[StartText/EndText/StepText/CountermeasureText]: #HEX - 节点文字色",
+                    "Color[Line]: #HEX, Line[Width]: [Number] - 连线样式",
+                    "Group: [ID], [Label], [ParentID?] - 分组容器定义",
+                    "Item: [ID], [Label], [start/step/end/countermeasure] - 节点定义",
+                    "id1--id2 [OK/NG] - 逻辑连线与判定标记"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "软件发布过程风险分析",
+                        "input": "分析软件上线流程：开始上线，部署代码，运行测试。如果成功，上线完成。如果失败，回滚代码，清理缓存，然后回到部署代码。",
+                        "output": "Title: 软件上线 PDPC 风险分析\nLayout: Directional\n\nGroup: g1, 正常上线流程\n  Item: start, 开始上线, [start]\n  Item: s1, 部署代码\n  Item: s2, 运行测试\nEndGroup\n\nGroup: g2, 故障处理\n  Item: c1, 回滚代码, [countermeasure]\n  Item: c2, 清理缓存, [countermeasure]\nEndGroup\n\nItem: end, 上线完成, [end]\n\nstart--s1--s2\ns2--end [OK]\ns2--c1 [NG]\nc1--c2--s1"
+                    }
+                ]
+            }
+        },
+        "arrow": {
+            "type": "logic",
+            "intent_trigger": [
+                "矢线图",
+                "PERT",
+                "CPM",
+                "关键路径",
+                "项目进度",
+                "网络计划图",
+                "arrow diagram"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字]",
+                    "ShowCritical: true/false - 关键路径高亮",
+                    "Color[Node/Line/Critical]: #HEX",
+                    "Event: [ID], [Label] - 定义事件/里程碑",
+                    "ID1 -> ID2 : [Duration], [Label] - 实活动",
+                    "ID1 ..> ID2 : 0, [Label] - 虚活动"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "简单工程排程",
+                        "input": "分析新品研发进度：1.启动(事件1)，2.设计(1->2, 5天)，3.开模(2->3, 10天)，4.铺货(3->4, 5天)。显示关键路径。",
+                        "output": "Title: 新品研发进度分析\nShowCritical: true\n\nEvent: 1, 启动\nEvent: 4, 发布\n\n1 -> 2 : 5, 工业设计\n2 -> 3 : 10, 模具开发\n3 -> 4 : 5, 渠道铺货"
+                    }
+                ]
+            }
+        }
+    }
+}
