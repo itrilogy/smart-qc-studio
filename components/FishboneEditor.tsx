@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { FishboneNode, FishboneChartStyles, DEFAULT_FISHBONE_STYLES } from '../types';
 import { INITIAL_FISHBONE_DSL } from '../constants';
-import { GitBranch, Sparkles, HelpCircle, X, Loader2, Database, Send, Plus, Trash2, ChevronRight, Code, RotateCcw } from 'lucide-react';
+import { GitBranch, Sparkles, HelpCircle, X, Loader2, Database, Send, Plus, Trash2, ChevronRight, Code, RotateCcw, Zap, Activity } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 import { QCToolType } from '../types';
 
@@ -83,6 +83,7 @@ const FishboneEditor: React.FC<FishboneEditorProps> = ({ data, styles, onDataCha
     const [dsl, setDsl] = useState(() => generateDSLFromData(data, styles));
     const [activeTab, setActiveTab] = useState<'manual' | 'dsl' | 'ai'>('manual');
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [error, setError] = useState<string | null>(null);
 
     // AI State
@@ -430,120 +431,187 @@ const FishboneEditor: React.FC<FishboneEditorProps> = ({ data, styles, onDataCha
             {/* Docs Modal */}
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                        <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                            <div className="flex items-center gap-5">
-                                <div className="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/20">
-                                    <HelpCircle size={28} className="text-white" />
+                    <div className="bg-[#0f172a] w-[900px] h-[800px] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl relative">
+                        {/* Modal Header */}
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6 bg-[#0f172a]/80 backdrop-blur-xl">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2 bg-blue-500/20 rounded-xl">
+                                        <HelpCircle size={24} className="text-blue-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">鱼骨图知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Version 3.0 • Ishikawa Processor</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-lg font-black text-white uppercase tracking-tighter">鱼骨图 DSL 规范</h3>
-                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
-                                        Recursive Cause Guide V3
-                                    </p>
-                                </div>
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                    <X size={24} />
+                                </button>
                             </div>
-                            <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
-                                <X size={24} />
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-12 space-y-12 custom-scrollbar text-slate-300">
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-blue-400 border-b border-blue-500/20 pb-4">
-                                    <Database size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
-                                </div>
-                                <div className="space-y-4">
-                                    <table className="w-full text-xs font-mono border-collapse">
-                                        <thead>
-                                            <tr className="text-slate-500 text-left border-b border-slate-800">
-                                                <th className="py-3 font-black uppercase">语法</th>
-                                                <th className="py-3 font-black uppercase">说明</th>
-                                                <th className="py-3 font-black uppercase">示例</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-800/50">
-                                            <tr>
-                                                <td className="py-3 text-blue-400 font-bold">Title:</td>
-                                                <td className="py-3 text-white">定义图表核心标题</td>
-                                                <td className="py-3 text-slate-500">Title: 鱼头核心问题</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-emerald-400 font-bold">Color[Root]:</td>
-                                                <td className="py-3 text-white">鱼头矩形背景色</td>
-                                                <td className="py-3 text-slate-500">Color[Root]: #1e40af</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-amber-400 font-bold">Color[Main]:</td>
-                                                <td className="py-3 text-white">主骨分类矩形背景色</td>
-                                                <td className="py-3 text-slate-500">Color[Main]: #2563eb</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div className="p-4 bg-slate-900/50 rounded-xl text-[10px] text-slate-500 leading-relaxed font-mono">
-                                        支持的颜色键值: BoneLine, CaseLine, Title, Case, Start, End
-                                    </div>
-                                </div>
-                            </section>
 
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
-                                    <ChevronRight size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">2. 颜色键值语法</span>
-                                </div>
-                                <div className="p-8 bg-slate-900/50 rounded-[2rem] border border-slate-800 space-y-4 font-mono text-xs">
-                                    <div className="flex justify-between border-b border-slate-700/50 pb-2">
-                                        <span className="text-amber-500">Color[Root]: ...</span>
-                                        <span className="text-slate-500">鱼头背景 (Root Node)</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-slate-700/50 pb-2">
-                                        <span className="text-amber-500">Color[RootText]: ...</span>
-                                        <span className="text-slate-500">鱼头文字 (Root Text)</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-slate-700/50 pb-2">
-                                        <span className="text-blue-400">Color[Main]: ...</span>
-                                        <span className="text-slate-500">大骨背景 (Main Category)</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-slate-700/50 pb-2">
-                                        <span className="text-blue-400">Color[MainText]: ...</span>
-                                        <span className="text-slate-500">大骨文字 (Main Text)</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-slate-700/50 pb-2">
-                                        <span className="text-emerald-400">Color[Bone]: ...</span>
-                                        <span className="text-slate-500">主脊椎线 (Spine Line)</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-slate-700/50 pb-2">
-                                        <span className="text-purple-400">Color[Line]: ...</span>
-                                        <span className="text-slate-500">子因连接线 (Sub-cause Line)</span>
-                                    </div>
-                                    <div className="flex justify-between border-b border-slate-700/50 pb-2">
-                                        <span className="text-purple-400">Color[Text]: ...</span>
-                                        <span className="text-slate-500">普通原因文字 (General Text)</span>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
-                                    <Code size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">3. 完整示例定义</span>
-                                </div>
-                                <div className="p-8 bg-black/40 rounded-[2.5rem] border border-white/5 space-y-4 font-mono text-[11px] leading-relaxed">
-                                    <div className="text-blue-400">Title: 售后投诉根因分析</div>
-                                    <div className="text-slate-600">Color[BoneLine]: #475569</div>
-                                    <br />
-                                    <div className="text-white"># 人 (Man)</div>
-                                    <div className="text-slate-400 pl-4">## 培训不足</div>
-                                    <div className="text-slate-500 pl-8">### 新员工缺乏上岗培训</div>
-                                    <div className="text-white"># 机 (Machine)</div>
-                                    <div className="text-slate-400 pl-4">## 模具老化</div>
-                                </div>
-                            </section>
+                            {/* Tab Navigation */}
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '因果分析指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
+                                            }`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
                         </div>
-                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center">
-                            <button onClick={() => setShowDocs(false)} className="px-16 py-4 bg-blue-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl active:scale-95 transition-all">
-                                已阅读并同步规范
+
+                        {/* Modal Body */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-10 text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12 animate-in fade-in duration-300">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-blue-400 border-b border-blue-500/20 pb-4">
+                                            <Database size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <table className="w-full text-xs font-mono border-collapse text-left bg-black/20 rounded-xl overflow-hidden">
+                                                <thead>
+                                                    <tr className="text-slate-500 bg-slate-800/50">
+                                                        <th className="p-4 font-black uppercase w-32">语法</th>
+                                                        <th className="p-4 font-black uppercase">说明</th>
+                                                        <th className="p-4 font-black uppercase">示例</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-800/50">
+                                                    <tr>
+                                                        <td className="p-4 text-blue-400 font-bold">Title:</td>
+                                                        <td className="p-4">定义图表核心标题</td>
+                                                        <td className="p-4 text-slate-500">Title: 售后投诉根因分析</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-emerald-400 font-bold">Color[Root]:</td>
+                                                        <td className="p-4">鱼头背景颜色</td>
+                                                        <td className="p-4 text-slate-500">Color[Root]: #1e40af</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-amber-400 font-bold">Color[Main]:</td>
+                                                        <td className="p-4">大骨分类背景色</td>
+                                                        <td className="p-4 text-slate-500">Color[Main]: #2563eb</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
+                                            <ChevronRight size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">2. 颜色键值语法</span>
+                                        </div>
+                                        <div className="p-8 bg-black/20 rounded-[2rem] border border-slate-800 space-y-4 font-mono text-xs">
+                                            {[
+                                                { key: 'Color[Root]', desc: '鱼头背景 (Root Node)', color: 'text-amber-500' },
+                                                { key: 'Color[RootText]', desc: '鱼头文字 (Root Text)', color: 'text-amber-500' },
+                                                { key: 'Color[Main]', desc: '大骨背景 (Main Category)', color: 'text-blue-400' },
+                                                { key: 'Color[MainText]', desc: '大骨文字 (Main Text)', color: 'text-blue-400' },
+                                                { key: 'Color[Bone]', desc: '主脊椎线 (Spine Line)', color: 'text-emerald-400' },
+                                                { key: 'Color[Line]', desc: '子因连接线 (Sub-cause Line)', color: 'text-purple-400' },
+                                                { key: 'Color[Text]', desc: '原因文字 (General Text)', color: 'text-purple-400' },
+                                            ].map(item => (
+                                                <div key={item.key} className="flex justify-between border-b border-slate-700/50 pb-2">
+                                                    <span className={item.color}>{item.key}: ...</span>
+                                                    <span className="text-slate-500">{item.desc}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                            <Code size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">3. 层级定义语法</span>
+                                        </div>
+                                        <div className="p-8 bg-black/40 rounded-[2.5rem] border border-white/5 space-y-4 font-mono text-[11px] leading-relaxed relative">
+                                            <div className="text-[11px] font-bold text-slate-500 mb-2">Markdown 风格语法</div>
+                                            <div className="text-blue-400"># 人 (Man) <span className="text-slate-600 ml-4 font-sans">// 一级分类（大骨）</span></div>
+                                            <div className="text-slate-400 pl-4">## 培训不足 <span className="text-slate-600 ml-4 font-sans">// 二级原因（中骨）</span></div>
+                                            <div className="text-slate-500 pl-8">### 新员工缺乏上岗培训 <span className="text-slate-600 ml-4 font-sans">// 三级原因（小骨）</span></div>
+                                            <div className="text-blue-400 mt-4"># 机 (Machine)</div>
+                                            <div className="text-slate-400 pl-4">## 模具老化</div>
+                                        </div>
+                                    </section>
+                                </div>
+                            ) : (
+                                <div className="space-y-12 animate-in fade-in duration-300">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-blue-400 border-b border-blue-500/20 pb-4">
+                                            <Activity size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">石川图 (Ishikawa) 因果分析原理</span>
+                                        </div>
+                                        <div className="p-8 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-6 text-sm leading-relaxed text-slate-400 font-sans">
+                                            <p>
+                                                鱼骨图，又称因果图，由石川馨博士发明。它是整理<b>问题与原因</b>之间关系的一种极佳工具。
+                                            </p>
+
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div className="space-y-3 bg-black/20 p-5 rounded-xl border border-white/5">
+                                                    <h5 className="text-[11px] font-black text-blue-400 uppercase tracking-widest">1. 5M1E 模型 (制造业)</h5>
+                                                    <p className="text-[11px]">最常用的分类方法，涵盖：</p>
+                                                    <ul className="list-disc pl-4 text-[11px] space-y-1">
+                                                        <li><b>人 (Man):</b> 操作员、技术、意识</li>
+                                                        <li><b>机 (Machine):</b> 设备稳定性、精度、润滑</li>
+                                                        <li><b>料 (Material):</b> 原材料、品质、规格</li>
+                                                        <li><b>法 (Method):</b> 工艺标准、操作流程</li>
+                                                        <li><b>环 (Environment):</b> 温湿度、照明、噪音</li>
+                                                        <li><b>测 (Measurement):</b> 测量工具、抽样方法</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="space-y-3 bg-black/20 p-5 rounded-xl border border-white/5">
+                                                    <h5 className="text-[11px] font-black text-blue-400 uppercase tracking-widest">2. 4P 模型 (服务业/管理)</h5>
+                                                    <p className="text-[11px]">适用于非制造流程：</p>
+                                                    <ul className="list-disc pl-4 text-[11px] space-y-1 flex-1">
+                                                        <li><b>策略 (Policies):</b> 规章制度、管理流程</li>
+                                                        <li><b>程序 (Procedures):</b> 具体作业步骤</li>
+                                                        <li><b>人员 (People):</b> 能力、态度、协作</li>
+                                                        <li><b>场所 (Plant):</b> 办公环境、系统工具</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3 bg-blue-900/10 p-5 rounded-xl border border-blue-500/20">
+                                                <h5 className="text-[11px] font-black text-blue-400 uppercase tracking-widest">3. 分析步骤要领</h5>
+                                                <div className="text-[11px] space-y-2">
+                                                    <p>① <b>界定问题：</b>在鱼头处明确定义发生的异常或目标。</p>
+                                                    <p>② <b>脑力激荡：</b>通过调查和沟通，由表及里，从大骨推导至小骨。</p>
+                                                    <p>③ <b>标记重点：</b>分析完成后，应圈出影响最大的 3-5 个核心因素。</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-blue-900/10 border border-blue-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-blue-500" />
+                                            <span className="text-[10px] font-black uppercase text-blue-500">专家建议</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic">
+                                            "鱼骨图的深度决定了解决问题的深度。当您推导出某个原因时，请连续追问 '为什么'，直到找到那个如果不采取行动就会导致全盘失败的实质节点。"
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-blue-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all font-sans"
+                            >
+                                我理解了分析原理
                             </button>
                         </div>
                     </div>

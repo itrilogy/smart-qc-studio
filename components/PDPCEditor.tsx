@@ -13,7 +13,7 @@ import {
 import { INITIAL_PDPC_DSL } from '../constants';
 import {
     ChevronRight, Save, Trash2, Plus, Edit3, Settings2, ArrowRight, LayoutGrid, Circle,
-    Workflow, Sparkles, HelpCircle, X, Loader2, Database, Code, GitFork, Layers, LogOut, RotateCcw
+    Workflow, Sparkles, HelpCircle, X, Loader2, Database, Code, GitFork, Layers, LogOut, RotateCcw, Zap
 } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 import { QCToolType } from '../types';
@@ -154,6 +154,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
     const [dsl, setDsl] = useState(INITIAL_PDPC_DSL);
     const [activeTab, setActiveTab] = useState<'manual' | 'dsl' | 'ai'>('manual');
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [error, setError] = useState<string | null>(null);
     const [aiPrompt, setAiPrompt] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
@@ -754,131 +755,126 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
 
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl">
-                        <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                            <div className="flex items-center gap-5">
-                                <div className="p-3 bg-emerald-600 rounded-2xl shadow-lg">
-                                    <HelpCircle size={28} className="text-white" />
+                    <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-emerald-600/20 rounded-2xl border border-emerald-500/30">
+                                        <GitFork size={24} className="text-emerald-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">PDPC 知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Decision Process Logic Base V1.2</p>
+                                    </div>
                                 </div>
-                                <h3 className="text-lg font-black text-white uppercase tracking-tighter">PDPC DSL 规范</h3>
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                    <X size={24} />
+                                </button>
                             </div>
-                            <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
-                                <X size={24} />
-                            </button>
+
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '分析逻辑与指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-12 space-y-12 text-slate-300 custom-scrollbar">
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
-                                    <Database size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">1. PDPC 分析法说明</span>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                            <Code size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">DSL 语法规范</span>
+                                        </div>
+                                        <div className="space-y-8">
+                                            <div className="space-y-3">
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">A. 元数据与样式控制</p>
+                                                <table className="w-full text-[10px] font-mono border-collapse bg-black/20 rounded-lg overflow-hidden">
+                                                    <thead>
+                                                        <tr className="text-slate-400 text-left bg-slate-800/50">
+                                                            <th className="p-3">关键字</th>
+                                                            <th className="p-3">示例</th>
+                                                            <th className="p-3">说明</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-slate-800/50">
+                                                        <tr><td className="p-3 text-emerald-400">Title</td><td className="p-3">Title: 某应急演练计划</td><td className="p-3 text-slate-400">设置图表标题</td></tr>
+                                                        <tr><td className="p-3 text-emerald-400">Layout</td><td className="p-3">Layout: Directional</td><td className="p-3 text-slate-400">排版方向 (Directional | Standard)</td></tr>
+                                                        <tr><td className="p-3 text-emerald-400">Color[*]</td><td className="p-3">Color[Start]: #ff0000</td><td className="p-3 text-slate-400">自定义颜色关键字</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div className="space-y-3">
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">B. 结构化定义</p>
+                                                <table className="w-full text-[10px] font-mono border-collapse bg-black/20 rounded-lg overflow-hidden">
+                                                    <thead>
+                                                        <tr className="text-slate-400 text-left bg-slate-800/50">
+                                                            <th className="p-3">类型</th>
+                                                            <th className="p-3">语法</th>
+                                                            <th className="p-3">说明</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-slate-800/50">
+                                                        <tr><td className="p-3 text-blue-400">分组 (Group)</td><td className="p-3">Group: G1, 第一阶段</td><td className="p-3 text-slate-400">以 EndGroup 结束</td></tr>
+                                                        <tr><td className="p-3 text-emerald-400">原子项 (Item)</td><td className="p-3">Item: id, 标签, [类型]</td><td className="p-3 text-slate-400">类型可选: Start | Step | Countermeasure | End</td></tr>
+                                                        <tr><td className="p-3 text-indigo-400">连接线 (Link)</td><td className="p-3">id1--id2 [OK/NG]</td><td className="p-3 text-slate-400">标记判定结果</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </section>
                                 </div>
-                                <div className="text-xs leading-relaxed space-y-4 text-slate-400">
-                                    <p>过程决策程序图 (Process Decision Program Chart) 是在制定计划阶段，对目标实现过程中可能出现的障碍进行预见，并设计多种应对手段的工具。它强调“走一步看一步”的动态决策逻辑。</p>
-                                    <div className="p-4 bg-emerald-900/20 rounded-xl border border-emerald-500/20">
-                                        <p className="text-emerald-400 font-bold mb-2">核心分析逻辑：</p>
-                                        <ul className="list-disc pl-4 space-y-1">
-                                            <li><span className="text-slate-200">顺向思维</span>：从起点出发，按时间序列推演（正常路径，标记为 OK）。</li>
-                                            <li><span className="text-slate-200">逆向思维</span>：预设“万一...”，从故障或障碍点引出“对策”（NG 路径）。</li>
-                                            <li><span className="text-slate-200">动态决策</span>：根据实时执行结果（OK/NG）灵活选择下一阶段路径。</li>
-                                        </ul>
+                            ) : (
+                                <div className="space-y-12">
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">PDPC 分析法 (决策程序图)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>过程决策程序图 (Process Decision Program Chart) 是在制定计划阶段，对目标实现过程中可能出现的障碍进行预见，并设计多种应对手段的工具。</p>
+                                            <ul className="list-disc list-inside space-y-2">
+                                                <li><strong>顺向思维</strong>: 从起点出发，推演正常路径 (OK)。</li>
+                                                <li><strong>逆向思维</strong>: 预设“万一...”，从障碍点引出“对策” (NG)。</li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">动态决策逻辑</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>PDPC 的核心在于“走一步看一步”。根据实时执行结果（OK 或 NG），决策者可以迅速从预设的备选方案中选择最合适的后续路径。</p>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-indigo-500" />
+                                            <span className="text-[10px] font-black uppercase text-indigo-500">思维启发</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                            "一个完善的 PDPC 图不仅要考虑技术风险，更要考虑管理、环境和人员心理等不可控因素的突发影响。"
+                                        </p>
                                     </div>
                                 </div>
-                            </section>
-
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
-                                    <Code size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">2. DSL 语法规范</span>
-                                </div>
-                                <div className="space-y-8">
-                                    {/* Table 1: Metadata & Styles */}
-                                    <div className="space-y-3">
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">A. 元数据与样式控制</p>
-                                        <table className="w-full text-[10px] font-mono border-collapse bg-black/20 rounded-lg overflow-hidden">
-                                            <thead>
-                                                <tr className="text-slate-400 text-left bg-slate-800/50">
-                                                    <th className="p-3">关键字</th>
-                                                    <th className="p-3">语法格式</th>
-                                                    <th className="p-3">功能说明</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-800/50">
-                                                <tr><td className="p-3 text-emerald-400">Title</td><td className="p-3">Title: [文字]</td><td className="p-3 text-slate-400">定义图表主标题</td></tr>
-                                                <tr><td className="p-3 text-emerald-400">Layout</td><td className="p-3">Layout: Directional/Standard</td><td className="p-3 text-slate-400">布局风格 (流图/树状)</td></tr>
-                                                <tr><td className="p-3 text-emerald-400">Color</td><td className="p-3">Color[Target]: #HEX</td><td className="p-3 text-slate-400">Start/End/Step/Countermeasure/Line</td></tr>
-                                                <tr><td className="p-3 text-emerald-400">Font</td><td className="p-3">Font[Title/Node]: [Size]</td><td className="p-3 text-slate-400">标题与节点字号控制</td></tr>
-                                                <tr><td className="p-3 text-emerald-400">Line</td><td className="p-3">Line[Width]: [Number]</td><td className="p-3 text-slate-400">连接线粗细设定</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    {/* Table 2: Groups & Nodes */}
-                                    <div className="space-y-3">
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">B. 节点与分组定义</p>
-                                        <table className="w-full text-[10px] font-mono border-collapse bg-black/20 rounded-lg overflow-hidden">
-                                            <thead>
-                                                <tr className="text-slate-400 text-left bg-slate-800/50">
-                                                    <th className="p-3">关键字</th>
-                                                    <th className="p-3">语法示例</th>
-                                                    <th className="p-3">功能说明</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-800/50">
-                                                <tr><td className="p-3 text-blue-400">Group</td><td className="p-3">Group: g1, 阶段名, [父ID?]</td><td className="p-3 text-slate-400">定义逻辑分组容器，需 EndGroup 闭合</td></tr>
-                                                <tr><td className="p-3 text-emerald-400">Item</td><td className="p-3">Item: s1, 节点名, [type?]</td><td className="p-3 text-slate-400">定义节点，类型可选: start, end, countermeasure</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    {/* Table 3: Relationships */}
-                                    <div className="space-y-3">
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">C. 逻辑连线与判定</p>
-                                        <table className="w-full text-[10px] font-mono border-collapse bg-black/20 rounded-lg overflow-hidden">
-                                            <thead>
-                                                <tr className="text-slate-400 text-left bg-slate-800/50">
-                                                    <th className="p-3">语法</th>
-                                                    <th className="p-3">示例</th>
-                                                    <th className="p-3">功能说明</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-800/50">
-                                                <tr><td className="p-3 text-purple-400">--</td><td className="p-3">s1--s2</td><td className="p-3 text-slate-400">标准无方向/有向逻辑连接</td></tr>
-                                                <tr><td className="p-3 text-purple-400">[OK/NG]</td><td className="p-3">s1--s2 [OK]</td><td className="p-3 text-slate-400">判定连线，OK 表示正常路径，NG 表示故障路径</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
-                                    <GitFork size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">3. 完整案例展示</span>
-                                </div>
-                                <div className="p-8 bg-black/40 rounded-[2rem] border border-white/5 font-mono text-[10px] leading-relaxed relative overflow-hidden group">
-                                    <div className="absolute top-4 right-6 text-[8px] font-black text-slate-700 uppercase tracking-widest">Software Release PDPC</div>
-                                    <div className="text-emerald-500">Title: 软件上线风险决策分析</div>
-                                    <div className="text-emerald-500">Layout: Directional</div>
-                                    <br />
-                                    <div className="text-blue-400">Group: g1, 正常上线流程</div>
-                                    <div className="pl-4 text-slate-300">Item: start, 开始上线, [start]</div>
-                                    <div className="pl-4 text-slate-300">Item: s1, 部署代码</div>
-                                    <div className="pl-4 text-slate-300">Item: s2, 运行回归测试</div>
-                                    <div className="text-blue-400">EndGroup</div>
-                                    <br />
-                                    <div className="text-amber-400">Group: g2, 故障补救</div>
-                                    <div className="pl-4 text-slate-300">Item: c1, 回滚至上个版本, [countermeasure]</div>
-                                    <div className="pl-4 text-slate-300">Item: c2, 清理缓存, [countermeasure]</div>
-                                    <div className="text-amber-400">EndGroup</div>
-                                    <br />
-                                    <div className="text-slate-300">Item: end, 上线成功, [end]</div>
-                                    <br />
-                                    <div className="text-purple-400">start--s1--s2</div>
-                                    <div className="text-purple-400">s2--end [OK]</div>
-                                    <div className="text-purple-400">s2--c1 [NG]</div>
-                                    <div className="text-purple-400">c1--c2--s1</div>
-                                </div>
-                            </section>
+                            )}
+                        </div>
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-emerald-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-emerald-500 transition-all font-sans"
+                            >
+                                已阅读规范
+                            </button>
                         </div>
                     </div>
                 </div>,

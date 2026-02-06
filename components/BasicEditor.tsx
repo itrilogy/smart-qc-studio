@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { BasicChartData, BasicChartStyles, DEFAULT_BASIC_STYLES, BasicChartDataset } from '../types';
 import { INITIAL_BASIC_DSL, INITIAL_BASIC_DATA } from '../constants';
-import { BarChart3, Sparkles, HelpCircle, X, Loader2, Database, Code, ChevronRight, Layout, Palette, Settings2, RotateCcw, ArrowUpDown, ArrowUpAZ, ArrowDownAZ } from 'lucide-react';
+import { BarChart3, Sparkles, HelpCircle, X, Loader2, Database, Code, ChevronRight, Layout, Palette, Settings2, RotateCcw, ArrowUpDown, ArrowUpAZ, ArrowDownAZ, Zap } from 'lucide-react';
 import { generateBasicDSL, getAIStatus } from '../services/aiService';
 
 interface BasicEditorProps {
@@ -83,6 +83,7 @@ const BasicEditor: React.FC<BasicEditorProps> = ({ data, styles, onDataChange, o
     const [dsl, setDsl] = useState(INITIAL_BASIC_DSL);
     const [activeTab, setActiveTab] = useState<'manual' | 'dsl' | 'ai'>('manual');
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [manualInput, setManualInput] = useState('');
 
     const [aiPrompt, setAiPrompt] = useState('');
@@ -419,63 +420,122 @@ const BasicEditor: React.FC<BasicEditorProps> = ({ data, styles, onDataChange, o
                 )}
             </div>
 
-            {/* Docs Modal */}
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden">
-                        <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                            <div className="flex items-center gap-5">
-                                <div className="p-3 bg-blue-600 rounded-2xl">
-                                    <HelpCircle size={28} className="text-white" />
+                    <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-blue-600/20 rounded-2xl border border-blue-500/30">
+                                        <BarChart3 size={24} className="text-blue-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">基础图表知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Basic Chart Logic Base V1.2</p>
+                                    </div>
                                 </div>
-                                <h3 className="text-lg font-black text-white uppercase tracking-tighter">基础图表 DSL 规范</h3>
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                    <X size={24} />
+                                </button>
                             </div>
-                            <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
-                                <X size={24} />
+
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '分析逻辑与指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12">
+                                    <div className="font-mono text-xs space-y-6">
+                                        <section>
+                                            <h4 className="text-blue-500 font-bold uppercase tracking-wider text-[10px] mb-3">关键配置</h4>
+                                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-[11px]">
+                                                <p><span className="text-blue-400 font-bold">Type:</span> bar | line | pie</p>
+                                                <p><span className="text-blue-400 font-bold">View:</span> v | h (柱状图/折线图方向)</p>
+                                                <p><span className="text-blue-400 font-bold">Stacked:</span> true | false (堆叠模式)</p>
+                                                <p><span className="text-blue-400 font-bold">Smooth:</span> true | false (平滑曲线)</p>
+                                                <p><span className="text-blue-400 font-bold">ShowLegend:</span> true | false (图例开关)</p>
+                                                <p><span className="text-blue-400 font-bold">Grid:</span> true | false (网格线开关)</p>
+                                            </div>
+                                        </section>
+                                        <section className="border-t border-slate-800 pt-6">
+                                            <h4 className="text-indigo-500 font-bold uppercase tracking-wider text-[10px] mb-3">样式控制</h4>
+                                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-[11px]">
+                                                <p><span className="text-indigo-400 font-bold">Color[Title]:</span> #HEX</p>
+                                                <p><span className="text-indigo-400 font-bold">Color[Bg]:</span> #HEX</p>
+                                                <p><span className="text-indigo-400 font-bold">Font[Title]:</span> [Size]</p>
+                                                <p><span className="text-indigo-400 font-bold">Font[Base]:</span> [Size]</p>
+                                            </div>
+                                        </section>
+                                        <section className="border-t border-slate-800 pt-6">
+                                            <h4 className="text-emerald-500 font-bold uppercase tracking-wider text-[10px] mb-3">数据与轴映射 (Dataset)</h4>
+                                            <div className="bg-black/30 p-4 rounded-xl border border-slate-800 text-slate-400 text-[11px] font-mono leading-relaxed">
+                                                <p className="text-blue-400 mb-2">// 语法: Dataset: 名称, [值列表], 颜色, 轴绑定</p>
+                                                <p>Dataset: 季度, [Q1, Q2, Q3], null, X</p>
+                                                <p>Dataset: 销售, [100, 200, 300], #3b82f6, Y</p>
+                                                <p>Dataset: 增长, [10, 20, 30], null, Y2</p>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-12">
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">图表类型选择</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>根据数据特性和分析目标选择合适的图表：</p>
+                                            <ul className="list-disc list-inside space-y-2">
+                                                <li><strong>柱状图 (Bar)</strong>: 强调个体之间的比较。</li>
+                                                <li><strong>折线图 (Line)</strong>: 展示随时间或其他连续维度的变化趋势。</li>
+                                                <li><strong>饼图 (Pie)</strong>: 反映组成部分与整体的比例关系。</li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-indigo-400 uppercase tracking-widest border-b border-indigo-900/50 pb-2">多维对比逻辑</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>利用双轴 (Y2) 和堆叠模式，可以实现在同一画布上对不同量级或不同性质的数据进行综合分析。</p>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-indigo-500" />
+                                            <span className="text-[10px] font-black uppercase text-indigo-500">专家建议</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                            "避免在同一个柱状图中展示超过 7 个分类，以免造成视觉拥挤和理解困难。"
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-blue-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all font-sans"
+                            >
+                                已阅读规范
                             </button>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-12 space-y-8 text-slate-300 custom-scrollbar">
-                            <div className="font-mono text-xs space-y-6">
-                                <section>
-                                    <h4 className="text-blue-500 font-bold uppercase tracking-wider text-[10px] mb-3">关键配置</h4>
-                                    <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-[11px]">
-                                        <p><span className="text-blue-400 font-bold">Type:</span> bar | line | pie</p>
-                                        <p><span className="text-blue-400 font-bold">View:</span> v | h (柱状图/折线图方向)</p>
-                                        <p><span className="text-blue-400 font-bold">Stacked:</span> true | false (堆叠模式)</p>
-                                        <p><span className="text-blue-400 font-bold">Smooth:</span> true | false (平滑曲线)</p>
-                                        <p><span className="text-blue-400 font-bold">ShowLegend:</span> true | false (图例开关)</p>
-                                        <p><span className="text-blue-400 font-bold">Grid:</span> true | false (网格线开关)</p>
-                                    </div>
-                                </section>
-                                <section className="border-t border-slate-800 pt-6">
-                                    <h4 className="text-indigo-500 font-bold uppercase tracking-wider text-[10px] mb-3">样式控制</h4>
-                                    <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-[11px]">
-                                        <p><span className="text-indigo-400 font-bold">Color[Title]:</span> #HEX</p>
-                                        <p><span className="text-indigo-400 font-bold">Color[Bg]:</span> #HEX</p>
-                                        <p><span className="text-indigo-400 font-bold">Font[Title]:</span> [Size]</p>
-                                        <p><span className="text-indigo-400 font-bold">Font[Base]:</span> [Size]</p>
-                                    </div>
-                                </section>
-                                <section className="border-t border-slate-800 pt-6">
-                                    <h4 className="text-emerald-500 font-bold uppercase tracking-wider text-[10px] mb-3">数据与轴映射 (Dataset)</h4>
-                                    <div className="bg-black/30 p-4 rounded-xl border border-slate-800 text-slate-400 text-[11px] font-mono leading-relaxed">
-                                        <p className="text-blue-400 mb-2">// 语法: Dataset: 名称, [值列表], 颜色, 轴绑定</p>
-                                        <p>Dataset: 季度, [Q1, Q2, Q3], null, X</p>
-                                        <p>Dataset: 销售, [100, 200, 300], #3b82f6, Y</p>
-                                        <p>Dataset: 增长, [10, 20, 30], null, Y2</p>
-                                    </div>
-                                </section>
-                                <section className="border-t border-slate-800 pt-6">
-                                    <h4 className="text-rose-500 font-bold uppercase tracking-wider text-[10px] mb-3">交互式管控</h4>
-                                    <div className="space-y-2 text-[11px] text-slate-400">
-                                        <p><span className="text-rose-400 font-bold">图例颜色及排序:</span> 在“快捷配置”中可长按色块拖拽调整多个数据集（Dataset）的渲染先后顺序，并实时同步 DSL。</p>
-                                        <p><span className="text-rose-400 font-bold">AI 智能推理:</span> 采用高级版推理流，输入业务现状即可自动识别维度、生成多轴配置并回填 DSL。</p>
-                                    </div>
-                                </section>
-                            </div>
-                        </div>
                     </div>
-                </div>, document.body
+                </div>,
+                document.body
             )}
         </div>
     );

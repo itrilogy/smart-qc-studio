@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { ScatterPoint, ScatterChartStyles, DEFAULT_SCATTER_STYLES } from '../types';
 import { INITIAL_SCATTER_DSL, INITIAL_SCATTER_DATA } from '../constants';
-import { ScatterChart as ScatterIcon, Sparkles, HelpCircle, X, Loader2, Database, Code, ChevronRight, Box, Waves, Grid3X3, RotateCcw } from 'lucide-react';
+import { ScatterChart as ScatterIcon, Sparkles, HelpCircle, X, Loader2, Database, Code, ChevronRight, Box, Waves, Grid3X3, RotateCcw, Zap } from 'lucide-react';
 import { generateScatterDSL, getAIStatus } from '../services/aiService';
 
 interface ScatterEditorProps {
@@ -62,6 +62,7 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
     const [dsl, setDsl] = useState(INITIAL_SCATTER_DSL);
     const [activeTab, setActiveTab] = useState<'manual' | 'dsl' | 'ai'>('manual');
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [manualInput, setManualInput] = useState('');
 
     // AI State
@@ -360,61 +361,128 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
             {/* Docs Modal */}
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                        <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                            <div className="flex items-center gap-5">
-                                <div className="p-3 bg-amber-600 rounded-2xl shadow-lg shadow-amber-500/20">
-                                    <HelpCircle size={28} className="text-white" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-black text-white uppercase tracking-tighter">散点图 DSL 规范</h3>
-                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]" />
-                                        Scatter Correlation Spec V1
-                                    </p>
-                                </div>
-                            </div>
-                            <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
-                                <X size={24} />
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-10 space-y-8 text-slate-300 custom-scrollbar">
-                            <div className="font-mono text-xs space-y-4">
-                                <div className="space-y-2">
-                                    <h4 className="text-amber-500 font-bold uppercase tracking-wider text-[10px] mb-2">基础元数据</h4>
-                                    <p className="text-slate-400"><span className="text-amber-400 font-bold">Title:</span> 图表标题</p>
-                                    <p className="text-slate-400"><span className="text-amber-400 font-bold">XAxis:</span> X轴标签</p>
-                                    <p className="text-slate-400"><span className="text-amber-400 font-bold">YAxis:</span> Y轴标签</p>
-                                    <p className="text-slate-400"><span className="text-amber-400 font-bold">ZAxis:</span> Z轴标签 (用于3D视图及气泡大小)</p>
-                                </div>
-
-                                <div className="space-y-2 border-t border-slate-800 pt-4">
-                                    <h4 className="text-blue-500 font-bold uppercase tracking-wider text-[10px] mb-2">样式控制</h4>
-                                    <p className="text-slate-400"><span className="text-blue-400 font-bold">Color[Point]:</span> #HEX (点颜色)</p>
-                                    <p className="text-slate-400"><span className="text-blue-400 font-bold">Color[Trend]:</span> #HEX (趋势线颜色)</p>
-                                    <p className="text-slate-400"><span className="text-blue-400 font-bold">Size[Base]:</span> Number (基准点大小, 默认10)</p>
-                                    <p className="text-slate-400"><span className="text-blue-400 font-bold">Opacity:</span> 0.1-1.0 (点透明度)</p>
-                                </div>
-
-                                <div className="space-y-2 border-t border-slate-800 pt-4">
-                                    <h4 className="text-emerald-500 font-bold uppercase tracking-wider text-[10px] mb-2">功能开关</h4>
-                                    <p className="text-slate-400"><span className="text-emerald-400 font-bold">ShowTrend:</span> true/false (显示回归线)</p>
-                                    <p className="text-slate-400"><span className="text-emerald-400 font-bold">3D:</span> true/false (启用3D模式)</p>
-                                </div>
-
-                                <div className="space-y-2 border-t border-slate-800 pt-4">
-                                    <h4 className="text-white font-bold uppercase tracking-wider text-[10px] mb-2">数据格式</h4>
-                                    <p className="text-slate-500 mb-2">使用 "- " 开头定义数据点，格式为 X, Y, [Z]</p>
-                                    <div className="bg-black/30 p-4 rounded-xl border border-slate-800 text-slate-400">
-                                        <p># 格式示例</p>
-                                        <p>- <span className="text-amber-400">10.5</span>, <span className="text-blue-400">20.2</span> <span className="text-slate-600">// X, Y (2D)</span></p>
-                                        <p>- <span className="text-amber-400">15.0</span>, <span className="text-blue-400">30.5</span>, <span className="text-emerald-400">50</span> <span className="text-slate-600">// X, Y, Z (3D/Bubble)</span></p>
+                    <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-amber-600/20 rounded-2xl border border-amber-500/30">
+                                        <ScatterIcon size={24} className="text-amber-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">散点图知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Correlation Knowledge Base V1.2</p>
                                     </div>
                                 </div>
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                    <X size={24} />
+                                </button>
                             </div>
+
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '分析逻辑与指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-amber-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12 font-mono text-xs">
+                                    <section className="space-y-4">
+                                        <h4 className="text-amber-500 font-bold uppercase tracking-wider text-[10px] mb-2">基础元数据</h4>
+                                        <div className="grid grid-cols-1 gap-3 p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
+                                            <p className="text-slate-400"><span className="text-amber-400 font-bold">Title:</span> 图表标题</p>
+                                            <p className="text-slate-400"><span className="text-amber-400 font-bold">XAxis:</span> X轴标签</p>
+                                            <p className="text-slate-400"><span className="text-amber-400 font-bold">YAxis:</span> Y轴标签</p>
+                                            <p className="text-slate-400"><span className="text-amber-400 font-bold">ZAxis:</span> Z轴标签 (用于3D视图及气泡大小)</p>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-blue-500 font-bold uppercase tracking-wider text-[10px] mb-2">样式控制</h4>
+                                        <div className="grid grid-cols-1 gap-3 p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
+                                            <p className="text-slate-400"><span className="text-blue-400 font-bold">Color[Point]:</span> #HEX (点颜色)</p>
+                                            <p className="text-slate-400"><span className="text-blue-400 font-bold">Color[Trend]:</span> #HEX (趋势线颜色)</p>
+                                            <p className="text-slate-400"><span className="text-blue-400 font-bold">Size[Base]:</span> Number (基准点大小, 默认10)</p>
+                                            <p className="text-slate-400"><span className="text-blue-400 font-bold">Opacity:</span> 0.1-1.0 (点透明度)</p>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-emerald-500 font-bold uppercase tracking-wider text-[10px] mb-2">功能开关</h4>
+                                        <div className="grid grid-cols-1 gap-3 p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
+                                            <p className="text-slate-400"><span className="text-emerald-400 font-bold">ShowTrend:</span> true/false (显示回归线)</p>
+                                            <p className="text-slate-400"><span className="text-emerald-400 font-bold">3D:</span> true/false (启用3D模式)</p>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-white font-bold uppercase tracking-wider text-[10px] mb-2">数据格式</h4>
+                                        <div className="p-6 bg-black/30 rounded-2xl border border-slate-800 space-y-4">
+                                            <p className="text-slate-500 mb-2">使用 "- " 开头定义数据点，格式为 X, Y, [Z]</p>
+                                            <code className="block p-4 bg-slate-950 rounded-xl space-y-1">
+                                                <p className="text-slate-600"># 格式示例</p>
+                                                <p>- <span className="text-amber-400">10.5</span>, <span className="text-blue-400">20.2</span> <span className="text-slate-600">// X, Y (2D)</span></p>
+                                                <p>- <span className="text-amber-400">15.0</span>, <span className="text-blue-400">30.5</span>, <span className="text-emerald-400">50</span> <span className="text-slate-600">// X, Y, Z (3D/Bubble)</span></p>
+                                            </code>
+                                        </div>
+                                    </section>
+                                </div>
+                            ) : (
+                                <div className="space-y-12">
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-amber-500 uppercase tracking-widest border-b border-amber-900/50 pb-2">相关性分析 (Correlation)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>散点图是判断两个（或三个）变量之间是否存在相关关系的数学工具。通过观察点集的分布形态，可以得出以下结论：</p>
+                                            <ul className="list-disc list-inside space-y-2">
+                                                <li><strong>正相关</strong>: X 增加，Y 也随之增加。</li>
+                                                <li><strong>负相关</strong>: X 增加，Y 随之减少。</li>
+                                                <li><strong>不相关</strong>: 点集呈杂乱分布，无明显趋势。</li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-blue-500 uppercase tracking-widest border-b border-blue-900/50 pb-2">回归分析 (Regression)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>系统自动计算线性回归线，作为预测模型的基础。通过趋势线，我们可以对未知的 X 值预测其对应的 Y 值位置。</p>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-indigo-500" />
+                                            <span className="text-[10px] font-black uppercase text-indigo-500">专家提示</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                            "相关性并不等同于因果关系。两个变量表现出强相关，可能是因为它们共同受第三个隐藏变量的影响。"
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-amber-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-amber-500 transition-all font-sans"
+                            >
+                                已阅读规范
+                            </button>
                         </div>
                     </div>
-                </div>, document.body
+                </div>,
+                document.body
             )}
         </div>
     );

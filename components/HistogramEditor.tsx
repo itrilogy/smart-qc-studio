@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Plus, Trash2, Sparkles, Database, Code,
-    ChevronRight, BarChart2, HelpCircle, X, Loader2, RotateCcw
+    ChevronRight, BarChart2, HelpCircle, X, Loader2, RotateCcw, Zap
 } from 'lucide-react';
 import { HistogramChartStyles, DEFAULT_HISTOGRAM_STYLES } from '../types';
 import { generateHistogramDSL, getAIStatus } from '../services/aiService';
@@ -65,6 +65,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
     const [aiInput, setAiInput] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [rawDataInput, setRawDataInput] = useState('');
     const [engineName, setEngineName] = useState('DeepSeek');
 
@@ -395,132 +396,184 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
 
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                        <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                            <div className="flex items-center gap-5">
-                                <div className="p-3 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-500/20">
-                                    <HelpCircle size={28} className="text-white" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-black text-white uppercase tracking-tighter">直方图 DSL 规范</h3>
-                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_#6366f1]" />
-                                        Distribution Logic Spec V1
-                                    </p>
-                                </div>
-                            </div>
-                            <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
-                                <X size={24} />
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-12 space-y-12 custom-scrollbar text-slate-300">
-
-                            {/* Section 1: Basic Config */}
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-indigo-400 border-b border-indigo-500/20 pb-4">
-                                    <Database size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
-                                </div>
-                                <div className="space-y-4">
-                                    <table className="w-full text-xs font-mono border-collapse">
-                                        <thead>
-                                            <tr className="text-slate-500 text-left border-b border-slate-800">
-                                                <th className="py-3 font-black uppercase">语法</th>
-                                                <th className="py-3 font-black uppercase">说明</th>
-                                                <th className="py-3 font-black uppercase">示例</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-800/50">
-                                            <tr>
-                                                <td className="py-3 text-indigo-400 font-bold">Title:</td>
-                                                <td className="py-3">图表标题</td>
-                                                <td className="py-3 text-slate-500">Title: 钢管直径分布</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-emerald-400 font-bold">USL:</td>
-                                                <td className="py-3">规格上限 (Upper Limit)</td>
-                                                <td className="py-3 text-slate-500">USL: 12.5</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-rose-400 font-bold">LSL:</td>
-                                                <td className="py-3">规格下限 (Lower Limit)</td>
-                                                <td className="py-3 text-slate-500">LSL: 10.0</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-blue-400 font-bold">Target:</td>
-                                                <td className="py-3">目标值 (Target Value)</td>
-                                                <td className="py-3 text-slate-500">Target: 11.25</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-amber-400 font-bold">Bins:</td>
-                                                <td className="py-3">分组数量 (auto 或 数字)</td>
-                                                <td className="py-3 text-slate-500">Bins: 20</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-purple-400 font-bold">ShowCurve:</td>
-                                                <td className="py-3">显示正态分布曲线</td>
-                                                <td className="py-3 text-slate-500">ShowCurve: true</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-
-                            {/* Section 2: Visual Styles */}
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
-                                    <BarChart2 size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式定义</span>
-                                </div>
-                                <div className="grid grid-cols-1 gap-4 font-mono text-xs">
-                                    <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3">
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-amber-500">Color[Bar]:</span>
-                                            <span className="text-slate-400">#HEX 直方柱颜色</span>
-                                        </div>
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-indigo-400">Color[Curve]:</span>
-                                            <span className="text-slate-400">#HEX 正态曲线颜色</span>
-                                        </div>
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-emerald-400">Color[USL]:</span>
-                                            <span className="text-slate-400">#HEX 上限线颜色</span>
-                                        </div>
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-rose-400">Color[LSL]:</span>
-                                            <span className="text-slate-400">#HEX 下限线颜色</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-blue-400">Color[Target]:</span>
-                                            <span className="text-slate-400">#HEX 目标线颜色</span>
-                                        </div>
+                    <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-indigo-600/20 rounded-2xl border border-indigo-500/30">
+                                        <BarChart2 size={24} className="text-indigo-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">直方图知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Histogram Knowledge Base V2.1</p>
                                     </div>
                                 </div>
-                            </section>
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                    <X size={24} />
+                                </button>
+                            </div>
 
-                            {/* Section 3: Data Input */}
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
-                                    <Plus size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
-                                </div>
-                                <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-4">
-                                    <div className="text-[11px] font-bold text-slate-500 mb-2">语法格式：- [数值]</div>
-                                    <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-xl">
-                                        # 原始测量数据<br />
-                                        - 10.5<br />
-                                        - 10.2<br />
-                                        - 9.8<br />
-                                        - 11.0
-                                    </code>
-                                    <p className="text-[10px] text-slate-500 italic">
-                                        * 注意：仅支持数值输入，每行一个数据点。
-                                    </p>
-                                </div>
-                            </section>
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '分析逻辑与指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
                         </div>
-                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center">
-                            <button onClick={() => setShowDocs(false)} className="px-16 py-4 bg-indigo-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-indigo-500 transition-all">
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-indigo-400 border-b border-indigo-500/20 pb-4">
+                                            <Database size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <table className="w-full text-xs font-mono border-collapse">
+                                                <thead>
+                                                    <tr className="text-slate-500 text-left border-b border-slate-800">
+                                                        <th className="py-3 font-black uppercase">语法</th>
+                                                        <th className="py-3 font-black uppercase">说明</th>
+                                                        <th className="py-3 font-black uppercase">示例</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-800/50">
+                                                    <tr>
+                                                        <td className="py-3 text-indigo-400 font-bold">Title:</td>
+                                                        <td className="py-3">图表标题</td>
+                                                        <td className="py-3 text-slate-500">Title: 钢管直径分布</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-3 text-emerald-400 font-bold">USL:</td>
+                                                        <td className="py-3">规格上限 (Upper Limit)</td>
+                                                        <td className="py-3 text-slate-500">USL: 12.5</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-3 text-rose-400 font-bold">LSL:</td>
+                                                        <td className="py-3">规格下限 (Lower Limit)</td>
+                                                        <td className="py-3 text-slate-500">LSL: 10.0</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-3 text-blue-400 font-bold">Target:</td>
+                                                        <td className="py-3">目标值 (Target Value)</td>
+                                                        <td className="py-3 text-slate-500">Target: 11.25</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-3 text-amber-400 font-bold">Bins:</td>
+                                                        <td className="py-3">分组数量 (auto 或 数字)</td>
+                                                        <td className="py-3 text-slate-500">Bins: 20</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-3 text-purple-400 font-bold">ShowCurve:</td>
+                                                        <td className="py-3">显示正态分布曲线</td>
+                                                        <td className="py-3 text-slate-500">ShowCurve: true</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
+                                            <BarChart2 size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式定义</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4 font-mono text-xs">
+                                            <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3">
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-amber-500">Color[Bar]:</span>
+                                                    <span className="text-slate-400">#HEX 直方柱颜色</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-indigo-400">Color[Curve]:</span>
+                                                    <span className="text-slate-400">#HEX 正态曲线颜色</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-emerald-400">Color[USL]:</span>
+                                                    <span className="text-slate-400">#HEX 上限线颜色</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-rose-400">Color[LSL]:</span>
+                                                    <span className="text-slate-400">#HEX 下限线颜色</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-blue-400">Color[Target]:</span>
+                                                    <span className="text-slate-400">#HEX 目标线颜色</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                            <Plus size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
+                                        </div>
+                                        <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 mb-2">语法格式：- [数值]</div>
+                                            <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-xl">
+                                                # 原始测量数据<br />
+                                                - 10.5<br />
+                                                - 10.2<br />
+                                                - 9.8<br />
+                                                - 11.0
+                                            </code>
+                                        </div>
+                                    </section>
+                                </div>
+                            ) : (
+                                <div className="space-y-12">
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-indigo-400 uppercase tracking-widest border-b border-indigo-900/50 pb-2">正态分布分析 (Normal Distribution)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>直方图通过对大量随机样本的观察，识别生产过程是否受控。完美的生产过程通常呈现对称的“钟形”曲线。</p>
+                                            <ul className="list-disc list-inside space-y-2">
+                                                <li><strong>均值 (μ)</strong>: 反映了加工的中心位置。</li>
+                                                <li><strong>标准差 (σ)</strong>: 反映了加工的散差大小。</li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">工序能力指标 (Process Capability)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>当定义了规格限 (USL/LSL) 时，系统会自动评估工序能力：</p>
+                                            <div className="bg-black/40 p-4 rounded-xl font-mono text-[10px] space-y-2">
+                                                <div>Cp / Cpk: 指标越大，代表工序的质量保证能力越强。</div>
+                                                <div>1.33: 视为工业级的“合格”门槛。</div>
+                                                <div>1.67: 优秀水平。</div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-indigo-500" />
+                                            <span className="text-[10px] font-black uppercase text-indigo-500">统计洞察</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                            "双峰直方图通常意味着数据来源于两个不同的班次、设备或供应商，需要深入分析波动源。"
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-indigo-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-indigo-500 transition-all"
+                            >
                                 已阅读规范
                             </button>
                         </div>

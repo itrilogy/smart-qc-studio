@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { RelationNode, RelationLink, RelationChartStyles, DEFAULT_RELATION_STYLES, RelationLayoutType } from '../types';
 import {
     ChevronRight, Save, Trash2, Plus, Edit3, Settings2, ArrowRight, LayoutGrid, Circle,
-    Workflow, Sparkles, HelpCircle, X, Loader2, Database, Code, RotateCcw
+    Workflow, Sparkles, HelpCircle, X, Loader2, Database, Code, RotateCcw, Zap
 } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 import { QCToolType } from '../types';
@@ -156,6 +156,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
     const [dsl, setDsl] = useState(INITIAL_RELATION_DSL);
     const [activeTab, setActiveTab] = useState<'manual' | 'dsl' | 'ai'>('manual');
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [error, setError] = useState<string | null>(null);
 
     // AI State
@@ -572,116 +573,129 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                 )}
             </div>
 
-            {/* Docs Modal */}
-            {
-                showDocs && createPortal(
-                    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                        <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                            <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                                <div className="flex items-center gap-5">
-                                    <div className="p-3 bg-purple-600 rounded-2xl shadow-lg shadow-purple-500/20">
-                                        <HelpCircle size={28} className="text-white" />
+            {showDocs && createPortal(
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
+                    <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-purple-600/20 rounded-2xl border border-purple-500/30">
+                                        <Workflow size={24} className="text-purple-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-black text-white uppercase tracking-tighter">关联图 DSL 规范</h3>
-                                        <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]" />
-                                            Relation Diagram Spec V1
-                                        </p>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">关联图知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Relation Analysis Logic Base V1.2</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
                                     <X size={24} />
                                 </button>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-12 space-y-12 custom-scrollbar text-slate-300">
-                                <section className="space-y-6">
-                                    <div className="flex items-center gap-3 text-purple-400 border-b border-purple-500/20 pb-4">
-                                        <Database size={18} />
-                                        <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <table className="w-full text-xs font-mono border-collapse">
-                                            <thead>
-                                                <tr className="text-slate-500 text-left border-b border-slate-800">
-                                                    <th className="py-3 font-black uppercase">语法</th>
-                                                    <th className="py-3 font-black uppercase">说明</th>
-                                                    <th className="py-3 font-black uppercase">示例</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-800/50">
-                                                <tr>
-                                                    <td className="py-3 text-purple-400 font-bold">Title:</td>
-                                                    <td className="py-3">定义根节点标题 (L0)</td>
-                                                    <td className="py-3 text-slate-500">Title: 客户流失分析</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-3 text-emerald-400 font-bold">Node:</td>
-                                                    <td className="py-3">定义因素节点 (自动判定End/Middle)</td>
-                                                    <td className="py-3 text-slate-500">Node: m1, 产品质量</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-3 text-amber-400 font-bold">Rel:</td>
-                                                    <td className="py-3">定义因果关系</td>
-                                                    <td className="py-3 text-slate-500">Rel: e1 {'->'} m1</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-3 text-blue-400 font-bold">Color:</td>
-                                                    <td className="py-3">配色配置 [Key]: #Hex</td>
-                                                    <td className="py-3 text-slate-500">Color[Root]: #ff0000</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 font-mono text-[10px] text-slate-400 leading-relaxed">
-                                            <p className="mb-2 text-slate-500 font-bold uppercase tracking-wider">完整示例：</p>
-                                            <div className="whitespace-pre text-emerald-400/80">
-                                                {`Title: 客户投诉根因分析
+
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '分析逻辑与指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-purple-400 border-b border-purple-500/20 pb-4">
+                                            <Code size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">DSL 语法规范</span>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <table className="w-full text-[10px] font-mono border-collapse bg-black/20 rounded-lg overflow-hidden">
+                                                <thead>
+                                                    <tr className="text-slate-400 text-left bg-slate-800/50">
+                                                        <th className="p-3">关键字</th>
+                                                        <th className="p-3">说明</th>
+                                                        <th className="p-3">示例</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-800/50">
+                                                    <tr><td className="p-3 text-purple-400">Title</td><td className="p-3">定义主要症结 (Root)</td><td className="p-3 text-slate-400">Title: 客户满意度下降</td></tr>
+                                                    <tr><td className="p-3 text-emerald-400">Node</td><td className="p-3">定义因素节点</td><td className="p-3 text-slate-400">Node: m1, 服务态度</td></tr>
+                                                    <tr><td className="p-3 text-amber-400">Rel</td><td className="p-3">定义因果箭头 (Source -{'>'} Target)</td><td className="p-3 text-slate-400">Rel: e1 -{'>'} m1</td></tr>
+                                                    <tr><td className="p-3 text-blue-400">Color</td><td className="p-3">节点与连线色彩配置</td><td className="p-3 text-slate-400">Color[Root]: #ff0000</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800 pb-2">完整代码片段</h4>
+                                        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 font-mono text-[10px] text-emerald-400/80 leading-relaxed">
+                                            <div className="whitespace-pre">
+                                                {`Title: 效率提升缓慢分析
 Layout: Directional
 Color[Root]: #dbeafe
 Color[RootText]: #1e40af
-Color[Middle]: #f3e8ff
-Color[End]: #fff1f2
-Node: m1, 服务态度差
-Node: e1, 缺乏客服培训
-Node: e2, 薪资待遇低
-Rel: e1 -> m1
-Rel: e2 -> m1`}
+Node: m1, 流程繁琐
+Node: e1, 缺乏信息化工具
+Rel: e1 -> m1`}
                                             </div>
-                                            <p className="mt-4 text-slate-500 italic">*注：所有末端节点(End/Source)会自动连接至根节点(Title)。</p>
                                         </div>
+                                    </section>
+                                </div>
+                            ) : (
+                                <div className="space-y-12">
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-purple-400 uppercase tracking-widest border-b border-purple-900/50 pb-2">关联图 (Relationship Diagram)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>关联图是将问题及其各种因素之间的复杂因果关系，用箭头连接起来的图形分析工具。它特别适用于原因相互交织、难以用鱼骨图等层级工具分析的场景。</p>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">因果识别逻辑</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <ul className="list-disc list-inside space-y-2">
+                                                <li><strong>末端因素 (End/Source)</strong>: 只有引出箭头，没有指向自身的箭头。通常是根本原因。</li>
+                                                <li><strong>中间因素 (Middle)</strong>: 既有接收箭头，也有引出箭头。</li>
+                                                <li><strong>主要症结 (Root/Sink)</strong>: 在此场景下，即为分析的主题或结果。</li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-indigo-500" />
+                                            <span className="text-[10px] font-black uppercase text-indigo-500">专家技巧</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                            "一个节点如果具有极高的'入度'(指向它的箭头多)，通常意味着它是核心矛盾的体现；如果具有极高的'出度'(引出的箭头多)，则是问题的根源所在。"
+                                        </p>
                                     </div>
-                                </section>
-                                <section className="space-y-6">
-                                    <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
-                                        <Workflow size={18} />
-                                        <span className="text-[12px] font-black uppercase tracking-widest">2. 样式定义</span>
-                                    </div>
-                                    <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3 font-mono text-xs">
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-rose-400">Color[Root]:</span>
-                                            <span className="text-slate-400">根节点色</span>
-                                        </div>
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-purple-400">Color[Middle]:</span>
-                                            <span className="text-slate-400">中间节点色</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-blue-400">Color[End]:</span>
-                                            <span className="text-slate-400">末端节点色</span>
-                                        </div>
-                                    </div>
-                                </section>
-                            </div>
-                            <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center">
-                                <button onClick={() => setShowDocs(false)} className="px-16 py-4 bg-purple-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-purple-500 transition-all">
-                                    已阅读规范
-                                </button>
-                            </div>
+                                </div>
+                            )}
                         </div>
-                    </div>,
-                    document.body
-                )
-            }
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-purple-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-purple-500 transition-all font-sans"
+                            >
+                                已阅读规范
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
         </div>
     );
 };

@@ -429,6 +429,38 @@
                     }
                 ]
             }
+        },
+        "radar": {
+            "type": "statistical",
+            "intent_trigger": [
+                "雷达图",
+                "多维评价",
+                "蜘蛛网图",
+                "能力分析",
+                "综合性能",
+                "radar",
+                "spider chart"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 图表标题",
+                    "StartAngle: [Number] - 起始角度 (默认 -90, 即12点钟方向)",
+                    "Clockwise: [true/false] - 是否顺时针排列轴",
+                    "Closed: [true/false] - 网格线是否闭合为多边形 (false则为圆形)",
+                    "Standardize: [true/false] - 是否开启数据自动标准化 (0-1 处理)",
+                    "ShowAreaScore: [true/false] - 是否显示多边形面积综合得分",
+                    "ShowSimilarity: [true/false] - 是否显示与首个系列的相似度",
+                    "Axis: [Name], [Max], [Min?] - 定义维度轴 (名称, 最大值, 最小值默认为0)",
+                    "Series: [Name], [Values], [#Color?], [Opacity?] - 定义数据列"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "竞品多维性能分析",
+                        "input": "对比旗舰手机 A 与 B 的平衡性。维度：影像(100)、续航(100)、屏幕(100)、手感(50, 10)、芯片强度(100)。A各维度为88, 92, 85, 45, 95；B各维度为95, 80, 90, 38, 98。开启标准化和面积评分。",
+                        "output": "Title: 旗舰机型多维竞争力雷达图\nStandardize: true\nShowAreaScore: true\nShowSimilarity: true\n\nAxis: 影像, 100\nAxis: 续航, 100\nAxis: 屏幕, 100\nAxis: 手感, 50, 10\nAxis: 芯片强度, 100\n\nSeries: 产品 A, [88, 92, 85, 45, 95], #3b82f6, 0.4\nSeries: 产品 B, [95, 80, 90, 38, 98], #ef4444, 0.3"
+                    }
+                ]
+            }
         }
     }
 }

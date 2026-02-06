@@ -4,7 +4,7 @@ import { AffinityItem, AffinityChartStyles, DEFAULT_AFFINITY_STYLES } from '../t
 import {
     Boxes, Sparkles, HelpCircle, X, Loader2, Database, Code,
     ChevronRight, Save, Trash2, Plus, Edit3, Grid, Layers,
-    AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Type, Settings2, RotateCcw
+    AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Type, Settings2, RotateCcw, Zap
 } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 import { QCToolType } from '../types';
@@ -111,6 +111,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
     const [dsl, setDsl] = useState(INITIAL_AFFINITY_DSL);
     const [activeTab, setActiveTab] = useState<'manual' | 'dsl' | 'ai'>('manual');
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [error, setError] = useState<string | null>(null);
 
     // AI State
@@ -599,116 +600,167 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                 )}
             </div>
 
-            {/* Docs Modal */}
-            {
-                showDocs && createPortal(
-                    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                        <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                            <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                                <div className="flex items-center gap-5">
-                                    <div className="p-3 bg-violet-600 rounded-2xl shadow-lg shadow-violet-500/20">
-                                        <HelpCircle size={28} className="text-white" />
+            {showDocs && createPortal(
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
+                    <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-violet-600/20 rounded-2xl border border-violet-500/30">
+                                        <Boxes size={24} className="text-violet-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-black text-white uppercase tracking-tighter">亲和图 DSL 规范</h3>
-                                        <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-violet-500 shadow-[0_0_8px_#8b5cf6]" />
-                                            Affinity Grouping Spec V1
-                                        </p>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">亲和图知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Affinity Logic Base V2.1</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
                                     <X size={24} />
                                 </button>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-12 space-y-12 custom-scrollbar text-slate-300">
-                                <section className="space-y-6">
-                                    <div className="flex items-center gap-3 text-violet-400 border-b border-violet-500/20 pb-4">
-                                        <Database size={18} />
-                                        <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <table className="w-full text-xs font-mono border-collapse">
-                                            <thead>
-                                                <tr className="text-slate-500 text-left border-b border-slate-800">
-                                                    <th className="py-3 font-black uppercase">语法</th>
-                                                    <th className="py-3 font-black uppercase">说明</th>
-                                                    <th className="py-3 font-black uppercase">示例</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-800/50">
-                                                <tr>
-                                                    <td className="py-3 text-violet-400 font-bold">Title:</td>
-                                                    <td className="py-3">图表标题</td>
-                                                    <td className="py-3 text-slate-500">Title: 市场调研整理</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-3 text-emerald-400 font-bold">Type:</td>
-                                                    <td className="py-3">渲染模式 (Card/Label)</td>
-                                                    <td className="py-3 text-slate-500">Type: Card</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-3 text-amber-400 font-bold">Layout:</td>
-                                                    <td className="py-3">布局方向 (Horizontal/Vertical)</td>
-                                                    <td className="py-3 text-slate-500">Layout: Horizontal</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </section>
 
-                                <section className="space-y-6">
-                                    <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
-                                        <Boxes size={18} />
-                                        <span className="text-[12px] font-black uppercase tracking-widest">2. 样式定义</span>
-                                    </div>
-                                    <div className="grid grid-cols-1 gap-4 font-mono text-xs">
-                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3">
-                                            <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                                <span className="text-violet-400">Color[TitleBg|TitleText]:</span>
-                                                <span className="text-slate-400">#HEX 标题样式</span>
-                                            </div>
-                                            <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                                <span className="text-emerald-400">Color[GroupHeaderBg]:</span>
-                                                <span className="text-slate-400">#HEX 分组头背景</span>
-                                            </div>
-                                            <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                                <span className="text-blue-400">Color[ItemBg|ItemText]:</span>
-                                                <span className="text-slate-400">#HEX 卡片样式</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-400">Font[Title|GroupHeader|Item]:</span>
-                                                <span className="text-slate-500">px 字号</span>
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '分析逻辑与指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-violet-400 border-b border-violet-500/20 pb-4">
+                                            <Database size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <table className="w-full text-xs font-mono border-collapse">
+                                                <thead>
+                                                    <tr className="text-slate-500 text-left border-b border-slate-800">
+                                                        <th className="py-3 font-black uppercase">语法</th>
+                                                        <th className="py-3 font-black uppercase">说明</th>
+                                                        <th className="py-3 font-black uppercase">示例</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-800/50">
+                                                    <tr>
+                                                        <td className="py-3 text-violet-400 font-bold">Title:</td>
+                                                        <td className="py-3">图表标题</td>
+                                                        <td className="py-3 text-slate-500">Title: 市场调研整理</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-3 text-emerald-400 font-bold">Type:</td>
+                                                        <td className="py-3">渲染模式 (Card/Label)</td>
+                                                        <td className="py-3 text-slate-500">Type: Card</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-3 text-amber-400 font-bold">Layout:</td>
+                                                        <td className="py-3">布局方向 (Horizontal/Vertical)</td>
+                                                        <td className="py-3 text-slate-500">Layout: Horizontal</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
+                                            <Boxes size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">2. 样式定义</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4 font-mono text-xs">
+                                            <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3">
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-violet-400">Color[TitleBg|TitleText]:</span>
+                                                    <span className="text-slate-400">#HEX 标题样式</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-emerald-400">Color[GroupHeaderBg]:</span>
+                                                    <span className="text-slate-400">#HEX 分组头背景</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-blue-400">Color[ItemBg|ItemText]:</span>
+                                                    <span className="text-slate-400">#HEX 卡片样式</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-slate-400">Font[Title|GroupHeader|Item]:</span>
+                                                    <span className="text-slate-500">px 字号</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </section>
+                                    </section>
 
-                                <section className="space-y-6">
-                                    <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
-                                        <Plus size={18} />
-                                        <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                            <Plus size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
+                                        </div>
+                                        <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 mb-2">语法格式：Item: [ID], [Label], [ParentID]</div>
+                                            <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-xl">
+                                                Item: root, 核心主题, null<br />
+                                                Item: g1, 市场因素, root<br />
+                                                Item: sub1, 竞争激烈, g1
+                                            </code>
+                                        </div>
+                                    </section>
+                                </div>
+                            ) : (
+                                <div className="space-y-12">
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-violet-400 uppercase tracking-widest border-b border-violet-900/50 pb-2">KJ法 (Affinity Diagram)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>亲和图法，又称KJ法，是将收集到的事实、意见、想法等语言信息，按其相互亲和性（相近性）归纳整理，使问题条理化的方法。</p>
+                                            <ul className="list-disc list-inside space-y-2">
+                                                <li><strong>发散</strong>: 收集尽可能多的想法。</li>
+                                                <li><strong>收敛</strong>: 寻找内在逻辑，形成层级。</li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">逻辑构建逻辑</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>通过层级化的定义，亲和图可以帮助团队从混乱的信息中理出头绪。一个好的亲和图应该具有清晰的因果或从属逻辑。</p>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-indigo-500" />
+                                            <span className="text-[10px] font-black uppercase text-indigo-500">思维洞察</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                            "当多个想法无法归入现有分组时，可能意味着存在一个新的维度或未被识别的根本问题。"
+                                        </p>
                                     </div>
-                                    <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-4">
-                                        <div className="text-[11px] font-bold text-slate-500 mb-2">语法格式：Item: [ID], [Label], [ParentID]</div>
-                                        <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-xl">
-                                            Item: root, 核心主题, null<br />
-                                            Item: g1, 市场因素, root<br />
-                                            Item: sub1, 竞争激烈, g1
-                                        </code>
-                                    </div>
-                                </section>
-                            </div>
-                            <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center">
-                                <button onClick={() => setShowDocs(false)} className="px-16 py-4 bg-violet-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-violet-500 transition-all">
-                                    已阅读规范
-                                </button>
-                            </div>
+                                </div>
+                            )}
                         </div>
-                    </div>,
-                    document.body
-                )
-            }
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-violet-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-violet-500 transition-all font-sans"
+                            >
+                                已阅读规范
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
         </div >
     );
 };

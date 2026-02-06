@@ -12,8 +12,71 @@ export enum QCToolType {
   MATRIX_PLOT = 'MATRIX_PLOT',
   PDPC = 'PDPC',
   ARROW = 'ARROW',
-  BASIC = 'BASIC'
+  BASIC = 'BASIC',
+  RADAR = 'RADAR'
 }
+
+export interface RadarAxis {
+  name: string;
+  max: number;
+  min?: number;
+}
+
+export interface RadarSeries {
+  name: string;
+  values: number[];
+  color?: string;
+  fillOpacity?: number;
+}
+
+export interface RadarData {
+  title: string;
+  axes: RadarAxis[];
+  series: RadarSeries[];
+  // 分析结果 (由 Diagram 计算并回传或内部使用)
+  analysis?: {
+    scores?: Record<string, number>; // 系列名称 -> 面积/综合得分
+    similarities?: Record<string, number>; // 与首个系列的欧式距离相似度
+  };
+}
+
+export interface RadarChartStyles {
+  title: string;
+  titleFontSize: number;
+  labelFontSize: number;
+  gridColor: string;
+  showGrid: boolean;
+  gridLevels: number;
+  showLabels: boolean;
+  showValues: boolean;
+  // 极坐标特性
+  startAngle: number;
+  clockwise: boolean;
+  isClosed: boolean;
+  // 高级分析与显示
+  standardize: boolean; // 是否数据标准化 (0-1)
+  showAreaScore: boolean; // 是否显示面积得分
+  showSimilarity: boolean; // 是否显示相似度 (欧式距离)
+  compareMode: boolean; // 比较模式 (突出差异)
+}
+
+export const DEFAULT_RADAR_STYLES: Required<RadarChartStyles> = {
+  title: '雷达图分析',
+  titleFontSize: 20,
+  labelFontSize: 12,
+  gridColor: '#cbd5e1',
+  showGrid: true,
+  gridLevels: 5,
+  showLabels: true,
+  showValues: true,
+  startAngle: -90,
+  clockwise: true,
+  isClosed: true,
+  standardize: false,
+  showAreaScore: false,
+  showSimilarity: false,
+  compareMode: false
+};
 
 export interface FishboneNode {
   id: string;

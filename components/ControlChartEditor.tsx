@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { ControlSeries, ControlChartStyles, DEFAULT_CONTROL_STYLES, INITIAL_CONTROL_DSL, ControlChartType, ControlRule } from '../types';
 import {
     Activity, Sparkles, HelpCircle, X, Loader2, Play,
-    Database, Code, ChevronRight, Settings2, Ruler, RotateCcw
+    Database, Code, ChevronRight, Settings2, Ruler, RotateCcw, Zap
 } from 'lucide-react';
 import { generateControlDSL, getAIStatus } from '../services/aiService';
 
@@ -107,6 +107,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
     const [aiInput, setAiInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [engineName, setEngineName] = useState('DeepSeek');
 
     useEffect(() => {
@@ -487,134 +488,207 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
             {/* Help Modal */}
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                        <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                            <div className="flex items-center gap-5">
-                                <div className="p-3 bg-emerald-600 rounded-2xl shadow-lg shadow-emerald-500/20">
-                                    <Activity size={28} className="text-white" />
+                    <div className="bg-[#0f172a] w-[900px] h-[800px] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl relative">
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6 bg-[#0f172a]/80 backdrop-blur-xl">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2 bg-emerald-500/20 rounded-xl">
+                                        <HelpCircle size={24} className="text-emerald-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">控制图知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Version 2.0 • SPC Engine</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-lg font-black text-white uppercase tracking-tighter">控制图 DSL 规范</h3>
-                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-                                        SPC Process Control V1
-                                    </p>
-                                </div>
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                    <X size={24} />
+                                </button>
                             </div>
-                            <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
-                                <X size={24} />
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-12 space-y-12 custom-scrollbar text-slate-300">
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
-                                    <Settings2 size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
-                                </div>
-                                <div className="space-y-4">
-                                    <table className="w-full text-xs font-mono border-collapse text-left">
-                                        <thead>
-                                            <tr className="text-slate-500 border-b border-slate-800">
-                                                <th className="py-3 font-black uppercase w-32">语法</th>
-                                                <th className="py-3 font-black uppercase">说明</th>
-                                                <th className="py-3 font-black uppercase w-48">示例</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-800/50">
-                                            <tr>
-                                                <td className="py-3 text-emerald-400 font-bold">Title:</td>
-                                                <td className="py-3">图表主标题</td>
-                                                <td className="py-3 text-slate-500">Title: 关键尺寸控制图</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-emerald-400 font-bold">Type:</td>
-                                                <td className="py-3">控制图类型 (I-MR, X-bar-R, X-bar-S, P, NP, C, U)</td>
-                                                <td className="py-3 text-slate-500">Type: X-bar-R</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-emerald-400 font-bold">Size:</td>
-                                                <td className="py-3">子组样本容量 (n)</td>
-                                                <td className="py-3 text-slate-500">Size: 5</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-emerald-400 font-bold">Rules:</td>
-                                                <td className="py-3">判异规则 (Basic/Western-Electric/Nelson)</td>
-                                                <td className="py-3 text-slate-500">Rules: Nelson</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-emerald-400 font-bold">Decimals:</td>
-                                                <td className="py-3">数值显示精度</td>
-                                                <td className="py-3 text-slate-500">Decimals: 3</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
 
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-blue-400 border-b border-blue-500/20 pb-4">
-                                    <Sparkles size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式配置</span>
-                                </div>
-                                <div className="space-y-4">
-                                    <table className="w-full text-xs font-mono border-collapse text-left">
-                                        <thead>
-                                            <tr className="text-slate-500 border-b border-slate-800">
-                                                <th className="py-3 font-black uppercase w-32">语法</th>
-                                                <th className="py-3 font-black uppercase">说明</th>
-                                                <th className="py-3 font-black uppercase w-48">默认值</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-800/50">
-                                            <tr>
-                                                <td className="py-3 text-blue-400 font-bold">Color[Line]:</td>
-                                                <td className="py-3">折线颜色</td>
-                                                <td className="py-3 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#3b82f6] rounded-sm" /> #3b82f6</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-blue-400 font-bold">Color[Point]:</td>
-                                                <td className="py-3">数据点颜色</td>
-                                                <td className="py-3 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#1d4ed8] rounded-sm" /> #1d4ed8</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-blue-400 font-bold">Color[UCL]:</td>
-                                                <td className="py-3">控制上限(UCL)颜色</td>
-                                                <td className="py-3 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#ef4444] rounded-sm" /> #ef4444</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-blue-400 font-bold">Color[CL]:</td>
-                                                <td className="py-3">中心线(CL)颜色</td>
-                                                <td className="py-3 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#22c55e] rounded-sm" /> #22c55e</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-blue-400 font-bold">Font[Title]:</td>
-                                                <td className="py-3">主标题字号</td>
-                                                <td className="py-3 text-slate-500">20</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-purple-400 border-b border-purple-500/20 pb-4">
-                                    <Play size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">3. 数据录入规范</span>
-                                </div>
-                                <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-4">
-                                    <div className="text-[11px] font-bold text-slate-500 mb-2">标准数据块格式</div>
-                                    <code className="block text-xs text-purple-200 leading-relaxed bg-black/30 p-4 rounded-xl font-mono">
-                                        [series]: 熔体温度<br />
-                                        <span className="text-slate-500">// 支持逗号、空格、换行分隔</span><br />
-                                        12.5, 12.8, 12.1, 12.4, 12.6<br />
-                                        12.3, 12.5, 12.7, 12.2, 12.9<br />
-                                        [/series]
-                                    </code>
-                                </div>
-                            </section>
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '分析逻辑与指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
+                                            }`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
                         </div>
-                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center">
-                            <button onClick={() => setShowDocs(false)} className="px-16 py-4 bg-emerald-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-emerald-500 transition-all">
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-10 text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                            <Settings2 size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
+                                        </div>
+                                        <div className="space-y-4 font-sans text-sm">
+                                            <table className="w-full text-xs font-mono border-collapse text-left bg-black/20 rounded-xl overflow-hidden">
+                                                <thead>
+                                                    <tr className="text-slate-500 bg-slate-800/50">
+                                                        <th className="p-4 font-black uppercase w-32">语法</th>
+                                                        <th className="p-4 font-black uppercase">说明</th>
+                                                        <th className="p-4 font-black uppercase">示例</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-800/50">
+                                                    <tr>
+                                                        <td className="p-4 text-emerald-400 font-bold">Title:</td>
+                                                        <td className="p-4">图表主标题</td>
+                                                        <td className="p-4 text-slate-500">Title: 关键尺寸控制图</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-emerald-400 font-bold">Type:</td>
+                                                        <td className="p-4">控制图类型 (I-MR, X-bar-R, X-bar-S, P, NP, C, U)</td>
+                                                        <td className="p-4 text-slate-500">Type: X-bar-R</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-emerald-400 font-bold">Size:</td>
+                                                        <td className="p-4">子组样本容量 (n)</td>
+                                                        <td className="p-4 text-slate-500">Size: 5</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-emerald-400 font-bold">Rules:</td>
+                                                        <td className="p-4">判异规则 (Basic/Western-Electric/Nelson)</td>
+                                                        <td className="p-4 text-slate-500">Rules: Nelson</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-emerald-400 font-bold">Decimals:</td>
+                                                        <td className="p-4">数值显示精度</td>
+                                                        <td className="p-4 text-slate-500">Decimals: 3</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-blue-400 border-b border-blue-500/20 pb-4">
+                                            <Sparkles size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式配置</span>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <table className="w-full text-xs font-mono border-collapse text-left bg-black/20 rounded-xl overflow-hidden">
+                                                <thead>
+                                                    <tr className="text-slate-500 bg-slate-800/50">
+                                                        <th className="p-4 font-black uppercase w-32">指令</th>
+                                                        <th className="p-4 font-black uppercase">说明</th>
+                                                        <th className="p-4 font-black uppercase">默认值</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-800/50">
+                                                    <tr>
+                                                        <td className="p-4 text-blue-400 font-bold">Color[Line]:</td>
+                                                        <td className="p-4">折线颜色</td>
+                                                        <td className="p-4 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#3b82f6] rounded-sm" /> #3b82f6</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-blue-400 font-bold">Color[Point]:</td>
+                                                        <td className="p-4">数据点颜色</td>
+                                                        <td className="p-4 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#1d4ed8] rounded-sm" /> #1d4ed8</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-blue-400 font-bold">Color[UCL]:</td>
+                                                        <td className="p-4">控制上限(UCL)颜色</td>
+                                                        <td className="p-4 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#ef4444] rounded-sm" /> #ef4444</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="p-4 text-blue-400 font-bold">Color[CL]:</td>
+                                                        <td className="p-4">中心线(CL)颜色</td>
+                                                        <td className="p-4 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#22c55e] rounded-sm" /> #22c55e</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-purple-400 border-b border-purple-500/20 pb-4">
+                                            <Play size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">3. 数据录入规范</span>
+                                        </div>
+                                        <div className="p-8 bg-black/40 rounded-[2rem] border border-white/5 font-mono text-xs leading-relaxed relative overflow-hidden group">
+                                            <div className="text-[11px] font-bold text-slate-500 mb-4">标准数据块格式</div>
+                                            <div className="text-purple-300">[series]: 熔体温度</div>
+                                            <div className="text-slate-500">// 支持逗号、空格、换行分隔</div>
+                                            <div className="text-indigo-300">12.5, 12.8, 12.1, 12.4, 12.6</div>
+                                            <div className="text-indigo-300">12.3, 12.5, 12.7, 12.2, 12.9</div>
+                                            <div className="text-purple-300">[/series]</div>
+                                        </div>
+                                    </section>
+                                </div>
+                            ) : (
+                                <div className="space-y-12">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                            <Activity size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">SPC 统计过程控制原理</span>
+                                        </div>
+                                        <div className="p-8 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-6 text-sm leading-relaxed text-slate-400">
+                                            <p>
+                                                控制图（Control Chart）是用于区分过程中的<b>偶然波动</b>与<b>异常波动</b>的重要工具。
+                                                Smart QC Studio 遵循 ISO 7870 与 GB/T 4091 标准进行计算。
+                                            </p>
+
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div className="space-y-3 bg-black/20 p-5 rounded-xl border border-white/5">
+                                                    <h5 className="text-[11px] font-black text-emerald-400 uppercase tracking-widest">1. 控制限计算 (Sigma)</h5>
+                                                    <p className="text-xs">通常采用 $3\sigma$ 原则确定 UCL (上限) 和 LCL (下限)。对于计量型数据：</p>
+                                                    <code className="block bg-black/30 p-2 rounded text-[10px] font-mono text-slate-300">UCL/LCL = CenterLine ± 3 * StandardError</code>
+                                                </div>
+                                                <div className="space-y-3 bg-black/20 p-5 rounded-xl border border-white/5">
+                                                    <h5 className="text-[11px] font-black text-emerald-400 uppercase tracking-widest">2. 判异规则应用</h5>
+                                                    <p className="text-xs">系统支持 Nelson 规则与 WE (Western Electric) 规则。常见异常包括：</p>
+                                                    <ul className="list-disc pl-4 text-[11px] space-y-1">
+                                                        <li>1个点落在 $3\sigma$ 区外</li>
+                                                        <li>连续9点落在中心线同一侧</li>
+                                                        <li>连续6点持续上升或下降</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3 bg-orange-900/10 p-5 rounded-xl border border-orange-500/20">
+                                                <h5 className="text-[11px] font-black text-orange-400 uppercase tracking-widest">3. 控制图选型指南</h5>
+                                                <table className="w-full text-[10px] text-left">
+                                                    <thead className="text-slate-500">
+                                                        <tr><th className="pb-2">数据性质</th><th className="pb-2">子组大小</th><th className="pb-2">推荐类型</th></tr>
+                                                    </thead>
+                                                    <tbody className="text-slate-300">
+                                                        <tr className="border-t border-white/5"><td className="py-2">计量型 (长度/重量)</td><td>n=1</td><td>I-MR</td></tr>
+                                                        <tr className="border-t border-white/5"><td className="py-2">计量型 (连续生产)</td><td>2≤n≤10</td><td>X-bar-R</td></tr>
+                                                        <tr className="border-t border-white/5"><td className="py-2">计件型 (不合格数)</td><td>恒定</td><td>NP</td></tr>
+                                                        <tr className="border-t border-white/5"><td className="py-2">计点型 (缺陷数)</td><td>不恒定</td><td>U</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-emerald-900/10 border border-emerald-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-emerald-500" />
+                                            <span className="text-[10px] font-black uppercase text-emerald-500">专家建议</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                            "控制图的目的不是让过程看起来'完美'，而是让我们在过程偏离轨道时能及早发现偏差。如果控制限太宽，您可能错失改进机会；如果太窄，则可能造成过度调整。"
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-emerald-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-emerald-500 transition-all font-sans"
+                            >
                                 已阅读规范
                             </button>
                         </div>

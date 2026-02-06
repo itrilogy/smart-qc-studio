@@ -1,6 +1,6 @@
 import React from 'react';
-import { Zap, BarChart3, LineChart, PieChart, ScatterChart, Activity, Workflow, Network, Boxes, Grid3X3, GitBranch, BarChart2, Table, GitFork } from 'lucide-react';
-import { QCToolType, FishboneNode } from './types';
+import { Zap, BarChart3, LineChart, PieChart, ScatterChart, Activity, Workflow, Network, Boxes, Grid3X3, GitBranch, BarChart2, Table, GitFork, Radar } from 'lucide-react';
+import { QCToolType, FishboneNode, RadarData } from './types';
 
 export const TOOL_CONFIGS = [
   {
@@ -122,6 +122,16 @@ export const TOOL_CONFIGS = [
     color: 'text-blue-500',
     bg: 'bg-blue-50/50',
     accent: '#3b82f6'
+  },
+  {
+    type: QCToolType.RADAR,
+    name: '雷达图',
+    enName: 'Radar Chart',
+    desc: '多维性能评估分析工具，支持极坐标系自定义、多指标对比分析。',
+    icon: <Radar size={32} />,
+    color: 'text-amber-600',
+    bg: 'bg-amber-50/50',
+    accent: '#d97706'
   }
 ];
 
@@ -772,3 +782,43 @@ Dataset: 线体, [线体-A, 线体-B, 线体-C, 线体-D, 线体-E], null, X
 Dataset: 实时产量, [850, 920, 780, 1100, 890], #3b82f6, Y
 Dataset: 能源消耗, [420, 450, 390, 520, 440], #10b981, Y2
 Dataset: 一次合格率, [98.2, 97.5, 99.1, 96.8, 98.5], #f59e0b, Y3`;
+
+export const INITIAL_RADAR_DATA: RadarData = {
+  title: '投资组合多维风险分析',
+  axes: [
+    { name: '年化回报(%)', max: 25, min: 0 },
+    { name: '波动率(%)', max: 30, min: 0 },
+    { name: '流动性评分', max: 100, min: 0 },
+    { name: '夏普比率', max: 3.0, min: 0 },
+    { name: '最大回撤(%)', max: 40, min: 0 }
+  ],
+  series: [
+    { name: '平衡型组合', values: [12, 15, 80, 1.8, 12], color: '#3b82f6', fillOpacity: 0.4 },
+    { name: '激进型组合', values: [20, 25, 60, 2.2, 28], color: '#ef4444', fillOpacity: 0.3 },
+    { name: '保守型组合', values: [6, 8, 95, 1.2, 5], color: '#10b981', fillOpacity: 0.2 }
+  ]
+};
+
+export const INITIAL_RADAR_DSL = `Title: 投资组合多维风险分析
+
+// 统计分析控制
+Standardize: true
+ShowAreaScore: true
+ShowSimilarity: true
+
+// 极坐标控制
+StartAngle: -90
+Clockwise: true
+Closed: true
+
+// 轴定义: Axis: 名称, 最大值, [最小值]
+Axis: 年化回报(%), 25, 0
+Axis: 波动率(%), 30, 0
+Axis: 流动性评分, 100, 0
+Axis: 夏普比率, 3.0, 0
+Axis: 最大回撤(%), 40, 0
+
+// 数据系列: Series: 名称, [值列表], 颜色?, 透明度?
+Series: 平衡型组合, [12, 15, 80, 1.8, 12], #3b82f6, 0.4
+Series: 激进型组合, [20, 25, 60, 2.2, 28], #ef4444, 0.3
+Series: 保守型组合, [6, 8, 95, 1.2, 5], #10b981, 0.2`;

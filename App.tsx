@@ -20,7 +20,9 @@ import {
   INITIAL_PDPC_DATA,
   INITIAL_ARROW_DSL,
   INITIAL_BASIC_DSL,
-  INITIAL_BASIC_DATA
+  INITIAL_BASIC_DATA,
+  INITIAL_RADAR_DATA,
+  INITIAL_RADAR_DSL
 } from './constants';
 import {
   DEFAULT_PARETO_STYLES,
@@ -52,7 +54,10 @@ import {
   AffinityItem,
   BasicChartData,
   BasicChartStyles,
-  DEFAULT_BASIC_STYLES
+  DEFAULT_BASIC_STYLES,
+  RadarData,
+  RadarChartStyles,
+  DEFAULT_RADAR_STYLES
 } from './types';
 import { Workspace } from './components/layout/Workspace';
 import { DashboardView } from './components/DashboardView';
@@ -81,6 +86,8 @@ import { ArrowDiagram } from './components/ArrowDiagram';
 import { ArrowDiagramEditor, parseArrowDSL } from './components/ArrowDiagramEditor';
 import BasicEditor, { parseBasicDSL } from './components/BasicEditor';
 import BasicDiagram from './components/BasicDiagram';
+import RadarEditor, { parseRadarDSL } from './components/RadarEditor';
+import RadarDiagram from './components/RadarDiagram';
 import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loader2, LineChart, BarChart3 } from 'lucide-react';
 
 // --- DSL Parsing Functions (Move outside to support Lazy Initialization) ---
@@ -345,6 +352,14 @@ const parseInitialBasic = () => {
   }
 };
 
+const parseInitialRadar = () => {
+  try {
+    return parseRadarDSL(INITIAL_RADAR_DSL);
+  } catch {
+    return { data: INITIAL_RADAR_DATA, styles: DEFAULT_RADAR_STYLES };
+  }
+};
+
 const App: React.FC = () => {
   // State variables for each tool
   const [selectedTool, setSelectedTool] = useState<QCToolType>(QCToolType.DASHBOARD);
@@ -397,6 +412,9 @@ const App: React.FC = () => {
 
   const [basicData, setBasicData] = useState<BasicChartData>(() => parseInitialBasic().data);
   const [basicStyles, setBasicStyles] = useState<BasicChartStyles>(() => parseInitialBasic().styles);
+
+  const [radarData, setRadarData] = useState<RadarData>(() => parseInitialRadar().data);
+  const [radarStyles, setRadarStyles] = useState<RadarChartStyles>(() => parseInitialRadar().styles);
 
   const [dashboardCols, setDashboardCols] = useState(6);
 
@@ -564,6 +582,13 @@ const App: React.FC = () => {
                   onDataChange={setBasicData}
                   onStylesChange={setBasicStyles}
                 />
+              ) : selectedTool === QCToolType.RADAR ? (
+                <RadarEditor
+                  data={radarData}
+                  styles={radarStyles}
+                  onDataChange={setRadarData}
+                  onStylesChange={setRadarStyles}
+                />
               ) : (
                 <EditorPanel
                   toolType={selectedTool}
@@ -669,6 +694,8 @@ const App: React.FC = () => {
                     return arrowData ? <ArrowDiagram ref={diagramRef} data={arrowData} styles={arrowStyles} /> : null;
                   case QCToolType.BASIC:
                     return <BasicDiagram ref={diagramRef} data={basicData} styles={basicStyles} />;
+                  case QCToolType.RADAR:
+                    return <RadarDiagram ref={diagramRef} data={radarData} styles={radarStyles} />;
                   default: return (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-white">
                       <Cpu className="w-32 h-32 text-slate-100 mb-8" />

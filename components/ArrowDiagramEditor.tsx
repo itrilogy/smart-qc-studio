@@ -13,7 +13,7 @@ import { INITIAL_ARROW_DSL } from '../constants';
 import {
     Settings2, LayoutGrid, Workflow, Sparkles, HelpCircle, X,
     Loader2, Database, Code, Network, Activity, Maximize, GitFork,
-    Plus, Trash2, Edit3, ArrowRight, Save, RotateCcw
+    Plus, Trash2, Edit3, ArrowRight, Save, RotateCcw, Zap
 } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 
@@ -712,6 +712,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
             {showHelp && createPortal(
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
                     <div className="bg-[#0f172a] w-[900px] h-[800px] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl relative">
+                        {/* Modal Header */}
                         <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6 bg-[#0f172a]/80 backdrop-blur-xl">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
@@ -719,8 +720,8 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                         <HelpCircle size={24} className="text-indigo-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">Arrow Diagram Manual</h3>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Version 2.0 • CPM Engine</p>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">前置进度图知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Version 2.0 • CPM & PERT Engine</p>
                                     </div>
                                 </div>
                                 <button onClick={() => setShowHelp(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
@@ -728,10 +729,11 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                 </button>
                             </div>
 
+                            {/* Tab Navigation */}
                             <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
-                                    { id: 'logic', label: '核心算法逻辑' },
+                                    { id: 'logic', label: '核心算法与指南' },
                                 ].map(t => (
                                     <button
                                         key={t.id}
@@ -745,46 +747,47 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                             </nav>
                         </div>
 
+                        {/* Modal Body */}
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-10 text-slate-300">
                             {docTab === 'dsl' ? (
-                                <div className="space-y-12">
+                                <div className="space-y-12 animate-in fade-in duration-300">
                                     <section className="space-y-6">
                                         <div className="flex items-center gap-3 text-indigo-400 border-b border-indigo-500/20 pb-4">
                                             <Database size={18} />
-                                            <span className="text-[12px] font-black uppercase tracking-widest">1. 主要元素定义</span>
+                                            <span className="text-[12px] font-black uppercase tracking-widest">1. 基础元素定义</span>
                                         </div>
-                                        <div className="grid grid-cols-1 gap-6">
+                                        <div className="space-y-6">
                                             <div className="space-y-3">
-                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">A. 全局配置</p>
-                                                <table className="w-full text-[10px] font-mono border-collapse bg-black/20 rounded-lg overflow-hidden">
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">A. 全局配置指令</p>
+                                                <table className="w-full text-xs font-mono border-collapse bg-black/20 rounded-xl overflow-hidden text-left">
                                                     <thead>
-                                                        <tr className="text-slate-400 text-left bg-slate-800/50">
-                                                            <th className="p-3 w-32">指令</th>
-                                                            <th className="p-3 w-48">示例</th>
-                                                            <th className="p-3">说明</th>
+                                                        <tr className="text-slate-500 bg-slate-800/50">
+                                                            <th className="p-4 font-black uppercase w-32">指令</th>
+                                                            <th className="p-4 font-black uppercase">示例</th>
+                                                            <th className="p-4 font-black uppercase">说明</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-800/50">
-                                                        <tr><td className="p-3 text-indigo-400">Title</td><td className="p-3">Title: 某项目计划</td><td className="p-3 text-slate-400">设置图表标题</td></tr>
-                                                        <tr><td className="p-3 text-indigo-400">ShowCritical</td><td className="p-3">ShowCritical: true</td><td className="p-3 text-slate-400">开启/关闭关键路径高亮</td></tr>
-                                                        <tr><td className="p-3 text-indigo-400">Color[*]</td><td className="p-3">Color[Node]: #ff0000</td><td className="p-3 text-slate-400">自定义颜色 (Node, Line, Critical)</td></tr>
+                                                        <tr><td className="p-4 text-indigo-400 font-bold">Title:</td><td className="p-4">Title: 某工程施工网络图</td><td className="p-4 text-slate-300">设置项目全局标题</td></tr>
+                                                        <tr><td className="p-4 text-indigo-400 font-bold">ShowCritical:</td><td className="p-4">ShowCritical: true</td><td className="p-4 text-slate-300">自动高亮总时差为 0 的关键路径</td></tr>
+                                                        <tr><td className="p-4 text-indigo-400 font-bold">Color[*]:</td><td className="p-4">Color[Node]: #6366f1</td><td className="p-4 text-slate-300">自定义颜色 (Node, Line, Critical)</td></tr>
                                                     </tbody>
                                                 </table>
                                             </div>
                                             <div className="space-y-3">
-                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">B. 节点与任务</p>
-                                                <table className="w-full text-[10px] font-mono border-collapse bg-black/20 rounded-lg overflow-hidden">
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">B. 节点与任务语法</p>
+                                                <table className="w-full text-xs font-mono border-collapse bg-black/20 rounded-xl overflow-hidden text-left">
                                                     <thead>
-                                                        <tr className="text-slate-400 text-left bg-slate-800/50">
-                                                            <th className="p-3 w-32">类型</th>
-                                                            <th className="p-3 w-48">语法</th>
-                                                            <th className="p-3">说明</th>
+                                                        <tr className="text-slate-500 bg-slate-800/50">
+                                                            <th className="p-4 font-black uppercase w-32">类型</th>
+                                                            <th className="p-4 font-black uppercase">格式</th>
+                                                            <th className="p-4 font-black uppercase">说明</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-800/50">
-                                                        <tr><td className="p-3 text-emerald-400">节点 (Node)</td><td className="p-3">Event: 1, 需求分析</td><td className="p-3 text-slate-400">定义节点ID和别名 (可选)</td></tr>
-                                                        <tr><td className="p-3 text-blue-400">任务 (Activity)</td><td className="p-3">1-&gt;2: 5, 设计</td><td className="p-3 text-slate-400">从节点1到2，工期5天，名称"设计"</td></tr>
-                                                        <tr><td className="p-3 text-amber-400">虚工序 (Dummy)</td><td className="p-3">2..&gt;3: 0, 虚任务</td><td className="p-3 text-slate-400">虚线连接，通常工期为0，用于逻辑依赖</td></tr>
+                                                        <tr><td className="p-4 text-emerald-400 font-bold">Event:</td><td className="p-4">Event: ID, 节点别名</td><td className="p-4 text-slate-300">定义里程碑节点（圆圈）</td></tr>
+                                                        <tr><td className="p-4 text-blue-400 font-bold">Task:</td><td className="p-4">1 {"->"} 2: 工期, 名称</td><td className="p-4 text-slate-300">实工序：表示消耗时间与资源的活动</td></tr>
+                                                        <tr><td className="p-4 text-amber-400 font-bold">Dummy:</td><td className="p-4">1 ..{">"} 2: 0, 虚活动</td><td className="p-4 text-slate-300">虚工序：仅表示逻辑依赖，不消耗资源</td></tr>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -792,76 +795,98 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                     </section>
 
                                     <section className="space-y-6">
-                                        <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
-                                            <GitFork size={18} />
-                                            <span className="text-[12px] font-black uppercase tracking-widest">2. 完整案例展示</span>
+                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                            <Code size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">2. 完整 DSL 脚本示例</span>
                                         </div>
-                                        <div className="p-8 bg-black/40 rounded-[2rem] border border-white/5 font-mono text-[10px] leading-relaxed relative overflow-hidden group">
-                                            <div className="absolute top-4 right-6 text-[8px] font-black text-slate-700 uppercase tracking-widest">Sample Construction Schedule</div>
-                                            <div className="text-emerald-500">Title: 软件开发进度网络图</div>
+                                        <div className="p-8 bg-black/40 rounded-[2.5rem] border border-white/5 font-mono text-[11px] leading-relaxed relative">
+                                            <div className="text-emerald-500">Title: 某系统升级项目网络图</div>
                                             <div className="text-emerald-500">ShowCritical: true</div>
                                             <br />
-                                            <div className="text-slate-500">// 节点定义</div>
-                                            <div className="text-blue-400">Event: 1, 项目启动</div>
-                                            <div className="text-blue-400">Event: 6, 项目结束</div>
+                                            <div className="text-slate-500 font-sans italic">// 定义节点里程碑</div>
+                                            <div className="text-blue-400">Event: 1, 启动</div>
+                                            <div className="text-blue-400">Event: 5, 交付</div>
                                             <br />
-                                            <div className="text-slate-500">// 任务逻辑</div>
-                                            <div className="text-indigo-300">1-&gt;2: 5, 需求分析</div>
-                                            <div className="text-indigo-300">2-&gt;3: 10, 架构设计</div>
-                                            <div className="text-indigo-300">2-&gt;4: 5, UI设计</div>
+                                            <div className="text-slate-500 font-sans italic">// 定义任务逻辑与工期</div>
+                                            <div className="text-indigo-300">1 {"->"} 2: 3, 需求分析</div>
+                                            <div className="text-indigo-300">2 {"->"} 3: 5, 后端开发</div>
+                                            <div className="text-indigo-300">2 {"->"} 4: 4, 前端开发</div>
                                             <br />
-                                            <div className="text-slate-500">// 虚任务示例</div>
-                                            <div className="text-amber-500">4..&gt;3: 0, 虚活动示例 (dummy)</div>
+                                            <div className="text-slate-500 font-sans italic">// 增加逻辑依赖（虚工序）</div>
+                                            <div className="text-amber-500">4 ..{">"} 3: 0, 接口依赖</div>
                                             <br />
-                                            <div className="text-indigo-300">3-&gt;5: 15, 后端开发</div>
-                                            <div className="text-indigo-300">4-&gt;5: 10, 前端开发</div>
-                                            <div className="text-indigo-300">5-&gt;6: 5, 联调测试</div>
+                                            <div className="text-indigo-300">3 {"->"} 5: 2, 联调测试</div>
                                         </div>
                                     </section>
                                 </div>
                             ) : (
-                                <div className="space-y-12">
+                                <div className="space-y-12 animate-in fade-in duration-300">
                                     <section className="space-y-6">
-                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                        <div className="flex items-center gap-3 text-blue-400 border-b border-blue-500/20 pb-4">
                                             <Activity size={18} />
-                                            <span className="text-[12px] font-black uppercase tracking-widest">关键路径法 (CPM) 原理</span>
+                                            <span className="text-[12px] font-black uppercase tracking-widest">关键路径法 (CPM) 深度解析</span>
                                         </div>
-                                        <div className="p-8 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-6 text-xs leading-relaxed text-slate-400">
+                                        <div className="p-8 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-6 text-sm leading-relaxed text-slate-400 font-sans">
                                             <p>
-                                                Smart QC Studio 采用标准的 <strong className="text-emerald-400">CPM (Critical Path Method)</strong> 算法来确定项目工期和关键路径。
-                                                系统会自动计算每项任务的<b>最早开始时间 (ES)</b>、<b>最晚开始时间 (LS)</b> 以及<b>总时差 (Total Float)</b>。
+                                                前置进度图（Arrow Diagram）是项目管理中用于计划、调度和控制复杂项目的核心工具。本系统采用 <b>CPM (Critical Path Method)</b> 算法。
                                             </p>
 
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div className="space-y-3 bg-black/20 p-5 rounded-xl border border-white/5">
-                                                    <h5 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">1. 正向递推 (Forward Pass)</h5>
-                                                    <p>从起点开始，沿箭头方向计算每个节点的最早开始时间。</p>
-                                                    <code className="block bg-black/30 p-2 rounded text-[10px] font-mono text-slate-300">ES(j) = max(ES(i) + Duration(i→j))</code>
-                                                    <p>这一步确定了整个项目的<b>最短总工期</b>。</p>
+                                                    <h5 className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">1. 计算模型：双向递推</h5>
+                                                    <p className="text-[11px]">系统自动执行两次扫描以确定时间参数：</p>
+                                                    <ul className="list-disc pl-4 text-[11px] space-y-1 text-slate-500">
+                                                        <li><b>正向递推 (Forward Pass):</b> 确定各节点最早开始时间 (ES)。</li>
+                                                        <li><b>反向递推 (Backward Pass):</b> 确定各节点最晚开始时间 (LS)。</li>
+                                                    </ul>
                                                 </div>
                                                 <div className="space-y-3 bg-black/20 p-5 rounded-xl border border-white/5">
-                                                    <h5 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">2. 反向递推 (Backward Pass)</h5>
-                                                    <p>从终点开始，逆箭头方向推算每个节点的最晚结束时间。</p>
-                                                    <code className="block bg-black/30 p-2 rounded text-[10px] font-mono text-slate-300">LS(i) = min(LS(j) - Duration(i→j))</code>
+                                                    <h5 className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">2. 核心指标定义</h5>
+                                                    <div className="text-[10px] bg-black/30 p-3 rounded-lg border border-slate-800 font-mono">
+                                                        <div className="text-indigo-300">Duration = 项目总工期</div>
+                                                        <div className="text-emerald-400 mt-1">Total Float (TF) = LS - ES - Duration</div>
+                                                        <div className="text-slate-500 mt-1">TF 为零的任务即为关键任务。</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-3 bg-emerald-900/10 p-5 rounded-xl border border-emerald-500/20">
-                                                <h5 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">3. 判定关键路径 (Critical Path)</h5>
-                                                <p>
-                                                    即<b>总时差 (Total Float) 为零</b>的任务集合。这些任务没有机动时间，其任何延迟都会直接导致项目总工期延误。
-                                                </p>
-                                                <code className="block bg-black/30 p-2 rounded text-[10px] font-mono text-emerald-300">Total Float = LS - ES - Duration = 0</code>
+                                            <div className="space-y-3 bg-blue-900/10 p-5 rounded-xl border border-blue-500/20">
+                                                <h5 className="text-[11px] font-black text-blue-400 uppercase tracking-widest">3. 优化与缩短工期的策略</h5>
+                                                <div className="text-[11px] space-y-2">
+                                                    <p>● <b>赶工 (Crashing):</b> 增加资源到关键活动中，以最小成本代价缩短时间。</p>
+                                                    <p>● <b>快速跟进 (Fast Tracking):</b> 将原来顺序进行的任务改为并行（需注意质量风险）。</p>
+                                                    <p>● <b>关键路径转移：</b> 缩短当前关键路径后，新的路径可能变为关键路径。</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </section>
+
+                                    <div className="p-6 bg-blue-900/10 border border-blue-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-blue-500" />
+                                            <span className="text-[10px] font-black uppercase text-blue-500">专家贴士</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic">
+                                            "在绘制高度复杂的逻辑时，适度使用<b>虚工序 (Dummy)</b>。它不消耗工期，但能清晰表达流程间的制约关系，防止逻辑死循环，确保项目排期符合客观规律。"
+                                        </p>
+                                    </div>
                                 </div>
                             )}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowHelp(false)}
+                                className="px-16 py-4 bg-indigo-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-indigo-500 transition-all font-sans"
+                            >
+                                我理解了 CPM 逻辑
+                            </button>
                         </div>
                     </div>
                 </div>,
                 document.body
             )}
-        </div>
+        </div >
     );
 };

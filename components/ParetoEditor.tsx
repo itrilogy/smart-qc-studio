@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Plus, Trash2, Sparkles, Database, Code,
-    ChevronRight, BarChart3, Sliders, HelpCircle, X, Loader2, RotateCcw
+    ChevronRight, BarChart3, Sliders, HelpCircle, X, Loader2, RotateCcw, Zap
 } from 'lucide-react';
 import { ParetoItem, ParetoChartStyles, DEFAULT_PARETO_STYLES } from '../types';
 import { generateParetoDSL, getAIStatus } from '../services/aiService';
@@ -62,6 +62,7 @@ export const ParetoEditor: React.FC<Props> = ({
     const [aiInput, setAiInput] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [showDocs, setShowDocs] = useState(false);
+    const [docTab, setDocTab] = useState<'dsl' | 'logic'>('dsl');
     const [engineName, setEngineName] = useState('DeepSeek');
 
     React.useEffect(() => {
@@ -376,102 +377,162 @@ export const ParetoEditor: React.FC<Props> = ({
             {/* Docs Modal */}
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[600px] max-h-[80vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                        <div className="px-12 py-10 flex items-center justify-between border-b border-slate-800">
-                            <div className="flex items-center gap-5">
-                                <div className="p-3 bg-emerald-600 rounded-2xl shadow-lg shadow-emerald-500/20">
-                                    <HelpCircle size={28} className="text-white" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-black text-white uppercase tracking-tighter">排列图 DSL 规范</h3>
-                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-                                        Pareto Analysis Spec V1
-                                    </p>
-                                </div>
-                            </div>
-                            <button onClick={() => setShowDocs(false)} className="p-4 hover:bg-slate-800 rounded-2xl transition-all text-slate-500 hover:text-white">
-                                <X size={24} />
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-12 space-y-12 custom-scrollbar text-slate-300">
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-blue-400 border-b border-blue-500/20 pb-4">
-                                    <Database size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
-                                </div>
-                                <div className="space-y-4">
-                                    <table className="w-full text-xs font-mono border-collapse">
-                                        <thead>
-                                            <tr className="text-slate-500 text-left border-b border-slate-800">
-                                                <th className="py-3 font-black uppercase">语法</th>
-                                                <th className="py-3 font-black uppercase">说明</th>
-                                                <th className="py-3 font-black uppercase">示例</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-800/50">
-                                            <tr>
-                                                <td className="py-3 text-blue-400 font-bold">Title:</td>
-                                                <td className="py-3">设置主标题</td>
-                                                <td className="py-3 text-slate-500">Title: 售后数据分析</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="py-3 text-emerald-400 font-bold">Decimals:</td>
-                                                <td className="py-3">累计百分比精度</td>
-                                                <td className="py-3 text-slate-500">Decimals: 2</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
-                                    <BarChart3 size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式定义</span>
-                                </div>
-                                <div className="grid grid-cols-1 gap-4 font-mono text-xs">
-                                    <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3">
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-amber-500">Color[Bar]:</span>
-                                            <span className="text-slate-400">#HEX 柱形颜色</span>
-                                        </div>
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-amber-500">Color[Line]:</span>
-                                            <span className="text-slate-400">#HEX 折线颜色</span>
-                                        </div>
-                                        <div className="flex justify-between border-b border-slate-800/50 pb-2">
-                                            <span className="text-amber-500">Color[MarkLine]:</span>
-                                            <span className="text-slate-400">#HEX 80% 线颜色</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-blue-400">Font[Title|Base|Bar]:</span>
-                                            <span className="text-slate-400">字号大小 (px)</span>
-                                        </div>
+                    <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-blue-600/20 rounded-2xl border border-blue-500/30">
+                                        <BarChart3 size={24} className="text-blue-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">排列图知识库</h3>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Pareto Knowledge Base V3.1</p>
                                     </div>
                                 </div>
-                            </section>
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                    <X size={24} />
+                                </button>
+                            </div>
 
-                            <section className="space-y-6">
-                                <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
-                                    <Plus size={18} />
-                                    <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
-                                </div>
-                                <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-4">
-                                    <div className="text-[11px] font-bold text-slate-500 mb-2">语法格式：- [项目名称]: [频数]</div>
-                                    <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-xl">
-                                        - 物流破损: 420<br />
-                                        - 包装变形: 156<br />
-                                        - 标签缺失: 89
-                                    </code>
-                                    <p className="text-[10px] text-slate-500 italic">
-                                        * 注意：系统将自动对数据执行降序排列并计算累计贡献率。
-                                    </p>
-                                </div>
-                            </section>
+                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                {[
+                                    { id: 'dsl', label: 'DSL 规范说明' },
+                                    { id: 'logic', label: '分析逻辑与指南' },
+                                ].map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setDocTab(t.id as any)}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </nav>
                         </div>
-                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center">
-                            <button onClick={() => setShowDocs(false)} className="px-16 py-4 bg-blue-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl">
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                            {docTab === 'dsl' ? (
+                                <div className="space-y-12">
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-blue-400 border-b border-blue-500/20 pb-4">
+                                            <Database size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <table className="w-full text-xs font-mono border-collapse">
+                                                <thead>
+                                                    <tr className="text-slate-500 text-left border-b border-slate-800">
+                                                        <th className="py-3 font-black uppercase">语法</th>
+                                                        <th className="py-3 font-black uppercase">说明</th>
+                                                        <th className="py-3 font-black uppercase">示例</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-800/50">
+                                                    <tr>
+                                                        <td className="py-3 text-blue-400 font-bold">Title:</td>
+                                                        <td className="py-3">设置主标题</td>
+                                                        <td className="py-3 text-slate-500">Title: 售后数据分析</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="py-3 text-emerald-400 font-bold">Decimals:</td>
+                                                        <td className="py-3">累计百分比精度</td>
+                                                        <td className="py-3 text-slate-500">Decimals: 2</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-amber-400 border-b border-amber-500/20 pb-4">
+                                            <BarChart3 size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式定义</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4 font-mono text-xs">
+                                            <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3">
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-amber-500">Color[Bar]:</span>
+                                                    <span className="text-slate-400">#HEX 柱形颜色</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-amber-500">Color[Line]:</span>
+                                                    <span className="text-slate-400">#HEX 折线颜色</span>
+                                                </div>
+                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                    <span className="text-amber-500">Color[MarkLine]:</span>
+                                                    <span className="text-slate-400">#HEX 80% 线颜色</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-blue-400">Font[Title|Base|Bar]:</span>
+                                                    <span className="text-slate-400">字号大小 (px)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-6">
+                                        <div className="flex items-center gap-3 text-emerald-400 border-b border-emerald-500/20 pb-4">
+                                            <Plus size={18} />
+                                            <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
+                                        </div>
+                                        <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 mb-2">语法格式：- [项目名称]: [频数]</div>
+                                            <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-xl">
+                                                - 物流破损: 420<br />
+                                                - 包装变形: 156<br />
+                                                - 标签缺失: 89
+                                            </code>
+                                            <p className="text-[10px] text-slate-500 italic">
+                                                * 注意：系统将自动对数据执行降序排列并计算累计贡献率。
+                                            </p>
+                                        </div>
+                                    </section>
+                                </div>
+                            ) : (
+                                <div className="space-y-12">
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">ABC 分类法 (Pareto Principle)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>排列图基于“二八定律”，旨在帮助管理者从众多的质量问题中，找出影响质量的“关键少数”。</p>
+                                            <ul className="list-disc list-inside space-y-2">
+                                                <li><strong className="text-blue-300">A类因素</strong> (0% - 80%): 主要影响因素，必须重点解决。</li>
+                                                <li><strong className="text-blue-300">B类因素</strong> (80% - 90%): 次要影响因素。</li>
+                                                <li><strong className="text-blue-300">C类因素</strong> (90% - 100%): 一般影响因素。</li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-4">
+                                        <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">核心算法 (Core Algorithms)</h4>
+                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                            <p>本引擎内置严密的数理逻辑：</p>
+                                            <div className="bg-black/40 p-4 rounded-xl font-mono text-[10px] space-y-2">
+                                                <div>1. 自动降序：Value[i] ≥ Value[i+1]</div>
+                                                <div>2. 累计百分比：P[i] = (Σ V[0...i]) / Σ V[all]</div>
+                                                <div>3. 80% 标识线：自动寻找 P[i] ≈ 80% 的临界坐标</div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <div className="p-6 bg-blue-900/10 border border-blue-800/20 rounded-3xl">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Zap size={14} className="text-blue-500" />
+                                            <span className="text-[10px] font-black uppercase text-blue-500">质量改进提示</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                            "解决排列图中最左侧的两个主要因素，通常能消除 80% 的质量成本。"
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <button
+                                onClick={() => setShowDocs(false)}
+                                className="px-16 py-4 bg-blue-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all"
+                            >
                                 已阅读规范
                             </button>
                         </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { MatrixData, MatrixChartStyles, DEFAULT_MATRIX_STYLES, MatrixAxis, MatrixSymbolType } from '../types';
 import { INITIAL_MATRIX_DSL, MATRIX_SAMPLE_TEMPLATES } from '../constants';
-import { Table, Sparkles, HelpCircle, X, Loader2, Database, Code, Trash2, RotateCcw } from 'lucide-react';
+import { Table, Sparkles, HelpCircle, X, Loader2, Database, Code, Trash2, RotateCcw, Zap } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 import { QCToolType } from '../types';
 
@@ -1107,6 +1107,16 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                                 决策提示：在调整高分项参数时，必须同步评估它对其他所有项目的冲击效应。
                                                             </div>
                                                         </div>
+                                                    </div>
+
+                                                    <div className="p-6 bg-cyan-900/10 border border-cyan-800/20 rounded-3xl">
+                                                        <div className="flex items-center gap-2 mb-3">
+                                                            <Zap size={14} className="text-cyan-500" />
+                                                            <span className="text-[10px] font-black uppercase text-cyan-500">专家技巧</span>
+                                                        </div>
+                                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                                            "矩阵图不应仅仅作为记录工具。其真正的价值在于通过加权评分（Weight × Symbol Value）来识别系统中最脆弱或最重要的交叉点。"
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
