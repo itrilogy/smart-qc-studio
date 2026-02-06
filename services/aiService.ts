@@ -182,6 +182,17 @@ export const generateScatterDSL = async (prompt: string) => {
         return `Title: 生成失败\n- Error: ${error.message || error}`;
     }
 };
+export const generateBasicDSL = async (prompt: string) => {
+    try {
+        const spec = await getChartSpec();
+        const systemPrompt = buildSystemPrompt("Statistical Analyst", "basic", spec);
+        const text = await callAI(systemPrompt, prompt);
+        return text.replace(/```\w*/g, '').replace(/```/g, '').trim();
+    } catch (error: any) {
+        return `Title: 生成失败\n- Error: ${error.message || error}`;
+    }
+};
+
 /**
  * Retrieves the name of the currently active AI engine
  */

@@ -11,7 +11,8 @@ export enum QCToolType {
   MATRIX = 'MATRIX',
   MATRIX_PLOT = 'MATRIX_PLOT',
   PDPC = 'PDPC',
-  ARROW = 'ARROW'
+  ARROW = 'ARROW',
+  BASIC = 'BASIC'
 }
 
 export interface FishboneNode {
@@ -607,4 +608,52 @@ export const DEFAULT_ARROW_STYLES: ArrowChartStyles = {
   nodeRadius: 30, // Increased from 18
   lineWidth: 3,   // Increased from 2
   fontSize: 14    // Increased from 12
+};
+// --- Basic Chart Types (Bar/Line/Pie) ---
+
+export interface BasicChartDataset {
+  name: string;
+  values: (number | string)[];
+  color?: string;
+  axisMatch: 'X' | 'Y' | 'Y2' | 'Y3' | 'Y4';
+}
+
+export interface BasicChartData {
+  title: string;
+  type: 'bar' | 'line' | 'pie';
+  datasets: BasicChartDataset[];
+}
+
+export interface BasicChartStyles {
+  title?: string;
+  type?: 'bar' | 'line' | 'pie';
+  view?: 'v' | 'h';
+  stacked?: boolean;
+  smooth?: boolean;
+  sortMode?: 'none' | 'asc' | 'desc';
+  showLegend?: boolean;
+  grid?: boolean;
+
+  // Colors
+  titleColor?: string;
+  backgroundColor?: string;
+
+  // Font Sizes
+  titleFontSize?: number;
+  baseFontSize?: number;
+}
+
+export const DEFAULT_BASIC_STYLES: Required<BasicChartStyles> = {
+  title: '基础图表分析',
+  type: 'bar',
+  view: 'v',
+  stacked: false,
+  smooth: false,
+  sortMode: 'none',
+  showLegend: true,
+  grid: true,
+  titleColor: '#0f172a',
+  backgroundColor: '#ffffff',
+  titleFontSize: 18,
+  baseFontSize: 12
 };

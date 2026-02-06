@@ -18,7 +18,9 @@ import {
   INITIAL_MATRIX_PLOT_DSL,
   INITIAL_PDPC_DSL,
   INITIAL_PDPC_DATA,
-  INITIAL_ARROW_DSL
+  INITIAL_ARROW_DSL,
+  INITIAL_BASIC_DSL,
+  INITIAL_BASIC_DATA
 } from './constants';
 import {
   DEFAULT_PARETO_STYLES,
@@ -47,7 +49,10 @@ import {
   FishboneNode,
   ParetoItem,
   ScatterPoint,
-  AffinityItem
+  AffinityItem,
+  BasicChartData,
+  BasicChartStyles,
+  DEFAULT_BASIC_STYLES
 } from './types';
 import { Workspace } from './components/layout/Workspace';
 import { DashboardView } from './components/DashboardView';
@@ -74,7 +79,9 @@ import PDPCEditor, { parsePDPCDSL } from './components/PDPCEditor';
 import PDPCDiagram from './components/PDPCDiagram';
 import { ArrowDiagram } from './components/ArrowDiagram';
 import { ArrowDiagramEditor, parseArrowDSL } from './components/ArrowDiagramEditor';
-import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loader2, LineChart } from 'lucide-react';
+import BasicEditor, { parseBasicDSL } from './components/BasicEditor';
+import BasicDiagram from './components/BasicDiagram';
+import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loader2, LineChart, BarChart3 } from 'lucide-react';
 
 // --- DSL Parsing Functions (Move outside to support Lazy Initialization) ---
 
@@ -330,6 +337,14 @@ const parseInitialPDPC = () => {
   }
 };
 
+const parseInitialBasic = () => {
+  try {
+    return parseBasicDSL(INITIAL_BASIC_DSL);
+  } catch {
+    return { data: INITIAL_BASIC_DATA, styles: DEFAULT_BASIC_STYLES };
+  }
+};
+
 const App: React.FC = () => {
   // State variables for each tool
   const [selectedTool, setSelectedTool] = useState<QCToolType>(QCToolType.DASHBOARD);
@@ -379,6 +394,10 @@ const App: React.FC = () => {
       return DEFAULT_ARROW_STYLES;
     }
   });
+
+  const [basicData, setBasicData] = useState<BasicChartData>(() => parseInitialBasic().data);
+  const [basicStyles, setBasicStyles] = useState<BasicChartStyles>(() => parseInitialBasic().styles);
+
 
   const [controlDsl, setControlDsl] = useState<string>(INITIAL_CONTROL_DSL);
   const [showParetoLine, setShowParetoLine] = useState(true);
@@ -536,6 +555,13 @@ const App: React.FC = () => {
                     onStylesChange={setArrowStyles}
                   />
                 ) : <div className="text-slate-500 p-8">Initializing Arrow Diagram...</div>
+              ) : selectedTool === QCToolType.BASIC ? (
+                <BasicEditor
+                  data={basicData}
+                  styles={basicStyles}
+                  onDataChange={setBasicData}
+                  onStylesChange={setBasicStyles}
+                />
               ) : (
                 <EditorPanel
                   toolType={selectedTool}
@@ -639,6 +665,8 @@ const App: React.FC = () => {
                     return <PDPCDiagram ref={diagramRef} data={pdpcData} styles={pdpcStyles} onStylesChange={setPdpcStyles} />;
                   case QCToolType.ARROW:
                     return arrowData ? <ArrowDiagram ref={diagramRef} data={arrowData} styles={arrowStyles} /> : null;
+                  case QCToolType.BASIC:
+                    return <BasicDiagram ref={diagramRef} data={basicData} styles={basicStyles} />;
                   default: return (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-white">
                       <Cpu className="w-32 h-32 text-slate-100 mb-8" />

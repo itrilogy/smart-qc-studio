@@ -341,6 +341,7 @@ export const ScatterDiagram = forwardRef<ScatterDiagramRef, Props>(({ data, styl
                 <ReactECharts
                     ref={echartsRef}
                     option={option}
+                    notMerge={true}
                     style={{ height: '100%', width: '100%' }}
                     opts={{ renderer: 'canvas' }}
                 />
@@ -353,6 +354,7 @@ export const ScatterDiagram = forwardRef<ScatterDiagramRef, Props>(({ data, styl
             <ReactECharts
                 ref={echartsRef}
                 option={option}
+                notMerge={true}
                 style={{ height: '100%', width: '100%' }}
                 opts={{ renderer: 'canvas' }}
             />

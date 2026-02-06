@@ -392,6 +392,43 @@
                     }
                 ]
             }
+        },
+        "basic": {
+            "type": "statistical",
+            "intent_trigger": [
+                "柱状图",
+                "折线图",
+                "饼图",
+                "趋势",
+                "占比",
+                "对比",
+                "bar",
+                "line",
+                "pie"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 图表标题",
+                    "Type: bar | line | pie - 图表类型",
+                    "View: v | h - 纵横切换 (柱状图有效)",
+                    "Stacked: true | false - 是否堆叠 (柱状/折线有效)",
+                    "Axis: [Label], [X/Y/Y2] - 轴定义",
+                    "Dataset: [Name], [Values], [#Color?], [AxisMatch] - 数据序列",
+                    "  - AxisMatch: X (对应分类标签), Y (对应主值轴), Y2 (对应副值轴)"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "双轴对比图 (柱状+折线)",
+                        "input": "对比过去四个月的销售额和增长率。销售: 100, 120, 150, 180; 增长率: 5%, 8%, 12%, 15%。",
+                        "output": "Title: 销售与增长分析\nType: bar\nAxis: 月份, X\nAxis: 销售额 (万), Y\nAxis: 增长率 (%), Y2\n\nDataset: 月份, [1月, 2月, 3月, 4月], null, X\nDataset: 销售额, [100, 120, 150, 180], #3b82f6, Y\nDataset: 增长率, [5, 8, 12, 15], #ef4444, Y2"
+                    },
+                    {
+                        "scenario": "多层饼图 (占比对比)",
+                        "input": "展示今年和去年四个季度的市场份额。今年: 20, 30, 25, 25; 去年: 25, 25, 25, 25。",
+                        "output": "Title: 市场份额年度对比\nType: pie\nDataset: 季度, [Q1, Q2, Q3, Q4], null, X\nDataset: 2024, [20, 30, 25, 25], null, Y\nDataset: 2023, [25, 25, 25, 25], null, Y2"
+                    }
+                ]
+            }
         }
     }
 }

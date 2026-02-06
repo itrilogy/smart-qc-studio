@@ -112,6 +112,16 @@ export const TOOL_CONFIGS = [
     color: 'text-indigo-600',
     bg: 'bg-indigo-50/50',
     accent: '#4f46e5'
+  },
+  {
+    type: QCToolType.BASIC,
+    name: '基础图表',
+    enName: 'Basic Charts',
+    desc: '集成柱状图、折线图与饼图，支持双轴、堆叠及多层饼图分析。',
+    icon: <BarChart3 size={32} />,
+    color: 'text-blue-500',
+    bg: 'bg-blue-50/50',
+    accent: '#3b82f6'
   }
 ];
 
@@ -730,3 +740,35 @@ Event: 7, 许可证获取
 4 -> 7: 15, 资质审批
 7 -> 8: 5, 最终归档
 `;
+// --- Basic Chart (Bar/Line/Pie) Initial Data ---
+
+export const INITIAL_BASIC_DATA: any = {
+  title: '智慧工厂生产线综合效能分析 (KPI)',
+  type: 'bar',
+  datasets: [
+    { name: '线体', values: ['线体-A', '线体-B', '线体-C', '线体-D', '线体-E'], axisMatch: 'X' },
+    { name: '实时产量', values: [850, 920, 780, 1100, 890], color: '#3b82f6', axisMatch: 'Y' },
+    { name: '能源消耗', values: [420, 450, 390, 520, 440], color: '#10b981', axisMatch: 'Y2' },
+    { name: '一次合格率', values: [98.2, 97.5, 99.1, 96.8, 98.5], color: '#f59e0b', axisMatch: 'Y3' }
+  ]
+};
+
+export const INITIAL_BASIC_DSL = `Title: 智慧工厂生产线综合效能分析 (KPI)
+Type: bar
+View: v
+Stacked: false
+Smooth: true
+ShowLegend: true
+Grid: true
+Color[Title]: #3b82f6
+Font[Title]: 22
+
+Axis: 线体, X
+Axis: 产量 (kpcs), Y
+Axis: 能耗 (kWh), Y2
+Axis: 合格率 (%), Y3
+
+Dataset: 线体, [线体-A, 线体-B, 线体-C, 线体-D, 线体-E], null, X
+Dataset: 实时产量, [850, 920, 780, 1100, 890], #3b82f6, Y
+Dataset: 能源消耗, [420, 450, 390, 520, 440], #10b981, Y2
+Dataset: 一次合格率, [98.2, 97.5, 99.1, 96.8, 98.5], #f59e0b, Y3`;

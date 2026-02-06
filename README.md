@@ -1,9 +1,5 @@
 # Smart QC Studio - 工业级智能质量控制工作站 🏆📊
 
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-
 Smart QC Studio 是一款面向工业工程、质量管理（QC）及系统分析领域的绘图工作站。它通过自研的 **DSL (Domain Specific Language)** 引擎与 **LLM (大语言模型)** 推理技术，将传统的繁琐绘图流程简化为“语言即图表”的极简体验。本版本采用了全新的 **Industrial Light OS** 视觉规范，提供更为沉浸、专业的分析环境。
 
 ---
@@ -71,13 +67,17 @@ Smart QC Studio 是一款面向工业工程、质量管理（QC）及系统分�
 - **动态约束渲染**: 支持实活动与虚活动（Dummy）组合建模，自适应时空拓扑布局。
 - **风险推演**: 支持实时调整工期，动态观察关键路径的演向转移。
 
-### 🛡️ 11. PDPC (过程决策程序图)
-> **动态风险分析与应对** — 预见未来障碍，制定备选方案。
-- **多路径决策**: 支持 `[OK]` 平稳路径与 `[NG]` 风险路径的并行建模。
-- **动态演化**: 专为不稳定过程设计，支持通过对策节点 (`[countermeasure]`) 实时反馈至主流程。
 - **逻辑分层**: 支持通过 `Group` 语法实现复杂流程的物理与逻辑分区。
 
-### 🛠️ 12. 工业级通用能力
+### 📊 12. 基础组件图 (Basic Charts)
+> **多维数据分析基石** — 柱形、折线、饼图的完美集成。
+- **智能推理标准版**: “AI 推理”面板已全面兼容鱼骨图高级范式，支持 `Engine Active` 指示、精准业务提示与“智能解析回填”流。
+- **图例交互管控**: 支持在常规配置面板通过拖拽（Drag & Drop）动态调整指标显示顺序，并实时同步图例配色与 DSL 排列。
+- **多轴支持**: 独创的动态 Y 轴排列，支持 Y/Y2/Y3 无限扩展，自动处理轴偏移与刻度对齐。
+- **叠层饼图**: 当 Type 为 Pie 时，支持通过多数值轴自动生成同心圆环分析。
+- **智能排序**: 支持基于首个可见数值轴的“无/升序/降序”实时动态重排。
+
+### 🛠️ 13. 工业级通用能力
 - **专业导出引擎**: 支持 **白底 PNG** (报告用)、**透明 PNG** (PPT用) 及 **矢量 PDF** (打印用) 一键高清导出。
 - **AI 智能推理**: 全系图表支持 LLM 推理，从自然语言到专业图表仅需一步。
 - **DSL 驱动**: 所有图表均基于文本定义，易于存储、版本控制及在团队间作为代码分享。
@@ -110,6 +110,7 @@ Smart QC Studio 是一款面向工业工程、质量管理（QC）及系统分�
 - 📉 **[全维度图矩阵 (Matrix Plot) 手册](docs/USER_MANUAL_MATRIX_PLOT.md)**
 - 🛡️ **[PDPC (过程决策程序图) 手册](docs/USER_MANUAL_PDPC.md)**
 - 🏹 **[矢线图 (Arrow Diagram) 手册](docs/USER_MANUAL_ARROW.md)**
+- 📊 **[基础图表 (Basic Chart) 手册](docs/USER_MANUAL_BASIC.md)**
 - 📒 **[控制图技术笔记](docs/控制图笔记.md)**
 - 📒 **[控制图技术笔记](docs/控制图笔记.md)**
 - 📐 **[亲和图设计方案](docs/DESIGN_AFFINITY.md)**
@@ -388,6 +389,45 @@ b1: c1:S
 b2: c2:S
 Matrix: C x A
 c1: a1:S
+```
+
+---
+
+### 📊 十二、基础图表 (Basic Chart) DSL 规范
+
+基础图表支持柱状图、折线图及饼图，具备强大的多轴配置能力。
+
+#### 12.1 核心配置
+| 语法 | 说明 | 示例 |
+|------|------|------|
+| `Title: [文字]` | 图表标题 | `Title: 季度营收分析` |
+| `Type: [bar/line/pie]` | 图表类型 | `Type: bar` |
+| `View: [v/h]` | 垂直/水平视图 (Bar/Line) | `View: v` |
+| `Stacked: [true/false]` | 堆叠模式 | `Stacked: true` |
+| `Smooth: [true/false]` | 平滑曲线 (Line) | `Smooth: true` |
+
+#### 12.2 样式与元数据
+| 语法 | 说明 | 示例 |
+|------|------|------|
+| `Color[Title]: #HEX` | 标题颜色 | `Color[Title]: #1e293b` |
+| `Font[Title]: [Size]` | 标题字号 | `Font[Title]: 20` |
+| `Axis: [Label], [X/Y/Y2...]` | 定义轴名称 | `Axis: 季度, X` |
+
+#### 12.3 数据数据集语法
+```yaml
+# 格式: Dataset: [名称], [[值列表]], [颜色], [轴映射]
+Dataset: 序列A, [10, 20, 30], #3b82f6, Y
+Dataset: 序列B, [15, 25, 35], null, Y2
+```
+
+#### 12.4 典型应用示例 (双轴组合)
+```basic
+Title: 产线效能分析
+Type: bar
+Smooth: true
+Dataset: 月份, [1月, 2月, 3月], null, X
+Dataset: 产量, [800, 950, 1100], #3b82f6, Y
+Dataset: 合格率, [92, 95, 94], #ef4444, Y2
 ```
 
 ---
