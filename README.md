@@ -578,18 +578,52 @@ Event: 6, 项目结束
 
 ## 📦 快速启动 (Quick Start)
 
+### 1. 基础配置与环境变量
+项目依赖环境变量来激活 AI 推理功能。在项目根目录下创建一个 `.env` 文件（或参考 `.env.example`）：
+
+```bash
+# AI 服务授权密钥 (如 DeepSeek, OpenAI 或 Gemini 的 Key)
+API_KEY=your_real_api_key
+
+# [可选] 激活的 AI 配置文件名
+# 默认使用 deepseek_public，可切换为 chart_spec.json 中定义的其他方案
+AI_ACTIVE_PROFILE=deepseek_public
+```
+
+### 2. 本地开发
 1. **安装依赖**:
    ```bash
    npm install
    ```
 2. **配置 API Key**:
-   在开发环境环境变量或 `.env` 中设置 `API_KEY`。
-3. **本地开发**:
+   在根目录下创建 `.env` 文件并设置 `API_KEY`（或在 `vite.config.ts` 中定义的对应变量）。
+3. **启动项目**:
    ```bash
    npm run dev
    ```
-4. **访问**:
-   打开浏览器访问 [http://localhost:3001](http://localhost:3001)
+4. **访问**: [http://localhost:3000](http://localhost:3000)
+
+### 2. 容器化部署 (Docker)
+项目支持**运行时环境变量注入**，这意味着您可以直接通过环境变量修改配置而无需重新编译镜像。
+
+1. **启动容器**:
+   ```bash
+   # 确保根目录下有 .env 文件或直接在命令中传入变量
+   docker compose up -d --build
+   ```
+2. **动态更新配置**:
+   如果您需要更换 API Key，只需修改 `.env` 或 `docker-compose.yml` 中的 `environment` 节点，然后运行：
+   ```bash
+   docker compose up -d
+   ```
+   系统将自动重写 `config.js` 并即时生效。
+3. **配置生效原理 (Technical Detail)**:
+   - **开发环境 (`npm run dev`)**: Vite 自动读取 `.env` 并直接注入代码。修改后通常需要重启 Vite 进程（或利用 HMR）。
+   - **生产环境 (Docker)**: 采用“运行时注入”技术。容器内的 `docker-entrypoint.sh` 脚本会在启动时将当前的容器环境变量（来自 `.env` 或 Compose 节点）提取并生成 `/config.js`。
+   - **优先级**: 运行时配置 (Docker) > 编译时配置 (.env/Dev) > 预置配置 (chart_spec.json)。
+
+4. **访问系统**:
+   通过浏览器访问 [http://localhost:8080](http://localhost:8080)。
 
 ---
 

@@ -8,6 +8,9 @@ services:
     container_name: smart-qc-studio
     ports:
       - "8080:80"
+    environment:
+      - API_KEY=${API_KEY}
+      - AI_ACTIVE_PROFILE=${AI_ACTIVE_PROFILE:-deepseek_public}
     restart: unless-stopped
     networks:
       - qc-network

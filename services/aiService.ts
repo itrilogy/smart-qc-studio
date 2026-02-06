@@ -36,10 +36,23 @@ async function getChartSpec(): Promise<ChartSpec> {
     }
 }
 
+/**
+ * Runtime configuration interface
+ */
+declare global {
+    interface Window {
+        APP_CONFIG?: {
+            API_KEY?: string;
+            AI_ACTIVE_PROFILE?: string;
+        };
+    }
+}
+
 async function callAI(systemPrompt: string, userPrompt: string) {
     const spec = await getChartSpec();
-    // 1. Try env var first
-    const envProfile = process.env.AI_ACTIVE_PROFILE;
+
+    // 1. Check runtime config (window.APP_CONFIG), then build-time env
+    const envProfile = window.APP_CONFIG?.AI_ACTIVE_PROFILE || process.env.AI_ACTIVE_PROFILE;
 
     // 2. Fallback to chart_spec.json active_profile if no env var
     const activeProfileName = envProfile || spec.ai_config.active_profile;
@@ -47,8 +60,8 @@ async function callAI(systemPrompt: string, userPrompt: string) {
     const profile = spec.ai_config.profiles[activeProfileName];
     if (!profile) throw new Error(`Invalid AI Profile: ${activeProfileName}`);
 
-    // Use the env key (mapped from GEMINI_API_KEY in vite.config.ts)
-    const apiKey = process.env.API_KEY;
+    // Check runtime API_KEY first
+    const apiKey = window.APP_CONFIG?.API_KEY || process.env.API_KEY;
 
     try {
         const response = await fetch(profile.endpoint, {
@@ -200,7 +213,7 @@ export const generateBasicDSL = async (prompt: string) => {
 export const getAIStatus = async (): Promise<string> => {
     try {
         const spec = await getChartSpec();
-        const envProfile = process.env.AI_ACTIVE_PROFILE;
+        const envProfile = window.APP_CONFIG?.AI_ACTIVE_PROFILE || process.env.AI_ACTIVE_PROFILE;
         const activeProfileName = envProfile || spec.ai_config.active_profile;
         const profile = spec.ai_config.profiles[activeProfileName];
         return profile?.name || "未激活服务";

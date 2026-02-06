@@ -19,8 +19,15 @@ FROM nginx:stable-alpine AS production-stage
 # Copy the build output from build-stage to nginx public directory
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 # Expose port 80
 EXPOSE 80
+
+# Use entrypoint script to inject env vars
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
