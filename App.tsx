@@ -398,6 +398,8 @@ const App: React.FC = () => {
   const [basicData, setBasicData] = useState<BasicChartData>(() => parseInitialBasic().data);
   const [basicStyles, setBasicStyles] = useState<BasicChartStyles>(() => parseInitialBasic().styles);
 
+  const [dashboardCols, setDashboardCols] = useState(6);
+
 
   const [controlDsl, setControlDsl] = useState<string>(INITIAL_CONTROL_DSL);
   const [showParetoLine, setShowParetoLine] = useState(true);
@@ -442,7 +444,7 @@ const App: React.FC = () => {
   };
 
   if (selectedTool === QCToolType.DASHBOARD) {
-    return <DashboardView onSelectTool={setSelectedTool} />;
+    return <DashboardView onSelectTool={setSelectedTool} cols={dashboardCols} setCols={setDashboardCols} />;
   }
 
   const currentTool = TOOL_CONFIGS.find(t => t.type === selectedTool);

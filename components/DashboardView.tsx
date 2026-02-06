@@ -6,10 +6,11 @@ import { ArrowUpRight, Cpu, ShieldCheck, LayoutGrid } from 'lucide-react';
 
 interface Props {
   onSelectTool: (type: QCToolType) => void;
+  cols: number;
+  setCols: (cols: number) => void;
 }
 
-export const DashboardView: React.FC<Props> = ({ onSelectTool }) => {
-  const [cols, setCols] = React.useState(5);
+export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols }) => {
 
   const gridColsClass = {
     3: 'md:grid-cols-3',
