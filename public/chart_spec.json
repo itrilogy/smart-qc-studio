@@ -461,6 +461,94 @@
                     }
                 ]
             }
+        },
+        "mermaid": {
+            "type": "logic",
+            "intent_trigger": [
+                "流程图",
+                "序列图",
+                "甘特图",
+                "状态图",
+                "类图",
+                "饼图",
+                "实体关系图",
+                "ER图",
+                "用户旅程图",
+                "时间线",
+                "mermaid",
+                "workflow",
+                "gantt",
+                "sequence",
+                "state",
+                "class",
+                "pie",
+                "erDiagram",
+                "journey",
+                "timeline"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Use Mermaid.js standard syntax. CRITICAL: Avoid syntax errors.",
+                    "1. 节点描述文字(Label)尽量使用中文标点符号(如：，。？！：)，严禁在未包裹的文字中出现英文半角逗号或分号。",
+                    "2. 节点描述文字严禁直接包含空格。如果必须包含空格或特殊字符，必须使用引号 `\" \"` 或括号 `[ ]`, `( )`, `{ }` 进行包裹。",
+                    "3. 推荐所有节点文字统一使用包裹格式，如：A[描述文字] 或 B(\"具有空格的文字\")。",
+                    "4. 节点 ID 必须简洁(如 A, B, node1)，且不含任何中文字符或空格。",
+                    "5. 对多级层级结构(思维导图/甘特图)，务必保持缩进的准确性。子节点必须相对于父节点缩进 2-4 个空格。",
+                    "Supported types: graph, flowchart, mindmap, kanban, sequenceDiagram, gantt, classDiagram, stateDiagram-v2, pie, erDiagram, journey, timeline"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "业务流程图",
+                        "input": "画一个请假审批流程：员工提单 -> 经理审批 -> (如果同意) 财务放款 -> 结束；(如果不同意) 退回修改 -> 员工提单。",
+                        "output": "graph TD\n    A[员工提单] --> B{经理审批}\n    B -- \"已通过\" --> C[财务放款]\n    C --> D[流程结束]\n    B -- \"未通过\" --> E[退回并修改]\n    E --> A"
+                    },
+                    {
+                        "scenario": "思维导图 - 知识梳理",
+                        "input": "整理关于“质量管理”的知识体系，包含输入（标准、规程）、处理（转化、控制）、输出（结果、纠正）。",
+                        "output": "mindmap\n  root((\"质量管理体系\"))\n    [输入环节]\n      (国际标准)\n      (企业内部规程)\n    [处理过程]\n      (要素转化)\n      (关键点控制)\n    [输出结果]\n      (最终产出)\n      (纠正预防措施)"
+                    },
+                    {
+                        "scenario": "序列图 - 系统交互",
+                        "input": "画一个用户登录交互：用户提交账密给Web客户端，Web向验证服务器发请求，服务器查DB返回Token及角色信息，Web拿到后再给用户显示Home。",
+                        "output": "sequenceDiagram\n    actor [用户]\n    participant Web as [Web端]\n    participant Auth as [验证服务]\n    participant DB as [数据库]\n    \n    [用户] ->> Web: 提交账号密码\n    Web ->> Auth: 验证请求\n    Auth ->> DB: 查询用户凭证\n    DB -->> Auth: 返回验证结果\n    Auth -->> Web: 签发身份Token\n    Web -->> [用户]: 跳转主页"
+                    },
+                    {
+                        "scenario": "状态图 - 订单流转",
+                        "input": "订单从“待支付”开始。若支付超时->“已取消”。支付成功->“待发货”。发货后->“已发货”。用户确认收货->“已完成”。任何时候退款都会变成“已退款”。",
+                        "output": "stateDiagram-v2\n    [*] --> [待支付]\n    [待支付] --> [已取消]: 支付超时\n    [待支付] --> [待发货]: 支付成功\n    [待发货] --> [已发货]: 仓库发货\n    [已发货] --> [已完成]: 确认收货\n    [已完成] --> [*]\n    \n    [待发货] --> [已退款]: 用户申请退款\n    [已发货] --> [已退款]: 协商退货退款"
+                    },
+                    {
+                        "scenario": "部分图 - 饼图",
+                        "input": "本月缺陷类型统计：外观划伤 40%，尺寸超差 35%，性能不良 15%，包装破损 10%。",
+                        "output": "pie title [本月产品缺陷分布]\n    \"外观划伤\" : 40\n    \"尺寸超差\" : 35\n    \"性能不良\" : 15\n    \"包装破损\" : 10"
+                    },
+                    {
+                        "scenario": "数据建模 - ER图",
+                        "input": "用户(USER)可以下多个订单(ORDER)，订单包含多个商品(PRODUCT)。标明属性：用户有id、名字；订单有时间；商品有价格。",
+                        "output": "erDiagram\n    USER ||--o{ ORDER : \"下单\"\n    ORDER ||--|{ PRODUCT : \"包含\"\n    \n    USER {\n        int user_id PK\n        string name\n    }\n    ORDER {\n        int order_id PK\n        datetime create_time\n    }\n    PRODUCT {\n        int product_id PK\n        float price\n    }"
+                    },
+                    {
+                        "scenario": "类图 - 系统结构",
+                        "input": "车(Car)实现交通工具(Vehicle)接口。Car包含Engine(引擎)。属性和方法简单写点即可。",
+                        "output": "classDiagram\n    class Vehicle {\n        <<interface>>\n        +move()\n    }\n    class Car {\n        -engine: Engine\n        +start()\n        +stop()\n    }\n    class Engine {\n        +cylinders: int\n        +ignite()\n    }\n    \n    Vehicle <|.. Car\n    Car *-- Engine"
+                    },
+                    {
+                        "scenario": "用户旅程图 - 线上购物",
+                        "input": "用户线上买衣服的旅程。分为“发现”、“购买”、“收货”。发现阶段：看广告(3分)，浏览商品(5分)。购买阶段：加购物车(4分)，支付(5分)。收货阶段：拆快递(5分)，试穿(2分，不好看)。",
+                        "output": "journey\n    title [线上购衣体验体验旅程]\n    section [发现阶段]\n      点击广告: 3: [用户]\n      浏览商品: 5: [用户]\n    section [购买阶段]\n      加入购物车: 4: [用户]\n      完成支付: 5: [用户]\n    section [收货阶段]\n      拆开快递: 5: [用户]\n      试穿发现不合适: 2: [用户]"
+                    },
+                    {
+                        "scenario": "时间线 - 互联网历史",
+                        "input": "互联网简史。1989年：WWW诞生。1998年：Google成立。2004年：Facebook上线。2007年：iPhone发布。",
+                        "output": "timeline\n    title [互联网大事件简史]\n    1989 : [万维网 WWW 诞生]\n    1998 : [Google 公司成立]\n    2004 : [Facebook 网站上线]\n    2007 : [初代 iPhone 正式发布]"
+                    },
+                    {
+                        "scenario": "甘特图 - 项目计划",
+                        "input": "制定一个为期两周的开发计划。第一周：需求分析(3天)，环境搭建(2天)；第二周：核心功能开发(5天)。",
+                        "output": "gantt\n    title [项目开发计划]\n    dateFormat  YYYY-MM-DD\n    section [第一周进度]\n    需求分析           :a1, 2024-01-01, 3d\n    环境搭建           :after a1, 2d\n    section [第二周进度]\n    核心功能开发        :2024-01-08, 5d"
+                    }
+                ]
+            }
         }
     }
 }

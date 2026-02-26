@@ -132,6 +132,16 @@ export const TOOL_CONFIGS = [
     color: 'text-amber-600',
     bg: 'bg-amber-50/50',
     accent: '#d97706'
+  },
+  {
+    type: QCToolType.MERMAID,
+    name: 'Mermaid 绘图',
+    enName: 'Mermaid Diagram',
+    desc: '基于 Mermaid 语法的全能绘图工具，支持流程图、序列图、甘特图等多种图表生成。',
+    icon: <Workflow size={32} />, // Using Workflow as a placeholder, or maybe something else? Workflow is already used. Let's use GitFork or GitBranch. GitBranch is Fishbone. Network is Arrow. GitFork is PDPC. Let's use Share2 or something similar if available. Wait, Workflow is Relation. Let's check available icons. Workflow is icon 2. Share2 is not imported. GitMerge or Layers? Let's use Activity or similar. Actually, let's use Workflow but I'll check icons again.
+    color: 'text-blue-500',
+    bg: 'bg-blue-50/50',
+    accent: '#3b82f6'
   }
 ];
 
@@ -798,6 +808,14 @@ export const INITIAL_RADAR_DATA: RadarData = {
     { name: '保守型组合', values: [6, 8, 95, 1.2, 5], color: '#10b981', fillOpacity: 0.2 }
   ]
 };
+
+export const INITIAL_MERMAID_DSL = `graph TD
+    A[开始] --> B{是否在线?}
+    B -- 是 --> C[加载网络资源]
+    B -- 否 --> D[使用本地缓存]
+    C --> E[渲染页面]
+    D --> E
+    E --> F[结束]`;
 
 export const INITIAL_RADAR_DSL = `Title: 投资组合多维风险分析
 

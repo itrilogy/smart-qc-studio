@@ -22,7 +22,8 @@ import {
   INITIAL_BASIC_DSL,
   INITIAL_BASIC_DATA,
   INITIAL_RADAR_DATA,
-  INITIAL_RADAR_DSL
+  INITIAL_RADAR_DSL,
+  INITIAL_MERMAID_DSL
 } from './constants';
 import {
   DEFAULT_PARETO_STYLES,
@@ -57,7 +58,9 @@ import {
   DEFAULT_BASIC_STYLES,
   RadarData,
   RadarChartStyles,
-  DEFAULT_RADAR_STYLES
+  DEFAULT_RADAR_STYLES,
+  MermaidChartStyles,
+  DEFAULT_MERMAID_STYLES
 } from './types';
 import { Workspace } from './components/layout/Workspace';
 import { DashboardView } from './components/DashboardView';
@@ -88,6 +91,8 @@ import BasicEditor, { parseBasicDSL } from './components/BasicEditor';
 import BasicDiagram from './components/BasicDiagram';
 import RadarEditor, { parseRadarDSL } from './components/RadarEditor';
 import RadarDiagram from './components/RadarDiagram';
+import { MermaidDiagram, MermaidDiagramRef } from './components/MermaidDiagram';
+import MermaidEditor from './components/MermaidEditor';
 import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loader2, LineChart, BarChart3 } from 'lucide-react';
 
 // --- DSL Parsing Functions (Move outside to support Lazy Initialization) ---
@@ -416,6 +421,9 @@ const App: React.FC = () => {
   const [radarData, setRadarData] = useState<RadarData>(() => parseInitialRadar().data);
   const [radarStyles, setRadarStyles] = useState<RadarChartStyles>(() => parseInitialRadar().styles);
 
+  const [mermaidData, setMermaidData] = useState<string>(INITIAL_MERMAID_DSL);
+  const [mermaidStyles, setMermaidStyles] = useState<MermaidChartStyles>(DEFAULT_MERMAID_STYLES);
+
   const [dashboardCols, setDashboardCols] = useState(6);
 
 
@@ -589,6 +597,13 @@ const App: React.FC = () => {
                   onDataChange={setRadarData}
                   onStylesChange={setRadarStyles}
                 />
+              ) : selectedTool === QCToolType.MERMAID ? (
+                <MermaidEditor
+                  data={mermaidData}
+                  styles={mermaidStyles}
+                  onDataChange={setMermaidData}
+                  onStylesChange={setMermaidStyles}
+                />
               ) : (
                 <EditorPanel
                   toolType={selectedTool}
@@ -628,7 +643,7 @@ const App: React.FC = () => {
                     className="p-3 bg-white shadow-sm rounded-xl text-slate-700 hover:text-blue-600 hover:shadow-md transition-all flex items-center gap-2 group"
                   >
                     <Image size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">白底 PNG</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">有底 PNG</span>
                   </button>
                   <button
                     onClick={() => diagramRef.current?.exportPNG?.(true)}
@@ -638,11 +653,18 @@ const App: React.FC = () => {
                     <span className="text-[10px] font-black uppercase tracking-widest">透明 PNG</span>
                   </button>
                   <button
-                    onClick={() => diagramRef.current?.exportPDF?.()}
+                    onClick={() => diagramRef.current?.exportPDF?.(false)}
                     className="p-3 bg-white shadow-sm rounded-xl text-slate-700 hover:text-red-600 hover:shadow-md transition-all flex items-center gap-2"
                   >
                     <FileText size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">PDF</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">有底 PDF</span>
+                  </button>
+                  <button
+                    onClick={() => diagramRef.current?.exportPDF?.(true)}
+                    className="p-3 bg-white shadow-sm rounded-xl text-slate-700 hover:text-indigo-600 hover:shadow-md transition-all flex items-center gap-2"
+                  >
+                    <Download size={16} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">透明 PDF</span>
                   </button>
                 </div>
                 {selectedTool === QCToolType.MATRIX && (
@@ -696,6 +718,8 @@ const App: React.FC = () => {
                     return <BasicDiagram ref={diagramRef} data={basicData} styles={basicStyles} />;
                   case QCToolType.RADAR:
                     return <RadarDiagram ref={diagramRef} data={radarData} styles={radarStyles} />;
+                  case QCToolType.MERMAID:
+                    return <MermaidDiagram ref={diagramRef} data={mermaidData} styles={mermaidStyles} />;
                   default: return (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-white">
                       <Cpu className="w-32 h-32 text-slate-100 mb-8" />

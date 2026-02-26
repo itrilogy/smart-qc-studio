@@ -13,7 +13,8 @@ export enum QCToolType {
   PDPC = 'PDPC',
   ARROW = 'ARROW',
   BASIC = 'BASIC',
-  RADAR = 'RADAR'
+  RADAR = 'RADAR',
+  MERMAID = 'MERMAID'
 }
 
 export interface RadarAxis {
@@ -719,4 +720,30 @@ export const DEFAULT_BASIC_STYLES: Required<BasicChartStyles> = {
   backgroundColor: '#ffffff',
   titleFontSize: 18,
   baseFontSize: 12
+};
+
+// --- Mermaid Diagram Types ---
+
+export interface MermaidChartStyles {
+  title: string;
+  titleFontSize: number;
+  theme: 'default' | 'forest' | 'dark' | 'neutral' | 'base';
+  fontSize: number;
+  backgroundColor: string;
+  look?: 'classic' | 'handDrawn';
+  useElk?: boolean;
+  elkMergeEdges?: boolean;
+  elkNodePlacementStrategy?: 'SIMPLE' | 'NETWORK_SIMPLE' | 'LINEAR_SEGMENTS' | 'BRANDES_KOEPF';
+}
+
+export const DEFAULT_MERMAID_STYLES: Required<MermaidChartStyles> = {
+  title: 'Mermaid 绘图分析',
+  titleFontSize: 20,
+  theme: 'default',
+  fontSize: 14,
+  backgroundColor: '#ffffff',
+  look: 'classic',
+  useElk: false,
+  elkMergeEdges: false,
+  elkNodePlacementStrategy: 'BRANDES_KOEPF'
 };

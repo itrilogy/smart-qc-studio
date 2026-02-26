@@ -157,7 +157,8 @@ export const generateLogicDSL = async (prompt: string, toolType: QCToolType) => 
                 toolType === QCToolType.MATRIX ? 'matrix' :
                     toolType === QCToolType.ARROW ? 'arrow' :
                         toolType === QCToolType.RADAR ? 'radar' :
-                            toolType === QCToolType.PDPC ? 'pdpc' : 'affinity';
+                            toolType === QCToolType.MERMAID ? 'mermaid' :
+                                toolType === QCToolType.PDPC ? 'pdpc' : 'affinity';
         const systemPrompt = buildSystemPrompt("Quality Control Engineer", grammarKey, spec);
 
         const text = await callAI(systemPrompt, prompt);
