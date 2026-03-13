@@ -920,16 +920,25 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
     useImperativeHandle(ref, () => ({
         exportPNG: (transparent = false) => {
             if (!svgRef.current || !layout) return;
-            const svgData = new XMLSerializer().serializeToString(svgRef.current);
+
+            const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;
+            svgClone.setAttribute('width', width.toString());
+            svgClone.setAttribute('height', height.toString());
+            svgClone.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+            const svgData = new XMLSerializer().serializeToString(svgClone);
             const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
             const url = URL.createObjectURL(blob);
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement("canvas");
-                canvas.width = width;
-                canvas.height = height;
+                // 2x scale for high resolution
+                canvas.width = width * 2;
+                canvas.height = height * 2;
                 const ctx = canvas.getContext("2d");
                 if (ctx) {
+                    ctx.scale(2, 2);
                     if (!transparent) {
                         ctx.fillStyle = "#ffffff";
                         ctx.fillRect(0, 0, width, height);
@@ -946,12 +955,60 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
         },
         exportPDF: () => {
             if (!svgRef.current || !layout) return;
-            const win = window.open('', '_blank');
-            if (win) {
-                const svgData = new XMLSerializer().serializeToString(svgRef.current);
-                win.document.write(`<html><head><title>Export PDF</title></head><body style="display:flex;justify-content:center;align-items:center;height:100vh;">${svgData}</body></html>`);
-                setTimeout(() => { win.print(); win.close(); }, 500);
-            }
+
+            const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;
+            svgClone.setAttribute('width', width.toString());
+            svgClone.setAttribute('height', height.toString());
+            svgClone.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+            const svgData = new XMLSerializer().serializeToString(svgClone);
+            const canvas = document.createElement("canvas");
+            // 2x scale for high resolution
+            canvas.width = width * 2;
+            canvas.height = height * 2;
+            const ctx = canvas.getContext("2d");
+            const img = new Image();
+            const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+
+            img.onload = () => {
+                if (ctx) {
+                    ctx.scale(2, 2);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0);
+                    const imgData = canvas.toDataURL("image/png");
+
+                    const win = window.open('', '_blank');
+                    if (win) {
+                        win.document.write(`
+                            <html>
+                            <head><title>Export PDF - Smart QC Studio</title></head>
+                            <body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f8fafc; font-family: -apple-system, sans-serif;">
+                                <div style="padding: 40px; background: #fff; box-shadow: 0 40px 100px rgba(0,0,0,0.05); border-radius: 20px; text-align: center;">
+                                <img src="${imgData}" style="max-width:100%; height:auto;" />
+                                <div style="margin-top: 20px; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+                                    Matrix Chart Report | Smart QC Studio
+                                </div>
+                                </div>
+                                <script>
+                                window.onload = () => {
+                                    setTimeout(() => {
+                                    window.print();
+                                    window.close();
+                                    }, 800);
+                                }
+                                </script>
+                            </body>
+                            </html>
+                        `);
+                        win.document.close();
+                    }
+                    URL.revokeObjectURL(url);
+                }
+            };
+            img.src = url;
         },
         tidyLayout: () => {
             if (containerRef.current && layout) {

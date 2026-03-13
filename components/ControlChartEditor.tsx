@@ -58,6 +58,10 @@ export function parseControlDSL(dsl: string): { series: ControlSeries[]; styles:
             styles.decimals = parseInt(trimmed.substring(9).trim());
             continue;
         }
+        if (trimmed.startsWith('ShowValues:')) {
+            styles.showValues = trimmed.substring(11).trim().toLowerCase() === 'true';
+            continue;
+        }
 
         // Colors
         const colorMatch = trimmed.match(/^Color\[(\w+)\]:\s*(#[0-9A-Fa-f]{6})/);
@@ -144,6 +148,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
         if (st.subgroupSize) lines.push(`Size: ${st.subgroupSize}`);
         if (st.rules && st.rules.length > 0) lines.push(`Rules: ${st.rules.join(',')}`);
         if (st.decimals !== undefined) lines.push(`Decimals: ${st.decimals}`);
+        lines.push(`ShowValues: ${st.showValues || false}`);
 
         if (st.ucl !== undefined) lines.push(`UCL: ${st.ucl}`);
         if (st.lcl !== undefined) lines.push(`LCL: ${st.lcl}`);
@@ -202,34 +207,34 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#0f172a] text-white relative">
+        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
             {/* Header */}
-            <div className="p-6 border-b border-slate-800 space-y-6">
+            <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-emerald-600/20 rounded-xl flex items-center justify-center border border-emerald-500/30">
                             <Activity size={20} className="text-emerald-400" />
                         </div>
                         <div>
-                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-white">控制图引擎</h2>
-                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">SPC Processor v2.0</p>
+                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-[var(--sidebar-text)]">控制图引擎</h2>
+                            <p className="text-[9px] font-bold text-[var(--sidebar-muted)] uppercase tracking-widest mt-1">SPC Processor v2.0</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-slate-800 rounded-xl text-slate-400 hover:text-blue-400 transition-all border border-slate-700"
+                            className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
-                        <button onClick={() => setShowDocs(true)} className="p-3 bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-all border border-slate-700">
+                        <button onClick={() => setShowDocs(true)} className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--sidebar-border)] shadow-sm">
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
 
-                <nav className="flex gap-2 p-1.5 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <nav className="flex gap-2 p-1.5 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)]">
                     {[
                         { id: 'manual', label: '手动录入', icon: <Database size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -238,7 +243,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                         <button
                             key={t.id}
                             onClick={() => handleTabChange(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-emerald-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'}`}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-emerald-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'}`}
                         >
                             {t.icon} {t.label}
                         </button>
@@ -254,7 +259,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                         <div className="space-y-4">
                             <div className="flex items-center gap-3 pl-2">
                                 <ChevronRight size={14} className="text-emerald-500" />
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">图表基本信息</span>
+                                <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">图表基本信息</span>
                             </div>
                             <input
                                 value={styles.title || ''}
@@ -264,11 +269,11 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                             />
                             <div className="flex items-center gap-3">
                                 <div className="flex-1">
-                                    <label className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-2 block">图表类型</label>
+                                    <label className="text-[9px] font-black uppercase text-[var(--sidebar-text)] tracking-widest mb-2 block">图表类型</label>
                                     <select
                                         value={styles.type}
                                         onChange={e => handleUpdate(series, { ...styles, type: e.target.value as ControlChartType })}
-                                        className="w-full h-10 px-3 bg-slate-800/50 rounded-xl border border-slate-700 text-[10px] font-bold text-slate-300 outline-none focus:border-emerald-500/50 appearance-none"
+                                        className="w-full h-10 px-3 bg-[var(--input-bg)] rounded-xl border border-[var(--input-border)] text-[10px] font-bold text-[var(--sidebar-text)] outline-none focus:border-emerald-500/50 appearance-none"
                                     >
                                         <option value="I-MR">I-MR (单维 | 单值)</option>
                                         <option value="X-bar-R">X-bar-R (单维 | 均值-极差)</option>
@@ -283,16 +288,16 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                         </div>
 
                         {/* 2. SPC Params */}
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-6 shadow-2xl">
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-2xl">
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <Ruler size={16} className="text-emerald-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">SPC 参数配置</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">SPC 参数配置</span>
                             </div>
 
                             {/* Sliders */}
                             <div className="flex gap-8">
                                 <div className="flex-1 space-y-3">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-500 tracking-widest">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-[var(--sidebar-text)] tracking-widest">
                                         <span>子组大小 (Size)</span>
                                         <span className="text-emerald-400">{styles.subgroupSize || 1}</span>
                                     </div>
@@ -300,11 +305,11 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                         type="range" min="1" max="10"
                                         value={styles.subgroupSize || 1}
                                         onChange={e => handleUpdate(series, { ...styles, subgroupSize: parseInt(e.target.value) })}
-                                        className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                                        className="w-full h-1.5 bg-[var(--sidebar-border)] rounded-lg appearance-none cursor-pointer accent-emerald-600"
                                     />
                                 </div>
                                 <div className="flex-1 space-y-3">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-500 tracking-widest">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-[var(--sidebar-text)] tracking-widest">
                                         <span>小数精度</span>
                                         <span className="text-emerald-400">{styles.decimals ?? 2} 位</span>
                                     </div>
@@ -312,14 +317,25 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                         type="range" min="0" max="4"
                                         value={styles.decimals ?? 2}
                                         onChange={e => handleUpdate(series, { ...styles, decimals: parseInt(e.target.value) })}
-                                        className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                                        className="w-full h-1.5 bg-[var(--sidebar-border)] rounded-lg appearance-none cursor-pointer accent-emerald-600"
                                     />
+                                </div>
+                                <div className="flex-1 space-y-3">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-[var(--sidebar-text)] tracking-widest">
+                                        <span>显示数值标签</span>
+                                        <button
+                                            onClick={() => handleUpdate(series, { ...styles, showValues: !styles.showValues })}
+                                            className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${styles.showValues ? 'bg-emerald-600' : 'bg-[var(--sidebar-muted)]'}`}
+                                        >
+                                            <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-transform duration-300 ${styles.showValues ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Rules */}
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black uppercase text-slate-500 tracking-widest block">判异规则 (Rules)</label>
+                                <label className="text-[9px] font-black uppercase text-[var(--sidebar-text)] tracking-widest block">判异规则 (Rules)</label>
                                 <div className="flex gap-2">
                                     {[
                                         { id: 'Basic', label: '基础' },
@@ -338,7 +354,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                                 }}
                                                 className={`flex-1 h-9 rounded-lg text-[10px] font-bold border transition-all flex items-center justify-center gap-1.5 ${isActive
                                                     ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                                                    : 'bg-slate-800/30 border-slate-700 text-slate-500 hover:border-slate-600'
+                                                    : 'bg-[var(--card-bg)] border-[var(--input-border)] text-[var(--sidebar-text)] hover:border-emerald-500/30'
                                                     }`}
                                             >
                                                 <div className={`w-2 h-2 rounded-full border ${isActive ? 'bg-emerald-500 border-emerald-500' : 'border-slate-600'}`} />
@@ -354,7 +370,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                         <div className="space-y-4">
                             <div className="flex items-center gap-3 pl-2">
                                 <Database size={14} className="text-emerald-500" />
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">观测数据序列</span>
+                                <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">观测数据序列</span>
                             </div>
                             {series.map((s, idx) => (
                                 <div key={idx} className="space-y-2">
@@ -365,7 +381,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                             newSeries[idx].name = e.target.value;
                                             handleUpdate(newSeries, styles);
                                         }}
-                                        className="w-full bg-transparent text-xs font-bold text-slate-400 outline-none placeholder:text-slate-700"
+                                        className="w-full bg-transparent text-xs font-bold text-[var(--sidebar-text)] outline-none placeholder:text-[var(--sidebar-muted)]"
                                         placeholder="系列名称"
                                     />
                                     <textarea
@@ -377,7 +393,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                             newSeries[idx].data = newData;
                                             handleUpdate(newSeries, styles);
                                         }}
-                                        className="w-full h-32 p-4 bg-slate-800/50 rounded-xl border border-slate-700 focus:border-emerald-500/50 outline-none text-xs font-mono leading-relaxed text-slate-300 resize-none"
+                                        className="w-full h-32 p-4 bg-[var(--input-bg)] rounded-xl border border-[var(--input-border)] focus:border-emerald-500/50 outline-none text-xs font-mono leading-relaxed text-[var(--sidebar-text)] resize-none"
                                         placeholder="输入观测值，用逗号分隔..."
                                     />
                                 </div>
@@ -385,7 +401,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                             {series.length === 0 && (
                                 <button
                                     onClick={() => handleUpdate([{ name: '新数据系列', data: [] }], styles)}
-                                    className="w-full py-3 border border-dashed border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-emerald-400 hover:border-emerald-500/50 transition-all"
+                                    className="w-full py-3 border border-dashed border-[var(--sidebar-border)] rounded-xl text-[10px] font-black uppercase tracking-widest text-[var(--sidebar-text)] hover:text-emerald-400 hover:border-emerald-500/50 transition-all"
                                 >
                                     + 添加数据系列
                                 </button>
@@ -393,10 +409,10 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                         </div>
 
                         {/* 4. Color Config */}
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-6 shadow-2xl">
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-2xl">
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <Settings2 size={16} className="text-emerald-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">视觉样式配置</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">视觉样式配置</span>
                             </div>
                             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                                 {[
@@ -431,7 +447,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                         <textarea
                             value={dsl}
                             onChange={(e) => onDslChange(e.target.value)}
-                            className="flex-1 w-full min-h-[400px] p-8 logic-terminal-input text-sm leading-relaxed border border-slate-700/50 whitespace-pre overflow-auto"
+                            className="flex-1 w-full min-h-[400px] p-8 bg-[var(--input-bg)] text-[var(--sidebar-text)] font-mono text-sm leading-relaxed border border-[var(--input-border)] rounded-2xl shadow-inner focus:outline-none focus:border-emerald-500 transition-all whitespace-pre overflow-auto resize-none"
                             placeholder="// 在此输入控制图 DSL 代码..."
                             spellCheck={false}
                         />
@@ -440,9 +456,9 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
 
                 {activeTab === 'ai' && (
                     <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-8 shadow-2xl relative overflow-hidden group">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">智能 SPC 逻辑推演</span>
+                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                            <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
+                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能 SPC 逻辑推演</span>
                                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]" />
                                     <span className="text-[9px] font-black text-emerald-500 uppercase">Engine Active: {engineName}</span>
@@ -452,14 +468,14 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                             <textarea
                                 value={aiInput}
                                 onChange={e => setAiInput(e.target.value)}
-                                className="w-full h-64 p-8 bg-slate-900/50 text-slate-200 p-8 text-sm leading-relaxed border border-slate-800 rounded-[2rem] focus:outline-none focus:border-emerald-500 transition-all resize-none shadow-inner"
+                                className="w-full h-64 p-8 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-emerald-500 transition-all resize-none shadow-inner"
                                 placeholder="例如：分析过去25组活塞销直径测量数据，每组5个样本。请自动判断控制限..."
                             />
 
                             <button
                                 onClick={handleSmartOptimize}
                                 disabled={isThinking || !aiInput.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isThinking ? 'bg-slate-800' : 'bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isThinking ? 'bg-[var(--sidebar-muted)]' : 'bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98]'}`}
                             >
                                 {isThinking ? (
                                     <>
@@ -476,7 +492,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
 
                             <div className="p-8 bg-emerald-900/10 border border-emerald-800/20 rounded-3xl space-y-4">
                                 <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">推理提示</p>
-                                <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                                <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以直接粘贴原始测量数据（如 Excel 复制内容），AI 将自动识别子组结构，并根据 SPC 理论推荐合适的控制图类型（I-MR, X-bar 等）并自动计算控制限。
                                 </p>
                             </div>
@@ -487,25 +503,25 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
 
             {/* Help Modal */}
             {showDocs && createPortal(
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[900px] h-[800px] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl relative">
-                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6 bg-[#0f172a]/80 backdrop-blur-xl">
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md transition-all">
+                    <div className="bg-[var(--sidebar-bg)] w-[900px] h-[800px] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl relative">
+                        <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6 bg-[var(--sidebar-bg)]/80 backdrop-blur-xl">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="p-2 bg-emerald-500/20 rounded-xl">
                                         <HelpCircle size={24} className="text-emerald-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">控制图知识库</h3>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Version 2.0 • SPC Engine</p>
+                                        <h3 className="text-xl font-black text-[var(--sidebar-text)] uppercase tracking-tighter">控制图知识库</h3>
+                                        <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Version 2.0 • SPC Engine</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-xl transition-all text-[var(--sidebar-text)] hover:text-white">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                            <nav className="flex bg-[var(--sidebar-bg)]/40 p-1 rounded-2xl border border-[var(--sidebar-border)]/80 w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -513,7 +529,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-emerald-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'
                                             }`}
                                     >
                                         {t.label}
@@ -522,7 +538,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                             </nav>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-10 text-slate-300">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-10 text-[var(--sidebar-muted)]">
                             {docTab === 'dsl' ? (
                                 <div className="space-y-12">
                                     <section className="space-y-6">
@@ -531,39 +547,39 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                             <span className="text-[12px] font-black uppercase tracking-widest">1. 基础配置说明</span>
                                         </div>
                                         <div className="space-y-4 font-sans text-sm">
-                                            <table className="w-full text-xs font-mono border-collapse text-left bg-black/20 rounded-xl overflow-hidden">
+                                            <table className="w-full text-xs font-mono border-collapse text-left bg-[var(--sidebar-bg)]/20 rounded-xl overflow-hidden">
                                                 <thead>
-                                                    <tr className="text-slate-500 bg-slate-800/50">
+                                                    <tr className="text-[var(--sidebar-text)] bg-[var(--input-bg)]">
                                                         <th className="p-4 font-black uppercase w-32">语法</th>
                                                         <th className="p-4 font-black uppercase">说明</th>
                                                         <th className="p-4 font-black uppercase">示例</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-slate-800/50">
+                                                <tbody className="divide-y divide-[var(--sidebar-border)]">
                                                     <tr>
                                                         <td className="p-4 text-emerald-400 font-bold">Title:</td>
                                                         <td className="p-4">图表主标题</td>
-                                                        <td className="p-4 text-slate-500">Title: 关键尺寸控制图</td>
+                                                        <td className="p-4 text-slate-200">Title: 关键尺寸控制图</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="p-4 text-emerald-400 font-bold">Type:</td>
                                                         <td className="p-4">控制图类型 (I-MR, X-bar-R, X-bar-S, P, NP, C, U)</td>
-                                                        <td className="p-4 text-slate-500">Type: X-bar-R</td>
+                                                        <td className="p-4 text-slate-200">Type: X-bar-R</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="p-4 text-emerald-400 font-bold">Size:</td>
                                                         <td className="p-4">子组样本容量 (n)</td>
-                                                        <td className="p-4 text-slate-500">Size: 5</td>
+                                                        <td className="p-4 text-slate-200">Size: 5</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="p-4 text-emerald-400 font-bold">Rules:</td>
                                                         <td className="p-4">判异规则 (Basic/Western-Electric/Nelson)</td>
-                                                        <td className="p-4 text-slate-500">Rules: Nelson</td>
+                                                        <td className="p-4 text-slate-200">Rules: Nelson</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="p-4 text-emerald-400 font-bold">Decimals:</td>
                                                         <td className="p-4">数值显示精度</td>
-                                                        <td className="p-4 text-slate-500">Decimals: 3</td>
+                                                        <td className="p-4 text-slate-200">Decimals: 3</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -576,34 +592,34 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                             <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式配置</span>
                                         </div>
                                         <div className="space-y-4">
-                                            <table className="w-full text-xs font-mono border-collapse text-left bg-black/20 rounded-xl overflow-hidden">
+                                            <table className="w-full text-xs font-mono border-collapse text-left bg-[var(--sidebar-bg)]/20 rounded-xl overflow-hidden">
                                                 <thead>
-                                                    <tr className="text-slate-500 bg-slate-800/50">
+                                                    <tr className="text-[var(--sidebar-text)] bg-[var(--input-bg)]">
                                                         <th className="p-4 font-black uppercase w-32">指令</th>
                                                         <th className="p-4 font-black uppercase">说明</th>
                                                         <th className="p-4 font-black uppercase">默认值</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-slate-800/50">
+                                                <tbody className="divide-y divide-[var(--sidebar-border)]">
                                                     <tr>
                                                         <td className="p-4 text-blue-400 font-bold">Color[Line]:</td>
                                                         <td className="p-4">折线颜色</td>
-                                                        <td className="p-4 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#3b82f6] rounded-sm" /> #3b82f6</td>
+                                                        <td className="p-4 text-slate-200 flex items-center gap-2"><div className="w-3 h-3 bg-[#3b82f6] rounded-sm" /> #3b82f6</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="p-4 text-blue-400 font-bold">Color[Point]:</td>
                                                         <td className="p-4">数据点颜色</td>
-                                                        <td className="p-4 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#1d4ed8] rounded-sm" /> #1d4ed8</td>
+                                                        <td className="p-4 text-slate-200 flex items-center gap-2"><div className="w-3 h-3 bg-[#1d4ed8] rounded-sm" /> #1d4ed8</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="p-4 text-blue-400 font-bold">Color[UCL]:</td>
                                                         <td className="p-4">控制上限(UCL)颜色</td>
-                                                        <td className="p-4 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#ef4444] rounded-sm" /> #ef4444</td>
+                                                        <td className="p-4 text-slate-200 flex items-center gap-2"><div className="w-3 h-3 bg-[#ef4444] rounded-sm" /> #ef4444</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="p-4 text-blue-400 font-bold">Color[CL]:</td>
                                                         <td className="p-4">中心线(CL)颜色</td>
-                                                        <td className="p-4 text-slate-500 flex items-center gap-2"><div className="w-3 h-3 bg-[#22c55e] rounded-sm" /> #22c55e</td>
+                                                        <td className="p-4 text-slate-200 flex items-center gap-2"><div className="w-3 h-3 bg-[#22c55e] rounded-sm" /> #22c55e</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -616,9 +632,9 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                             <span className="text-[12px] font-black uppercase tracking-widest">3. 数据录入规范</span>
                                         </div>
                                         <div className="p-8 bg-black/40 rounded-[2rem] border border-white/5 font-mono text-xs leading-relaxed relative overflow-hidden group">
-                                            <div className="text-[11px] font-bold text-slate-500 mb-4">标准数据块格式</div>
+                                            <div className="text-[11px] font-bold text-[var(--sidebar-text)] mb-4">标准数据块格式</div>
                                             <div className="text-purple-300">[series]: 熔体温度</div>
-                                            <div className="text-slate-500">// 支持逗号、空格、换行分隔</div>
+                                            <div className="text-[var(--sidebar-text)]">// 支持逗号、空格、换行分隔</div>
                                             <div className="text-indigo-300">12.5, 12.8, 12.1, 12.4, 12.6</div>
                                             <div className="text-indigo-300">12.3, 12.5, 12.7, 12.2, 12.9</div>
                                             <div className="text-purple-300">[/series]</div>
@@ -632,7 +648,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                             <Activity size={18} />
                                             <span className="text-[12px] font-black uppercase tracking-widest">SPC 统计过程控制原理</span>
                                         </div>
-                                        <div className="p-8 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-6 text-sm leading-relaxed text-slate-400">
+                                        <div className="p-8 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-6 text-sm leading-relaxed text-slate-100">
                                             <p>
                                                 控制图（Control Chart）是用于区分过程中的<b>偶然波动</b>与<b>异常波动</b>的重要工具。
                                                 Smart QC Studio 遵循 ISO 7870 与 GB/T 4091 标准进行计算。
@@ -658,7 +674,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                             <div className="space-y-3 bg-orange-900/10 p-5 rounded-xl border border-orange-500/20">
                                                 <h5 className="text-[11px] font-black text-orange-400 uppercase tracking-widest">3. 控制图选型指南</h5>
                                                 <table className="w-full text-[10px] text-left">
-                                                    <thead className="text-slate-500">
+                                                    <thead className="text-slate-200">
                                                         <tr><th className="pb-2">数据性质</th><th className="pb-2">子组大小</th><th className="pb-2">推荐类型</th></tr>
                                                     </thead>
                                                     <tbody className="text-slate-300">
@@ -677,7 +693,7 @@ const ControlChartEditor: React.FC<ControlEditorProps> = ({ dsl, onDslChange }) 
                                             <Zap size={14} className="text-emerald-500" />
                                             <span className="text-[10px] font-black uppercase text-emerald-500">专家建议</span>
                                         </div>
-                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                        <p className="text-[11px] text-slate-100 font-medium italic mb-2">
                                             "控制图的目的不是让过程看起来'完美'，而是让我们在过程偏离轨道时能及早发现偏差。如果控制限太宽，您可能错失改进机会；如果太窄，则可能造成过度调整。"
                                         </p>
                                     </div>

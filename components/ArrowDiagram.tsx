@@ -18,7 +18,8 @@ export const ArrowDiagram = forwardRef<ArrowDiagramRef, ArrowDiagramProps>(({ da
     const {
         nodeRadius, lineWidth, fontSize,
         nodeColor, nodeTextColor,
-        lineColor, criticalLineColor, textColor
+        lineColor, criticalLineColor, shortestLineColor, textColor,
+        showCriticalPath, showShortestPath
     } = styles;
 
     const [scale, setScale] = useState(1);
@@ -291,6 +292,9 @@ export const ArrowDiagram = forwardRef<ArrowDiagramRef, ArrowDiagramProps>(({ da
                         <marker id="arrow-head-critical" markerWidth={markerW} markerHeight={markerH} refX={nodeRadius + markerW - 2} refY={markerH / 2} orient="auto" markerUnits="userSpaceOnUse">
                             <polygon points={`0 0, ${markerW} ${markerH / 2}, 0 ${markerH}`} fill={criticalLineColor} />
                         </marker>
+                        <marker id="arrow-head-shortest" markerWidth={markerW} markerHeight={markerH} refX={nodeRadius + markerW - 2} refY={markerH / 2} orient="auto" markerUnits="userSpaceOnUse">
+                            <polygon points={`0 0, ${markerW} ${markerH / 2}, 0 ${markerH}`} fill={shortestLineColor} />
+                        </marker>
                         <marker id="arrow-head-dummy" markerWidth={markerW} markerHeight={markerH} refX={nodeRadius + markerW - 2} refY={markerH / 2} orient="auto" markerUnits="userSpaceOnUse">
                             <polygon points={`0 0, ${markerW} ${markerH / 2}, 0 ${markerH}`} fill={lineColor} fillOpacity="0.5" />
                         </marker>
@@ -322,11 +326,19 @@ export const ArrowDiagram = forwardRef<ArrowDiagramRef, ArrowDiagramProps>(({ da
                             if (!src || !tgt) return null;
 
                             const isCrit = styles.showCriticalPath && link.isCritical;
-                            const stroke = isCrit ? criticalLineColor : lineColor;
-                            const strokeWidth = isCrit ? lineWidth * 1.5 : lineWidth;
-                            const markerEnd = link.isDummy
+                            const isShort = styles.showShortestPath && link.isShortest;
+
+                            let stroke = lineColor;
+                            if (isCrit) stroke = criticalLineColor;
+                            else if (isShort) stroke = shortestLineColor;
+
+                            let strokeWidth = lineWidth;
+                            if (isCrit) strokeWidth = lineWidth * 1.5;
+                            else if (isShort) strokeWidth = lineWidth * 1.3;
+
+                            let markerEnd = link.isDummy
                                 ? 'url(#arrow-head-dummy)'
-                                : (isCrit ? 'url(#arrow-head-critical)' : 'url(#arrow-head)');
+                                : (isCrit ? 'url(#arrow-head-critical)' : (isShort ? 'url(#arrow-head-shortest)' : 'url(#arrow-head)'));
 
                             const x1 = src.x || 0;
                             const y1 = src.y || 0;

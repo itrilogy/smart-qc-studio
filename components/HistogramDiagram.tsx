@@ -154,7 +154,7 @@ export const HistogramDiagram = forwardRef<HistogramDiagramRef, Props>(({ data, 
                     borderRadius: [4, 4, 0, 0]
                 },
                 label: {
-                    show: true,
+                    show: finalStyles.showValues,
                     position: 'top',
                     color: finalStyles.barColor,
                     fontSize: finalStyles.barFontSize,

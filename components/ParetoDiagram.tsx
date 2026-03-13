@@ -211,7 +211,7 @@ export const ParetoDiagram = forwardRef<ParetoDiagramRef, Props>(({ data, styles
                         borderWidth: 2
                     },
                     label: {
-                        show: true,
+                        show: finalStyles.showValues,
                         position: 'top',
                         formatter: (p: any) => p.value[1],
                         color: finalStyles.barColor,
@@ -229,7 +229,7 @@ export const ParetoDiagram = forwardRef<ParetoDiagramRef, Props>(({ data, styles
                     lineStyle: { width: 4, color: finalStyles.lineColor, shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.1)' },
                     itemStyle: { color: finalStyles.lineColor, borderColor: '#fff', borderWidth: 2 },
                     label: {
-                        show: true,
+                        show: finalStyles.showValues,
                         position: 'top',
                         formatter: (p: any) => p.value[0] > 0 ? `${p.value[1].toFixed(decimals)}%` : '',
                         color: finalStyles.lineColor,

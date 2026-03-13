@@ -144,7 +144,21 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
     // ... export methods (no changes needed)
     const exportPNG = (transparent = false) => {
         if (!svgRef.current) return;
-        const svgData = new XMLSerializer().serializeToString(svgRef.current);
+
+        const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;
+        const exportWidth = width + 100; // Extra padding
+        const exportHeight = height + 100;
+        svgClone.setAttribute('width', exportWidth.toString());
+        svgClone.setAttribute('height', exportHeight.toString());
+        svgClone.setAttribute('viewBox', `-50 -50 ${exportWidth} ${exportHeight}`);
+        svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+        const mainGroup = svgClone.querySelector('g');
+        if (mainGroup) {
+            mainGroup.setAttribute('transform', 'translate(0, 0) scale(1)');
+        }
+
+        const svgData = new XMLSerializer().serializeToString(svgClone);
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
@@ -174,7 +188,21 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
 
     const exportPDF = () => {
         if (!svgRef.current) return;
-        const svgData = new XMLSerializer().serializeToString(svgRef.current);
+
+        const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;
+        const exportWidth = width + 100;
+        const exportHeight = height + 100;
+        svgClone.setAttribute('width', exportWidth.toString());
+        svgClone.setAttribute('height', exportHeight.toString());
+        svgClone.setAttribute('viewBox', `-50 -50 ${exportWidth} ${exportHeight}`);
+        svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+        const mainGroup = svgClone.querySelector('g');
+        if (mainGroup) {
+            mainGroup.setAttribute('transform', 'translate(0, 0) scale(1)');
+        }
+
+        const svgData = new XMLSerializer().serializeToString(svgClone);
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
@@ -363,14 +391,28 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
                                     const r = ((val - (axis.min || 0)) / (axis.max - (axis.min || 0))) * radius;
                                     const angle = startAngle + i * angleStep * direction;
                                     const coord = getCoordinates(angle, r);
+
+                                    // Offset for text to avoid overlap with dot
+                                    const textCoord = getCoordinates(angle, r + 15);
+
                                     return (
-                                        <circle
-                                            key={i}
-                                            cx={coord.x}
-                                            cy={coord.y}
-                                            r="3"
-                                            fill={s.color || '#3b82f6'}
-                                        />
+                                        <g key={i}>
+                                            <circle
+                                                cx={coord.x}
+                                                cy={coord.y}
+                                                r="3"
+                                                fill={s.color || '#3b82f6'}
+                                            />
+                                            <text
+                                                x={textCoord.x}
+                                                y={textCoord.y}
+                                                textAnchor="middle"
+                                                dominantBaseline="middle"
+                                                style={{ fontSize: 9, fontWeight: '700', fill: s.color || '#3b82f6', paintOrder: 'stroke', stroke: '#fff', strokeWidth: 2 }}
+                                            >
+                                                {val}
+                                            </text>
+                                        </g>
                                     );
                                 })}
                             </g>

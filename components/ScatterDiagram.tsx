@@ -208,9 +208,20 @@ export const ScatterDiagram = forwardRef<ScatterDiagramRef, Props>(({ data, styl
                         color: finalStyles.pointColor,
                         opacity: finalStyles.renderMode3D === 'wireframe' ? 0 : finalStyles.opacity
                     },
+                    label: {
+                        show: finalStyles.showValues,
+                        formatter: (params: any) => {
+                            const val = params.value;
+                            return `(${val[0]}, ${val[1]}${val[2] ? `, ${val[2]}` : ''})`;
+                        },
+                        textStyle: {
+                            color: finalStyles.pointColor,
+                            fontSize: 10
+                        }
+                    },
                     emphasis: {
                         label: {
-                            show: false
+                            show: true
                         }
                     }
                 }, ...regressionSeries3D]
@@ -320,11 +331,26 @@ export const ScatterDiagram = forwardRef<ScatterDiagramRef, Props>(({ data, styl
                         borderColor: '#fff',
                         borderWidth: 1
                     },
+                    label: {
+                        show: finalStyles.showValues,
+                        position: 'top',
+                        formatter: (params: any) => {
+                            const val = params.value;
+                            return `(${val[0]}, ${val[1]}${val[2] ? `, ${val[2]}` : ''})`;
+                        },
+                        fontSize: 10,
+                        fontWeight: 'bold',
+                        color: finalStyles.pointColor
+                    },
                     emphasis: {
                         itemStyle: {
                             opacity: 1,
                             shadowBlur: 10,
                             shadowColor: 'rgba(0,0,0,0.3)'
+                        },
+                        label: {
+                            show: true,
+                            fontWeight: 'bold'
                         }
                     },
                     z: 2

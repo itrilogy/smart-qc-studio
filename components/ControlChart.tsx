@@ -299,6 +299,13 @@ export const ControlChart = forwardRef<ControlChartRef, ControlChartProps>(
                     ctx.lineWidth = 2;
                     ctx.stroke();
                 }
+
+                if (finalStyles.showValues) {
+                    ctx.fillStyle = isOutlier ? '#ef4444' : finalStyles.lineColor;
+                    ctx.font = `bold ${finalStyles.labelFontSize - 2}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(val.toFixed(finalStyles.decimals), getX(i), getY(val) - 10);
+                }
             });
 
             // --- 4. 坐标轴与标题 ---

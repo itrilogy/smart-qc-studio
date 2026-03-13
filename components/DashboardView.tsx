@@ -2,15 +2,17 @@
 import React from 'react';
 import { TOOL_CONFIGS } from '../constants';
 import { QCToolType } from '../types';
-import { ArrowUpRight, Cpu, ShieldCheck, LayoutGrid } from 'lucide-react';
+import { ArrowUpRight, Cpu, ShieldCheck, LayoutGrid, Sun, Moon } from 'lucide-react';
 
 interface Props {
   onSelectTool: (type: QCToolType) => void;
   cols: number;
   setCols: (cols: number) => void;
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
-export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols }) => {
+export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols, theme, setTheme }) => {
 
   const gridColsClass = {
     3: 'md:grid-cols-3',
@@ -20,7 +22,7 @@ export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols }) 
   }[cols as 3 | 4 | 5 | 6] || 'md:grid-cols-5';
 
   return (
-    <div className="w-screen h-screen bg-[#fcfdfe] dot-grid overflow-y-auto custom-scrollbar">
+    <div className="w-screen h-screen bg-transparent dot-grid overflow-y-auto custom-scrollbar transition-colors duration-500">
       <div className="max-w-[1600px] mx-auto w-full p-16 space-y-16">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-12">
           <div className="flex items-center gap-8">
@@ -29,18 +31,18 @@ export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols }) 
               <Cpu size={40} className="relative z-10" />
             </div>
             <div>
-              <h1 className="text-5xl font-[900] text-slate-900 tracking-tighter uppercase leading-none">Smart QC <span className="text-blue-600 font-[400] italic">Studio</span></h1>
+              <h1 className="text-5xl font-[900] text-slate-900 dark:text-white tracking-tighter uppercase leading-none">Smart QC <span className="text-blue-600 font-[400] italic">Studio</span></h1>
               <p className="text-slate-400 font-bold uppercase tracking-[0.4em] text-[10px] mt-3 pl-1">Industrial OS Logic Core v3.0</p>
             </div>
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="bg-white/40 backdrop-blur-xl px-8 py-4 rounded-[2rem] border border-white/50 shadow-xl flex items-center gap-6 transition-all border-b-2 border-b-blue-500/10">
+            <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl px-8 py-4 rounded-[2rem] border border-white/50 dark:border-slate-700/50 shadow-xl flex items-center gap-6 transition-all border-b-2 border-b-blue-500/10">
               <LayoutGrid size={24} className="text-blue-500" />
               <div className="flex flex-col min-w-[140px]">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none">网格跨度</span>
-                  <span className="text-[11px] font-black text-blue-600 tracking-tighter">{cols} COLUMNS</span>
+                  <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] leading-none">网格跨度</span>
+                  <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 tracking-tighter">{cols} COLUMNS</span>
                 </div>
                 <input
                   type="range"
@@ -49,16 +51,24 @@ export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols }) 
                   step="1"
                   value={cols}
                   onChange={(e) => setCols(parseInt(e.target.value))}
-                  className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600 hover:accent-blue-500 transition-all"
+                  className="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600 hover:accent-blue-500 transition-all"
                 />
               </div>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-3xl px-8 py-4 rounded-[2rem] border border-slate-200 shadow-xl flex items-center gap-6 text-slate-900 border-b-2 border-b-emerald-500/10">
+            <button
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-full border border-white/50 dark:border-slate-700/50 shadow-xl hover:scale-110 active:scale-95 transition-all text-blue-500 dark:text-blue-400 group flex items-center justify-center min-w-[56px] min-h-[56px]"
+              title={theme === 'light' ? '切换到暗色模式' : '切换到亮色模式'}
+            >
+              {theme === 'light' ? <Moon size={24} /> : <Sun size={24} />}
+            </button>
+
+            <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-3xl px-8 py-4 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-xl flex items-center gap-6 text-slate-900 dark:text-slate-100 border-b-2 border-b-emerald-500/10">
               <ShieldCheck size={28} className="text-emerald-500" />
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">System Status</p>
-                <p className="text-base font-black tracking-tight text-slate-800 uppercase">Synchronized</p>
+                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] leading-none mb-1">System Status</p>
+                <p className="text-base font-black tracking-tight text-slate-800 dark:text-slate-200 uppercase">Synchronized</p>
               </div>
             </div>
           </div>
@@ -69,14 +79,14 @@ export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols }) 
             <button
               key={tool.type}
               onClick={() => onSelectTool(tool.type)}
-              className="group bg-white rounded-[2.5rem] p-10 border border-slate-200/60 shadow-industrial hover:shadow-[0_20px_50px_-10px_rgba(37,99,235,0.1)] hover:border-blue-400/30 transition-all duration-700 relative overflow-hidden flex flex-col h-[320px] text-left active:scale-[0.98]"
+              className="group bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-200/60 dark:border-slate-800 shadow-industrial hover:shadow-[0_20px_50px_-10px_rgba(37,99,235,0.1)] hover:border-blue-400/30 transition-all duration-700 relative overflow-hidden flex flex-col h-[320px] text-left active:scale-[0.98]"
             >
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div>
                   <div className={`w-14 h-14 rounded-2xl ${tool.bg} flex items-center justify-center mb-6 transition-all duration-700 group-hover:scale-110 group-hover:rotate-[6deg] ring-1 ring-white/50 shadow-lg`}>
                     {React.cloneElement(tool.icon as React.ReactElement<any>, { size: 26, className: tool.color })}
                   </div>
-                  <h3 className="text-2xl font-[900] text-slate-800 tracking-tight group-hover:text-blue-600 transition-colors uppercase leading-none">
+                  <h3 className="text-2xl font-[900] text-slate-800 dark:text-slate-200 tracking-tight group-hover:text-blue-600 transition-colors uppercase leading-none">
                     {tool.name}
                   </h3>
                   <div className="mt-2 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">{tool.enName}</div>

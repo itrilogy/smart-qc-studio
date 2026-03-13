@@ -169,6 +169,7 @@ export interface HistogramChartStyles {
   titleFontSize?: number;
   baseFontSize?: number;
   barFontSize?: number;
+  showValues?: boolean;
 }
 
 export const DEFAULT_HISTOGRAM_STYLES: Required<HistogramChartStyles> = {
@@ -186,7 +187,8 @@ export const DEFAULT_HISTOGRAM_STYLES: Required<HistogramChartStyles> = {
   titleColor: '#1e293b',
   titleFontSize: 18,
   baseFontSize: 12,
-  barFontSize: 10
+  barFontSize: 10,
+  showValues: true
 };
 
 export interface ParetoItem {
@@ -206,6 +208,7 @@ export interface ParetoChartStyles {
   lineFontSize?: number;
   baseFontSize?: number;
   decimals?: number;
+  showValues?: boolean;
 }
 
 export const DEFAULT_PARETO_STYLES: ParetoChartStyles = {
@@ -218,7 +221,8 @@ export const DEFAULT_PARETO_STYLES: ParetoChartStyles = {
   barFontSize: 12,
   lineFontSize: 12,
   baseFontSize: 12,
-  decimals: 1
+  decimals: 1,
+  showValues: true
 };
 
 export interface ScatterPoint {
@@ -242,6 +246,7 @@ export interface ScatterChartStyles {
   baseFontSize?: number;
   is3D?: boolean;
   renderMode3D?: 'scatter' | 'surface' | 'wireframe';
+  showValues?: boolean;
 }
 
 export const DEFAULT_SCATTER_STYLES: Required<ScatterChartStyles> = {
@@ -257,7 +262,8 @@ export const DEFAULT_SCATTER_STYLES: Required<ScatterChartStyles> = {
   titleFontSize: 16,
   baseFontSize: 12,
   is3D: false,
-  renderMode3D: 'scatter'
+  renderMode3D: 'scatter',
+  showValues: false
 };
 
 // --- Affinity Diagram Types (Legacy Compatible) ---
@@ -365,6 +371,7 @@ export interface ControlChartStyles {
   labelFontSize: number;
 
   decimals: number;
+  showValues: boolean;
 }
 
 export const DEFAULT_CONTROL_STYLES: Required<ControlChartStyles> = {
@@ -384,7 +391,8 @@ export const DEFAULT_CONTROL_STYLES: Required<ControlChartStyles> = {
   titleFontSize: 20,
   baseFontSize: 12,
   labelFontSize: 10,
-  decimals: 2
+  decimals: 2,
+  showValues: true
 };
 
 export const INITIAL_CONTROL_DSL = `// 示例：轴类零件外径加工过程监控
@@ -632,6 +640,7 @@ export interface ArrowLink {
   tf?: number; // Total Float
   ff?: number; // Free Float
   isCritical?: boolean;
+  isShortest?: boolean;
 }
 
 export interface ArrowData {
@@ -644,12 +653,14 @@ export interface ArrowChartStyles {
   title: string;
   titleFontSize: number;
   showCriticalPath: boolean;
+  showShortestPath: boolean;
 
   // Colors
   nodeColor: string;
   nodeTextColor: string;
   lineColor: string;
   criticalLineColor: string;
+  shortestLineColor: string;
   textColor: string;
 
   // Sizes
@@ -662,11 +673,13 @@ export const DEFAULT_ARROW_STYLES: ArrowChartStyles = {
   title: '矢线图 (PERT/CPM)',
   titleFontSize: 24,
   showCriticalPath: true,
+  showShortestPath: true,
 
   nodeColor: '#ffffff',
   nodeTextColor: '#0f172a',
   lineColor: '#64748b',
   criticalLineColor: '#ef4444',
+  shortestLineColor: '#10b981', // Emerald Green for shortest
   textColor: '#475569',
 
   nodeRadius: 30, // Increased from 18
@@ -705,6 +718,7 @@ export interface BasicChartStyles {
   // Font Sizes
   titleFontSize?: number;
   baseFontSize?: number;
+  showValues?: boolean;
 }
 
 export const DEFAULT_BASIC_STYLES: Required<BasicChartStyles> = {
@@ -719,7 +733,8 @@ export const DEFAULT_BASIC_STYLES: Required<BasicChartStyles> = {
   titleColor: '#0f172a',
   backgroundColor: '#ffffff',
   titleFontSize: 18,
-  baseFontSize: 12
+  baseFontSize: 12,
+  showValues: true
 };
 
 // --- Mermaid Diagram Types ---

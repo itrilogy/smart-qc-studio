@@ -519,22 +519,22 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#0f172a] text-white relative">
-            <div className="p-6 border-b border-slate-800 space-y-6">
+        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative">
+            <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-cyan-600/20 rounded-xl flex items-center justify-center border border-cyan-500/30">
                             <Table size={22} className="text-cyan-400" />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black text-white tracking-widest uppercase">矩阵图引擎</h2>
-                            <p className="text-[8px] text-slate-500 font-bold tracking-[0.2em] mt-1">MATRIX PROCESSOR V1.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">矩阵图引擎</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1">MATRIX PROCESSOR V1.0</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-slate-800 rounded-xl text-slate-400 hover:text-blue-400 transition-all border border-slate-700"
+                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
@@ -553,13 +553,13 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                         </button>
                         <button
                             onClick={() => setShowDocs(true)}
-                            className="p-3 bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-all border border-slate-700"
+                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]"
                         >
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
-                <nav className="flex bg-black/40 p-1.5 rounded-2xl border border-slate-800/50 gap-1">
+                <nav className="flex bg-[var(--nav-bg)] p-1.5 rounded-2xl border border-[var(--sidebar-border)] gap-1">
                     {[
                         { id: 'manual', label: '手工录入', icon: <Database size={14} /> },
                         { id: 'dsl', label: 'DSL编辑器', icon: <Code size={14} /> },
@@ -568,7 +568,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                         <button
                             key={t.id}
                             onClick={() => setActiveTab(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-cyan-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-cyan-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--input-bg)]'
                                 }`}
                         >
                             {t.icon} {t.label}
@@ -581,9 +581,9 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                 {/* AI Inference Tab */}
                 {activeTab === 'ai' && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-8 shadow-2xl relative overflow-hidden group">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">智能矩阵分析描述</span>
+                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                            <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
+                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能矩阵分析描述</span>
                                 <div className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_8px_#06b6d4]" />
                                     <span className="text-[9px] font-black text-cyan-500 uppercase">Engine Active: {engineName}</span>
@@ -592,13 +592,13 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                             <textarea
                                 value={aiPrompt}
                                 onChange={(e) => setAiPrompt(e.target.value)}
-                                className="w-full h-56 bg-slate-900/50 text-slate-200 p-8 text-sm leading-relaxed border border-slate-800 rounded-[2rem] focus:outline-none focus:border-cyan-500 transition-all resize-none shadow-inner"
+                                className="w-full h-56 bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-cyan-500 transition-all resize-none shadow-inner"
                                 placeholder="输入您想分析的维度及其关系描述，例如：'分析零件(齿轮、轴承)与故障模式(磨损、泄漏)的强弱相关性'..."
                             />
                             <button
                                 onClick={handleGenerateAI}
                                 disabled={isGenerating || !aiPrompt.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-slate-800' : 'bg-cyan-600 hover:bg-cyan-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-border)]' : 'bg-cyan-600 hover:bg-cyan-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -613,9 +613,9 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                 )}
                             </button>
 
-                            <div className="p-8 bg-cyan-900/10 border border-cyan-800/20 rounded-3xl space-y-4">
+                            <div className="p-8 bg-cyan-900/10 border border-cyan-800/20 rounded-3xl space-y-4 shadow-sm">
                                 <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">推理提示</p>
-                                <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                                <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以描述多个维度及其交叉点关系，AI 将自动识别轴和项目，并填充矩阵。例如：“分析部门 A、B 与考核指标 X、Y 的关系，其中 A 与 X 强相关”。
                                 </p>
                             </div>
@@ -629,7 +629,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                         <textarea
                             value={currentDsl}
                             onChange={(e) => handleDSLChange(e.target.value)}
-                            className="flex-1 w-full bg-black/40 text-cyan-100 p-8 font-mono text-[11px] leading-relaxed border border-slate-800 rounded-[2.5rem] focus:outline-none focus:ring-4 focus:ring-cyan-500/10 transition-all resize-none custom-scrollbar shadow-inner"
+                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-[2.5rem] focus:outline-none focus:ring-4 focus:ring-cyan-500/10 transition-all resize-none custom-scrollbar shadow-inner"
                             placeholder="输入 DSL 指令..."
                             spellCheck={false}
                         />
@@ -645,20 +645,20 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                 {/* Manual Entry Tab */}
                 {activeTab === 'manual' && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-6 shadow-2xl">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
                             {/* Global & Layout Section */}
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">全局与布局</span>
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">全局与布局</span>
                             </div>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-[11px] font-bold text-slate-300">矩阵图类型</span>
+                                        <span className="text-[11px] font-bold text-[var(--sidebar-muted)]">矩阵图类型</span>
                                         <div className="flex items-center gap-2">
                                             <select
                                                 value={styles.type}
                                                 onChange={e => handleStylesChange({ ...styles, type: e.target.value as any })}
-                                                className="bg-slate-800 text-[11px] text-cyan-400 border border-slate-700 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
+                                                className="bg-[var(--input-bg)] text-[11px] text-cyan-400 border border-[var(--input-border)] rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
                                             >
                                                 <option value="L">L 型 (2轴)</option>
                                                 <option value="T">T 型 (3轴)</option>
@@ -676,7 +676,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-[11px] font-bold text-slate-300">数值计算</span>
+                                        <span className="text-[11px] font-bold text-[var(--sidebar-muted)]">数值计算</span>
                                         <label className="relative inline-flex items-center cursor-pointer">
                                             <input
                                                 type="checkbox"
@@ -684,28 +684,28 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                 onChange={e => handleStylesChange({ ...styles, showScores: e.target.checked })}
                                                 className="sr-only peer"
                                             />
-                                            <div className="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                                            <div className="w-9 h-5 bg-[var(--input-bg)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
                                         </label>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between gap-4">
-                                    <span className="text-[11px] font-bold text-slate-300 shrink-0">项目标题</span>
+                                    <span className="text-[11px] font-bold text-[var(--sidebar-muted)] shrink-0">项目标题</span>
                                     <input
                                         type="text"
                                         value={styles.title}
                                         onChange={e => handleStylesChange({ ...styles, title: e.target.value })}
-                                        className="flex-1 bg-slate-800 text-[11px] text-white border border-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 font-mono"
+                                        className="flex-1 bg-[var(--input-bg)] text-[11px] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 font-mono shadow-inner"
                                     />
                                 </div>
                             </div>
 
                             {/* Data Structure Section */}
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3 mt-8">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">数据结构 (Axes & Items)</span>
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3 mt-8">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">数据结构 (Axes & Items)</span>
                             </div>
                             <div className="space-y-4">
                                 {data.axes.map((axis, aIdx) => (
-                                    <div key={axis.id} className="p-4 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4">
+                                    <div key={axis.id} className="p-4 bg-[var(--card-bg)]/80 rounded-2xl border border-[var(--sidebar-border)] space-y-4 shadow-sm">
                                         <div className="flex items-center justify-between gap-2">
                                             <input
                                                 className="bg-transparent text-xs font-black text-cyan-400 w-16 focus:outline-none"
@@ -717,7 +717,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                 }}
                                             />
                                             <input
-                                                className="flex-1 bg-slate-800/50 text-[11px] text-white border border-slate-700/50 rounded px-2 py-1 focus:outline-none"
+                                                className="flex-1 bg-[var(--input-bg)] text-[11px] text-[var(--sidebar-text)] border border-[var(--input-border)]/50 rounded px-2 py-1 focus:outline-none shadow-inner"
                                                 value={axis.label}
                                                 onChange={e => {
                                                     const newAxes = [...data.axes];
@@ -730,17 +730,17 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                     const newAxes = data.axes.filter((_, i) => i !== aIdx);
                                                     handleDataChange({ ...data, axes: newAxes });
                                                 }}
-                                                className="p-1 text-slate-500 hover:text-red-400 transition-colors"
+                                                className="p-1 text-[var(--sidebar-muted)] hover:text-red-400 transition-colors"
                                             >
                                                 <Trash2 size={14} />
                                             </button>
                                         </div>
 
-                                        <div className="pl-4 space-y-2 border-l border-slate-800">
+                                        <div className="pl-4 space-y-2 border-l border-[var(--sidebar-border)]">
                                             {axis.items.map((item, iIdx) => (
                                                 <div key={item.id} className="flex items-center gap-2">
                                                     <input
-                                                        className="bg-transparent text-[10px] text-slate-500 w-12 font-mono focus:outline-none"
+                                                        className="bg-transparent text-[10px] text-[var(--sidebar-text)] w-12 font-mono focus:outline-none opacity-80"
                                                         value={item.id}
                                                         onChange={e => {
                                                             const newAxes = [...data.axes];
@@ -751,7 +751,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                         }}
                                                     />
                                                     <input
-                                                        className="flex-1 bg-slate-800/30 text-[10px] text-slate-300 border border-slate-700/30 rounded px-2 py-0.5 focus:outline-none"
+                                                        className="flex-1 bg-[var(--input-bg)]/30 text-[10px] text-[var(--sidebar-text)] border border-[var(--input-border)]/30 rounded px-2 py-0.5 focus:outline-none"
                                                         value={item.label}
                                                         onChange={e => {
                                                             const newAxes = [...data.axes];
@@ -763,7 +763,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                     />
                                                     <input
                                                         type="number"
-                                                        className="w-12 bg-slate-800/30 text-[10px] text-amber-400 border border-slate-700/30 rounded px-1 py-0.5 focus:outline-none text-center"
+                                                        className="w-12 bg-[var(--input-bg)]/30 text-[10px] text-amber-500 border border-[var(--input-border)]/30 rounded px-1 py-0.5 focus:outline-none text-center"
                                                         placeholder="W"
                                                         value={item.weight ?? ''}
                                                         onChange={e => {
@@ -781,7 +781,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                             newAxes[aIdx] = { ...axis, items: newItems };
                                                             handleDataChange({ ...data, axes: newAxes });
                                                         }}
-                                                        className="p-1 text-slate-600 hover:text-red-400 transition-colors"
+                                                        className="p-1 text-[var(--sidebar-muted)]/50 hover:text-red-400 transition-colors"
                                                     >
                                                         <Trash2 size={12} />
                                                     </button>
@@ -806,15 +806,15 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                         const nextId = String.fromCharCode(65 + data.axes.length);
                                         handleDataChange({ ...data, axes: [...data.axes, { id: nextId, label: `维度轴 ${nextId}`, items: [] }] });
                                     }}
-                                    className="w-full py-4 bg-slate-900/30 rounded-2xl border border-dashed border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-cyan-400 hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all"
+                                    className="w-full py-4 bg-[var(--input-bg)]/30 rounded-2xl border border-dashed border-[var(--sidebar-border)] text-[10px] font-black uppercase tracking-widest text-[var(--sidebar-muted)] hover:text-cyan-400 hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all shadow-sm"
                                 >
                                     + 新增维度轴
                                 </button>
                             </div>
 
                             {/* Symbol Weight Configuration */}
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3 mt-8">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">符号权重配置</span>
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3 mt-8">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">符号权重配置</span>
                             </div>
                             <div className="grid grid-cols-3 gap-4">
                                 {[
@@ -823,20 +823,20 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                     { key: 'weightWeak', label: '弱 (△)' }
                                 ].map(w => (
                                     <div key={w.key} className="space-y-2">
-                                        <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider text-center">{w.label}</div>
+                                        <div className="text-[9px] font-bold text-[var(--sidebar-muted)] uppercase tracking-wider text-center">{w.label}</div>
                                         <input
                                             type="number"
                                             value={(styles as any)[w.key]}
                                             onChange={e => handleStylesChange({ ...styles, [w.key]: parseInt(e.target.value) || 0 })}
-                                            className="w-full bg-slate-800 text-[11px] text-white border border-slate-700 rounded-lg px-2 py-1.5 text-center focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
+                                            className="w-full bg-[var(--input-bg)] text-[11px] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-lg px-2 py-1.5 text-center focus:outline-none focus:ring-1 focus:ring-cyan-500/50 shadow-inner"
                                         />
                                     </div>
                                 ))}
                             </div>
 
                             {/* Visual Configuration */}
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3 mt-8">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">视觉配置</span>
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3 mt-8">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">视觉配置</span>
                             </div>
                             <div className="grid grid-cols-3 gap-6">
                                 {[
@@ -847,7 +847,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                     { key: 'gridColor', label: '网格线颜色' }
                                 ].map(c => (
                                     <div key={c.key} className="flex items-center justify-between">
-                                        <span className="text-[11px] font-bold text-slate-300">{c.label}</span>
+                                        <span className="text-[11px] font-bold text-[var(--sidebar-muted)]">{c.label}</span>
                                         <input
                                             type="color"
                                             value={(styles as any)[c.key] || '#000000'}
@@ -859,12 +859,12 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                             </div>
 
                             {/* Size Configuration */}
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3 mt-8">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">尺寸配置</span>
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3 mt-8">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">尺寸配置</span>
                             </div>
                             <div className="grid grid-cols-3 gap-6">
                                 <div className="space-y-2">
-                                    <span className="text-[11px] font-bold text-slate-300">单元格尺寸</span>
+                                    <span className="text-[11px] font-bold text-[var(--sidebar-muted)]">单元格尺寸</span>
                                     <input
                                         type="range"
                                         min="30"
@@ -872,12 +872,12 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                         step="5"
                                         value={styles.cellSize}
                                         onChange={e => handleStylesChange({ ...styles, cellSize: parseInt(e.target.value) })}
-                                        className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                                        className="w-full h-1.5 bg-[var(--input-bg)] rounded-lg appearance-none cursor-pointer accent-cyan-500"
                                     />
-                                    <div className="text-[10px] text-slate-500 text-right">{styles.cellSize}px</div>
+                                    <div className="text-[10px] text-[var(--sidebar-muted)] text-right">{styles.cellSize}px</div>
                                 </div>
                                 <div className="space-y-2">
-                                    <span className="text-[11px] font-bold text-slate-300">标题字号</span>
+                                    <span className="text-[11px] font-bold text-[var(--sidebar-muted)]">标题字号</span>
                                     <input
                                         type="range"
                                         min="12"
@@ -885,12 +885,12 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                         step="1"
                                         value={styles.titleFontSize}
                                         onChange={e => handleStylesChange({ ...styles, titleFontSize: parseInt(e.target.value) })}
-                                        className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                                        className="w-full h-1.5 bg-[var(--input-bg)] rounded-lg appearance-none cursor-pointer accent-cyan-500"
                                     />
-                                    <div className="text-[10px] text-slate-500 text-right">{styles.titleFontSize}px</div>
+                                    <div className="text-[10px] text-[var(--sidebar-muted)] text-right">{styles.titleFontSize}px</div>
                                 </div>
                                 <div className="space-y-2">
-                                    <span className="text-[11px] font-bold text-slate-300">内容字号</span>
+                                    <span className="text-[11px] font-bold text-[var(--sidebar-muted)]">内容字号</span>
                                     <input
                                         type="range"
                                         min="8"
@@ -898,9 +898,9 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                         step="1"
                                         value={styles.fontSize}
                                         onChange={e => handleStylesChange({ ...styles, fontSize: parseInt(e.target.value) })}
-                                        className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                                        className="w-full h-1.5 bg-[var(--input-bg)] rounded-lg appearance-none cursor-pointer accent-cyan-500"
                                     />
-                                    <div className="text-[10px] text-slate-500 text-right">{styles.fontSize}px</div>
+                                    <div className="text-[10px] text-[var(--sidebar-muted)] text-right">{styles.fontSize}px</div>
                                 </div>
                             </div>
                         </div>
@@ -910,25 +910,25 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
             {/* Docs Modal */}
             {
                 showDocs && createPortal(
-                    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                        <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl">
-                            <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md">
+                        <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl">
+                            <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6 bg-[var(--sidebar-bg)]/80 backdrop-blur-xl">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <div className="p-3 bg-cyan-600/20 rounded-2xl border border-cyan-500/30">
                                             <Table size={24} className="text-cyan-400" />
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-black text-white uppercase tracking-tighter">矩阵图知识库</h3>
-                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Matrix Knowledge Base V1.1</p>
+                                            <h3 className="text-xl font-black text-[var(--sidebar-text)] uppercase tracking-tighter">矩阵图知识库</h3>
+                                            <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Matrix Knowledge Base V1.1</p>
                                         </div>
                                     </div>
-                                    <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                    <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-xl transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
                                         <X size={24} />
                                     </button>
                                 </div>
 
-                                <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                                <nav className="flex bg-[var(--nav-bg)] p-1 rounded-2xl border border-[var(--sidebar-border)] w-fit">
                                     {[
                                         { id: 'dsl', label: 'DSL 规范说明' },
                                         { id: 'logic', label: '分析逻辑与指南' },
@@ -936,7 +936,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                         <button
                                             key={t.id}
                                             onClick={() => setDocTab(t.id as any)}
-                                            className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-cyan-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
+                                            className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-cyan-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'
                                                 }`}
                                         >
                                             {t.label}
@@ -945,59 +945,59 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                 </nav>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                            <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-[var(--sidebar-muted)]">
                                 {docTab === 'dsl' ? (
                                     <div className="space-y-12">
                                         {/* Section 1: 全局配置 */}
                                         <section className="space-y-4">
                                             <h4 className="text-sm font-black text-cyan-400 uppercase tracking-widest border-b border-cyan-900/50 pb-2">1. 全局基础配置 (Global Settings)</h4>
-                                            <div className="grid grid-cols-[180px_1fr] gap-4 text-xs font-mono bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                                            <div className="grid grid-cols-[180px_1fr] gap-4 text-xs font-mono bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--sidebar-border)]">
                                                 <span className="text-cyan-300 font-bold">Title:</span>
-                                                <span className="text-slate-400">图表主标题，显示在顶部中央。</span>
+                                                <span className="text-[var(--sidebar-text)]">图表主标题，显示在顶部中央。</span>
 
                                                 <span className="text-cyan-300 font-bold">Type:</span>
-                                                <span className="text-slate-400">矩阵布局类型: L, T, Y, X, C</span>
+                                                <span className="text-[var(--sidebar-text)]">矩阵布局类型: L, T, Y, X, C</span>
 
                                                 <span className="text-cyan-300 font-bold">Orientation:</span>
-                                                <span className="text-slate-400">渲染方向: Top (默认) 或 Bottom (等轴测视图翻转)</span>
+                                                <span className="text-[var(--sidebar-text)]">渲染方向: Top (默认) 或 Bottom (等轴测视图翻转)</span>
 
                                                 <span className="text-cyan-300 font-bold">CellSize:</span>
-                                                <span className="text-slate-400">正方形单元格基础尺寸 (默认 40)</span>
+                                                <span className="text-[var(--sidebar-text)]">正方形单元格基础尺寸 (默认 40)</span>
 
                                                 <span className="text-cyan-300 font-bold">Font[Title|Base|Score]:</span>
-                                                <span className="text-slate-400">对应位置的字号。示例: Font[Title]: 24</span>
+                                                <span className="text-[var(--sidebar-text)]">对应位置的字号。示例: Font[Title]: 24</span>
 
                                                 <span className="text-cyan-300 font-bold">Weight[Strong|Medium|Weak]:</span>
-                                                <span className="text-slate-400">自定义符号对应的分值。默认: 9, 3, 1</span>
+                                                <span className="text-[var(--sidebar-text)]">自定义符号对应的分值。默认: 9, 3, 1</span>
 
                                                 <span className="text-cyan-300 font-bold">Color[Axis|Grid|...]:</span>
-                                                <span className="text-slate-400">色彩配置。支持 HEX 颜色值。</span>
+                                                <span className="text-[var(--sidebar-text)]">色彩配置。支持 HEX 颜色值。</span>
                                             </div>
                                         </section>
 
                                         {/* Section 2: 维度定义与权重 */}
                                         <section className="space-y-4">
                                             <h4 className="text-sm font-black text-amber-400 uppercase tracking-widest border-b border-amber-900/50 pb-2">2. 轴维度与项目定义 (Axis & Items)</h4>
-                                            <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-6">
+                                            <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-6">
                                                 <div className="space-y-3">
-                                                    <p className="text-xs text-white font-bold">定义语法：</p>
-                                                    <div className="bg-black/40 p-4 rounded-xl font-mono text-xs text-slate-300 space-y-2">
+                                                    <p className="text-xs text-[var(--sidebar-text)] font-bold">定义语法：</p>
+                                                    <div className="bg-black/40 p-4 rounded-xl font-mono text-xs text-[var(--sidebar-muted)] space-y-2">
                                                         <div>Axis: [ID], [Label] <span className="text-slate-600">// 定义一个新的维度轴</span></div>
                                                         <div>- [ItemID], [ItemLabel], [Weight] <span className="text-slate-600">// 定义轴下的具体项目</span></div>
                                                     </div>
                                                 </div>
 
                                                 <div className="space-y-3">
-                                                    <p className="text-xs text-white font-bold">权重定义 (两种方式)：</p>
-                                                    <ul className="text-xs space-y-2 text-slate-400 list-disc list-inside">
+                                                    <p className="text-xs text-[var(--sidebar-text)] font-bold">权重定义 (两种方式)：</p>
+                                                    <ul className="text-xs space-y-2 text-[var(--sidebar-text)] list-disc list-inside">
                                                         <li>三列 CSV 式：<code className="text-amber-500">- a01, 稳定性需求, 10</code></li>
                                                         <li>标签标注式：<code className="text-amber-500">- a01, 稳定性需求 [10]</code> (更易读)</li>
                                                     </ul>
                                                 </div>
 
                                                 <div className="space-y-3">
-                                                    <p className="text-xs text-white font-bold">X型矩阵专用定义：</p>
-                                                    <p className="text-xs text-slate-400 font-mono bg-black/40 p-4 rounded-xl">Order: AxisN, AxisE, AxisS, AxisW <br /><span className="text-[10px] text-slate-600">按顺时针方向定义四个轴的位置。</span></p>
+                                                    <p className="text-xs text-[var(--sidebar-text)] font-bold">X型矩阵专用定义：</p>
+                                                    <p className="text-xs text-[var(--sidebar-text)] font-mono bg-black/40 p-4 rounded-xl">Order: AxisN, AxisE, AxisS, AxisW <br /><span className="text-[10px] text-slate-600">按顺时针方向定义四个轴的位置。</span></p>
                                                 </div>
                                             </div>
                                         </section>
@@ -1005,15 +1005,15 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                         {/* Section 3: 矩阵映射规则 */}
                                         <section className="space-y-4">
                                             <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">3. 矩阵创建与数据填充 (Matrix Mapping)</h4>
-                                            <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-6">
+                                            <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-6">
                                                 <div className="space-y-3">
-                                                    <p className="text-xs text-white font-bold">矩阵声明：</p>
-                                                    <p className="text-xs text-slate-400 font-mono bg-black/40 p-4 rounded-xl">Matrix: [AxisID_Row] x [AxisID_Col]</p>
+                                                    <p className="text-xs text-[var(--sidebar-text)] font-bold">矩阵声明：</p>
+                                                    <p className="text-xs text-[var(--sidebar-muted)] font-mono bg-black/40 p-4 rounded-xl">Matrix: [AxisID_Row] x [AxisID_Col]</p>
                                                 </div>
 
                                                 <div className="space-y-3">
-                                                    <p className="text-xs text-white font-bold">关系录入：</p>
-                                                    <div className="bg-black/40 p-4 rounded-xl font-mono text-xs text-slate-300 space-y-2">
+                                                    <p className="text-xs text-[var(--sidebar-text)] font-bold">关系录入：</p>
+                                                    <div className="bg-black/40 p-4 rounded-xl font-mono text-xs text-[var(--sidebar-muted)] space-y-2">
                                                         <div>[RowID]: [ColID]:[Symbol]</div>
                                                         <div className="text-slate-600 mt-1"> 示例: r1: c1:S, c2:M, c3:W</div>
                                                         <div className="text-slate-600"> (S=强, M=中, W=弱, 0=清除)</div>
@@ -1027,7 +1027,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                         {/* Methodology Section */}
                                         <section className="space-y-8">
                                             <div className="flex items-center gap-4 border-l-4 border-cyan-500 pl-4">
-                                                <h4 className="text-lg font-black text-white uppercase tracking-tight italic">矩阵分析法指南 (Methods & Analysis)</h4>
+                                                <h4 className="text-lg font-black text-[var(--sidebar-text)] uppercase tracking-tight italic">矩阵分析法指南 (Methods & Analysis)</h4>
                                             </div>
 
                                             <div className="space-y-12">
@@ -1035,16 +1035,16 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                 <div className="space-y-4">
                                                     <div className="flex items-center gap-2">
                                                         <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 text-[10px] font-black rounded border border-cyan-500/30">L/T 型</span>
-                                                        <h5 className="text-sm font-bold text-slate-200">二元/三元传递分析</h5>
+                                                        <h5 className="text-sm font-bold text-[var(--sidebar-text)]">二元/三元传递分析</h5>
                                                     </div>
-                                                    <div className="grid grid-cols-[240px_1fr] gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                                                        <div className="text-xs text-slate-400 leading-relaxed italic border-r border-slate-800 pr-6">
+                                                    <div className="grid grid-cols-[240px_1fr] gap-6 bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--sidebar-border)]">
+                                                        <div className="text-xs text-[var(--sidebar-muted)] leading-relaxed italic border-r border-[var(--sidebar-border)] pr-6">
                                                             "最基础的映射分析，用于将客户需求（WHAT）转化为设计特性（HOW）。"
                                                         </div>
                                                         <div className="space-y-3 text-xs">
                                                             <div className="text-cyan-500 font-bold uppercase tracking-widest text-[10px]">分析逻辑</div>
                                                             <p>计算每个“输出项”承载的加权总分。分值越高，代表为了满足该项指标，系统需要投入的关注度越大。</p>
-                                                            <div className="mt-2 text-slate-500 font-mono text-[10px]">公式: Score = Σ (输入权重 * 关联强度)</div>
+                                                            <div className="mt-2 text-[var(--sidebar-muted)] font-mono text-[10px]">公式: Score = Σ (输入权重 * 关联强度)</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1053,16 +1053,16 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                 <div className="space-y-4">
                                                     <div className="flex items-center gap-2">
                                                         <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-black rounded border border-amber-500/30">Y 型</span>
-                                                        <h5 className="text-sm font-bold text-slate-200">立体闭环影响分析</h5>
+                                                        <h5 className="text-sm font-bold text-[var(--sidebar-text)]">立体闭环影响分析</h5>
                                                     </div>
-                                                    <div className="grid grid-cols-[240px_1fr] gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                                                        <div className="text-xs text-slate-400 leading-relaxed italic border-r border-slate-800 pr-6">
+                                                    <div className="grid grid-cols-[240px_1fr] gap-6 bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--sidebar-border)]">
+                                                        <div className="text-xs text-[var(--sidebar-muted)] leading-relaxed italic border-r border-[var(--sidebar-border)] pr-6">
                                                             "用于三个维度互相制约的场景，如：需求 &rarr; 功能 &rarr; 零件 &rarr; 需求。"
                                                         </div>
                                                         <div className="space-y-3 text-xs">
                                                             <div className="text-amber-500 font-bold uppercase tracking-widest text-[10px]">分析逻辑</div>
                                                             <p>通过等轴测视图观察三维度的传递效率。不仅计算单轴得分，还要观察是否存在“逻辑断链”或“过度冗余”。</p>
-                                                            <div className="mt-2 px-3 py-2 bg-black/30 rounded border border-white/5 text-slate-400 italic">
+                                                            <div className="mt-2 px-3 py-2 bg-black/30 rounded border border-white/5 text-[var(--sidebar-muted)] italic">
                                                                 闭环分析有助于发现：看似不重要的零件（C），可能通过影响关键功能（B）从而极大地满足了核心需求（A）。
                                                             </div>
                                                         </div>
@@ -1073,16 +1073,16 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                 <div className="space-y-4">
                                                     <div className="flex items-center gap-2">
                                                         <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-black rounded border border-emerald-500/30">X 型</span>
-                                                        <h5 className="text-sm font-bold text-slate-200">四象限约束与匹配分析</h5>
+                                                        <h5 className="text-sm font-bold text-[var(--sidebar-text)]">四象限约束与匹配分析</h5>
                                                     </div>
-                                                    <div className="grid grid-cols-[240px_1fr] gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                                                        <div className="text-xs text-slate-400 leading-relaxed italic border-r border-slate-800 pr-6">
+                                                    <div className="grid grid-cols-[240px_1fr] gap-6 bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--sidebar-border)]">
+                                                        <div className="text-xs text-[var(--sidebar-muted)] leading-relaxed italic border-r border-[var(--sidebar-border)] pr-6">
                                                             "典型的组织资源匹配矩阵。例如：目标 &harr; 部门 &harr; 流程 &harr; 资源。"
                                                         </div>
                                                         <div className="space-y-3 text-xs">
                                                             <div className="text-emerald-500 font-bold uppercase tracking-widest text-[10px]">分析逻辑</div>
                                                             <p>边缘得分展示了该项受到两个相邻象限的“双重拉动强度”。高分项通常是跨流程协作的“超级枢纽”。</p>
-                                                            <ul className="text-[10px] space-y-1 text-slate-500 list-disc list-inside">
+                                                            <ul className="text-[10px] space-y-1 text-[var(--sidebar-muted)] list-disc list-inside">
                                                                 <li>均衡性分析：观察象限关系是否分布均匀。</li>
                                                                 <li>瓶颈分析：识别承载过多约束的关键环节。</li>
                                                             </ul>
@@ -1094,30 +1094,29 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                                                 <div className="space-y-4">
                                                     <div className="flex items-center gap-2">
                                                         <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-[10px] font-black rounded border border-purple-500/30">C 型</span>
-                                                        <h5 className="text-sm font-bold text-slate-200">屋顶自相关与协同分析</h5>
+                                                        <h5 className="text-sm font-bold text-[var(--sidebar-text)]">屋顶自相关与协同分析</h5>
                                                     </div>
-                                                    <div className="grid grid-cols-[240px_1fr] gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                                                        <div className="text-xs text-slate-400 leading-relaxed italic border-r border-slate-800 pr-6">
+                                                    <div className="grid grid-cols-[240px_1fr] gap-6 bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--sidebar-border)]">
+                                                        <div className="text-xs text-[var(--sidebar-muted)] leading-relaxed italic border-r border-[var(--sidebar-border)] pr-6">
                                                             "HOQ 质量屋的经典屋顶。分析指标间的内部冲突或协同增益。"
                                                         </div>
                                                         <div className="space-y-3 text-xs">
                                                             <div className="text-purple-500 font-bold uppercase tracking-widest text-[10px]">分析逻辑</div>
                                                             <p>计算项目的<strong>“耦合度分值”</strong>。高分项代表系统中最不稳定的“敏感变量”。</p>
-                                                            <div className="mt-2 text-slate-500 font-mono text-[10px]">
+                                                            <div className="mt-2 text-[var(--sidebar-muted)] font-mono text-[10px]">
                                                                 决策提示：在调整高分项参数时，必须同步评估它对其他所有项目的冲击效应。
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    <div className="p-6 bg-cyan-900/10 border border-cyan-800/20 rounded-3xl">
-                                                        <div className="flex items-center gap-2 mb-3">
-                                                            <Zap size={14} className="text-cyan-500" />
-                                                            <span className="text-[10px] font-black uppercase text-cyan-500">专家技巧</span>
-                                                        </div>
-                                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
-                                                            "矩阵图不应仅仅作为记录工具。其真正的价值在于通过加权评分（Weight × Symbol Value）来识别系统中最脆弱或最重要的交叉点。"
-                                                        </p>
+                                                </div>
+                                                <div className="p-6 bg-cyan-900/10 border border-cyan-800/20 rounded-3xl">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Zap size={14} className="text-cyan-500" />
+                                                        <span className="text-[10px] font-black uppercase text-cyan-500">专家技巧</span>
                                                     </div>
+                                                    <p className="text-[11px] text-[var(--sidebar-muted)] font-medium italic mb-2">
+                                                        "矩阵图不应仅仅作为记录工具。其真正的价值在于通过加权评分（Weight × Symbol Value）来识别系统中最脆弱或最重要的交叉点。"
+                                                    </p>
                                                 </div>
                                             </div>
                                         </section>
@@ -1126,10 +1125,10 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({ data, styles, onDataChange,
                             </div>
 
                             {/* Modal Footer */}
-                            <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                            <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                                 <button
                                     onClick={() => setShowDocs(false)}
-                                    className="px-16 py-4 bg-cyan-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-cyan-500 transition-all"
+                                    className="px-16 py-4 bg-cyan-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-cyan-500 transition-all shadow-lg"
                                 >
                                     已阅读规范
                                 </button>

@@ -105,7 +105,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
     const isValidData = Array.isArray(data) && (data.length === 0 || (typeof data[0] === 'object' && 'label' in data[0]));
 
     if (!isValidData) {
-        return <div className="h-full flex items-center justify-center text-slate-500 font-mono text-xs">initializing affinity engine...</div>;
+        return <div className="h-full flex items-center justify-center text-[var(--sidebar-text)] font-mono text-xs">initializing affinity engine...</div>;
     }
 
     const [dsl, setDsl] = useState(INITIAL_AFFINITY_DSL);
@@ -222,20 +222,20 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
     // --- RENDER HELPERS ---
     const renderTreeItem = (item: AffinityItem, depth: number) => (
         <div key={item.id} className="space-y-2">
-            <div className={`flex items-center gap-2 group ${depth === 0 ? 'bg-slate-900/50 border border-slate-700/50' : ''} p-2 rounded-xl transition-all`}>
+            <div className={`flex items-center gap-2 group ${depth === 0 ? 'bg-[var(--input-bg)] border border-[var(--input-border)] shadow-sm' : ''} p-2 rounded-xl transition-all`}>
                 <div style={{ width: depth * 12 }} />
-                {depth === 0 ? <Database size={14} className="text-indigo-400" /> : <ChevronRight size={12} className="text-slate-600" />}
+                {depth === 0 ? <Database size={14} className="text-indigo-400" /> : <ChevronRight size={12} className="text-[var(--sidebar-muted)]" />}
 
                 <input
                     value={item.label}
                     onChange={(e) => updateItem(item.id, e.target.value)}
-                    className="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-xs font-medium text-slate-300 w-full hover:text-white transition-colors placeholder-slate-600"
+                    className="bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-xs font-medium text-[var(--sidebar-text)] w-full hover:text-white transition-colors placeholder-[var(--sidebar-muted)]"
                     placeholder="请输入项目名称..."
                 />
 
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => addItem(item.id)} className="p-1.5 hover:bg-indigo-600/20 text-slate-500 hover:text-indigo-300 rounded-lg transition-colors"><Plus size={12} /></button>
-                    <button onClick={() => deleteItem(item.id)} className="p-1.5 hover:bg-red-600/20 text-slate-500 hover:text-red-300 rounded-lg transition-colors"><Trash2 size={12} /></button>
+                    <button onClick={() => addItem(item.id)} className="p-1.5 hover:bg-indigo-600/20 text-[var(--sidebar-text)] hover:text-indigo-300 rounded-lg transition-colors"><Plus size={12} /></button>
+                    <button onClick={() => deleteItem(item.id)} className="p-1.5 hover:bg-red-600/20 text-[var(--sidebar-text)] hover:text-red-300 rounded-lg transition-colors"><Trash2 size={12} /></button>
                 </div>
             </div>
             {item.children && item.children.map(c => renderTreeItem(c, depth + 1))}
@@ -270,37 +270,37 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#0f172a] text-white relative">
+        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative">
             {/* Header Area */}
-            <div className="p-6 border-b border-slate-800 space-y-6">
+            <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-indigo-600/20 rounded-xl flex items-center justify-center border border-indigo-500/30">
                             <Boxes size={20} className="text-indigo-400" />
                         </div>
                         <div>
-                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-white">亲和图引擎</h2>
-                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">AFFINITY ENGINE V2.0</p>
+                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-[var(--sidebar-text)]">亲和图引擎</h2>
+                            <p className="text-[9px] font-bold text-[var(--sidebar-muted)] uppercase tracking-widest mt-1">AFFINITY ENGINE V2.0</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-slate-800 rounded-xl text-slate-400 hover:text-blue-400 transition-all border border-slate-700"
+                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
                         <button
                             onClick={() => setShowDocs(true)}
-                            className="p-3 bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-all border border-slate-700"
+                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]"
                         >
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
 
-                <nav className="flex gap-2 p-1.5 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <nav className="flex gap-2 p-1.5 bg-[var(--nav-bg)] rounded-2xl border border-[var(--sidebar-border)]">
                     {[
                         { id: 'manual', label: '手动录入', icon: <Edit3 size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -312,7 +312,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                                 if (t.id === 'dsl') setDsl(generateDSLFromData());
                                 setActiveTab(t.id as any);
                             }}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--input-bg)]'
                                 }`}
                         >
                             {t.icon} {t.label}
@@ -329,39 +329,39 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                         <div className="space-y-4">
                             <div className="flex items-center gap-3 pl-2">
                                 <ChevronRight size={14} className="text-indigo-500" />
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">图表基本信息</span>
+                                <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">图表基本信息</span>
                             </div>
                             <input
                                 value={styles.title || ''}
                                 onChange={e => onStylesChange({ ...styles, title: e.target.value })}
-                                className="w-full h-14 px-6 logic-terminal-input text-sm font-bold bg-[#0f172a] text-white border-slate-700 rounded-xl focus:border-indigo-500"
+                                className="w-full h-14 px-6 logic-terminal-input text-sm font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border-[var(--input-border)] rounded-xl focus:border-indigo-500"
                                 placeholder="例如：市场环境亲和图分析"
                             />
                         </div>
 
                         {/* Display Config */}
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-6 shadow-2xl">
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">显示配置</span>
+                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">显示配置</span>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex flex-col">
-                                        <span className="text-xs font-bold text-slate-300">渲染模式 (Card/Label)</span>
-                                        <span className="text-[9px] text-slate-500 font-mono mt-0.5">TYPE: {styles.type.toUpperCase()}</span>
+                                        <span className="text-xs font-bold text-[var(--sidebar-text)]">渲染模式 (Card/Label)</span>
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] font-mono mt-0.5">TYPE: {styles.type.toUpperCase()}</span>
                                     </div>
-                                    <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800 items-center">
+                                    <div className="flex bg-[var(--input-bg)] rounded-lg p-1 border border-[var(--input-border)] items-center">
                                         <button
                                             onClick={() => onStylesChange({ ...styles, type: 'Card' })}
-                                            className={`px-3 py-1.5 rounded-md flex items-center gap-2 transition-all ${styles.type === 'Card' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                            className={`px-3 py-1.5 rounded-md flex items-center gap-2 transition-all ${styles.type === 'Card' ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                         >
                                             <Layers size={12} />
                                             <span className="text-[10px] font-black uppercase">Card</span>
                                         </button>
                                         <button
                                             onClick={() => onStylesChange({ ...styles, type: 'Label' })}
-                                            className={`px-3 py-1.5 rounded-md flex items-center gap-2 transition-all ${styles.type === 'Label' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                            className={`px-3 py-1.5 rounded-md flex items-center gap-2 transition-all ${styles.type === 'Label' ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                         >
                                             <Grid size={12} />
                                             <span className="text-[10px] font-black uppercase">Label</span>
@@ -371,20 +371,20 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
 
                                 <div className="flex items-center justify-between">
                                     <div className="flex flex-col">
-                                        <span className="text-xs font-bold text-slate-300">布局方向 (Layout)</span>
-                                        <span className="text-[9px] text-slate-500 font-mono mt-0.5">DIR: {styles.layout.toUpperCase()}</span>
+                                        <span className="text-xs font-bold text-[var(--sidebar-text)]">布局方向 (Layout)</span>
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] font-mono mt-0.5">DIR: {styles.layout.toUpperCase()}</span>
                                     </div>
-                                    <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800 items-center">
+                                    <div className="flex bg-[var(--input-bg)] rounded-lg p-1 border border-[var(--input-border)] items-center">
                                         <button
                                             onClick={() => onStylesChange({ ...styles, layout: 'Horizontal' })}
-                                            className={`px-3 py-1.5 rounded-md flex items-center gap-2 transition-all ${styles.layout === 'Horizontal' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                            className={`px-3 py-1.5 rounded-md flex items-center gap-2 transition-all ${styles.layout === 'Horizontal' ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                         >
                                             <AlignHorizontalJustifyCenter size={12} />
                                             <span className="text-[10px] font-black uppercase">Horz</span>
                                         </button>
                                         <button
                                             onClick={() => onStylesChange({ ...styles, layout: 'Vertical' })}
-                                            className={`px-3 py-1.5 rounded-md flex items-center gap-2 transition-all ${styles.layout === 'Vertical' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                            className={`px-3 py-1.5 rounded-md flex items-center gap-2 transition-all ${styles.layout === 'Vertical' ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                         >
                                             <AlignVerticalJustifyCenter size={12} />
                                             <span className="text-[10px] font-black uppercase">Vert</span>
@@ -394,23 +394,23 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
 
                                 <div className="space-y-2 pt-2">
                                     <div className="flex justify-between">
-                                        <span className="text-xs font-bold text-slate-300">元素间距 (Gap)</span>
-                                        <span className="text-[10px] font-mono text-slate-500">{styles.itemGap}px</span>
+                                        <span className="text-xs font-bold text-[var(--sidebar-text)]">元素间距 (Gap)</span>
+                                        <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.itemGap}px</span>
                                     </div>
                                     <input
                                         type="range" min="0" max="100"
                                         value={styles.itemGap}
                                         onChange={e => onStylesChange({ ...styles, itemGap: parseInt(e.target.value) })}
-                                        className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                                        className="w-full h-2 bg-[var(--sidebar-muted)] rounded-lg appearance-none cursor-pointer accent-indigo-500"
                                     />
                                 </div>
                             </div>
                         </div>
 
                         {/* Tree Editor */}
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-6 shadow-2xl min-h-[300px]">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">数据层级结构</span>
+                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-6 shadow-2xl min-h-[300px]">
+                            <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">数据层级结构</span>
                                 <button
                                     onClick={() => addItem()}
                                     className="text-[9px] font-black uppercase tracking-wider text-indigo-400 hover:text-indigo-300 flex items-center gap-1 bg-indigo-500/10 px-2 py-1 rounded-lg border border-indigo-500/20 transition-all hover:bg-indigo-500/20"
@@ -424,120 +424,120 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                         </div>
 
                         {/* Style Configuration (Paired Layout like Fishbone) */}
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-8 shadow-2xl">
-                            <div className="flex items-center gap-4 border-b border-slate-800 pb-3">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">样式布局配置</span>
+                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-8 shadow-2xl">
+                            <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">样式布局配置</span>
                             </div>
 
                             {/* Section 1: Title */}
                             <div className="space-y-3">
                                 <div className="flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">标题样式 (Title)</span>
+                                    <span className="text-[10px] font-bold text-[var(--sidebar-text)] uppercase tracking-wider">标题样式 (Title)</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest pl-1">背景色</span>
-                                        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">背景色</span>
+                                        <div className="flex items-center gap-2 bg-[var(--input-bg)] p-1.5 rounded-xl border border-[var(--input-border)]">
                                             <input type="color" value={styles.titleBackgroundColor} onChange={e => onStylesChange({ ...styles, titleBackgroundColor: e.target.value })} className="w-6 h-6 rounded-lg bg-transparent cursor-pointer border-none p-0" />
-                                            <span className="text-[10px] font-mono text-slate-400">{styles.titleBackgroundColor}</span>
+                                            <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.titleBackgroundColor}</span>
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest pl-1">文字颜色</span>
-                                        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">文字颜色</span>
+                                        <div className="flex items-center gap-2 bg-[var(--input-bg)] p-1.5 rounded-xl border border-[var(--input-border)]">
                                             <input type="color" value={styles.titleTextColor} onChange={e => onStylesChange({ ...styles, titleTextColor: e.target.value })} className="w-6 h-6 rounded-lg bg-transparent cursor-pointer border-none p-0" />
-                                            <span className="text-[10px] font-mono text-slate-400">{styles.titleTextColor}</span>
+                                            <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.titleTextColor}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-1 pt-1">
                                     <div className="flex justify-between px-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest">字号 (px)</span>
-                                        <span className="text-[9px] font-mono text-slate-400">{styles.titleFontSize}px</span>
+                                        <span className="text-[9px] text-[var(--sidebar-text)] uppercase tracking-widest">字号 (px)</span>
+                                        <span className="text-[9px] font-mono text-[var(--sidebar-text)]">{styles.titleFontSize}px</span>
                                     </div>
-                                    <input type="range" min="12" max="48" value={styles.titleFontSize} onChange={e => onStylesChange({ ...styles, titleFontSize: parseInt(e.target.value) })} className="w-full h-1.5 bg-slate-800 rounded-full appearance-none accent-indigo-500" />
+                                    <input type="range" min="12" max="48" value={styles.titleFontSize} onChange={e => onStylesChange({ ...styles, titleFontSize: parseInt(e.target.value) })} className="w-full h-1.5 bg-[var(--sidebar-muted)] rounded-full appearance-none accent-indigo-500" />
                                 </div>
                             </div>
 
                             {/* Section 2: Group Header (Root) */}
-                            <div className="space-y-3 pt-4 border-t border-slate-800/50">
+                            <div className="space-y-3 pt-4 border-t border-[var(--sidebar-border)]/50">
                                 <div className="flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">分组头/根节点 (Root)</span>
+                                    <span className="text-[10px] font-bold text-[var(--sidebar-text)] uppercase tracking-wider">分组头/根节点 (Root)</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest pl-1">背景色</span>
-                                        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">背景色</span>
+                                        <div className="flex items-center gap-2 bg-[var(--input-bg)] p-1.5 rounded-xl border border-[var(--input-border)]">
                                             <input type="color" value={styles.groupHeaderBackgroundColor} onChange={e => onStylesChange({ ...styles, groupHeaderBackgroundColor: e.target.value })} className="w-6 h-6 rounded-lg bg-transparent cursor-pointer border-none p-0" />
-                                            <span className="text-[10px] font-mono text-slate-400">{styles.groupHeaderBackgroundColor}</span>
+                                            <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.groupHeaderBackgroundColor}</span>
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest pl-1">文字颜色</span>
-                                        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">文字颜色</span>
+                                        <div className="flex items-center gap-2 bg-[var(--input-bg)] p-1.5 rounded-xl border border-[var(--input-border)]">
                                             <input type="color" value={styles.groupHeaderTextColor} onChange={e => onStylesChange({ ...styles, groupHeaderTextColor: e.target.value })} className="w-6 h-6 rounded-lg bg-transparent cursor-pointer border-none p-0" />
-                                            <span className="text-[10px] font-mono text-slate-400">{styles.groupHeaderTextColor}</span>
+                                            <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.groupHeaderTextColor}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-1 pt-1">
                                     <div className="flex justify-between px-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest">字号 (px)</span>
-                                        <span className="text-[9px] font-mono text-slate-400">{styles.groupHeaderFontSize}px</span>
+                                        <span className="text-[9px] text-[var(--sidebar-text)] uppercase tracking-widest">字号 (px)</span>
+                                        <span className="text-[9px] font-mono text-[var(--sidebar-text)]">{styles.groupHeaderFontSize}px</span>
                                     </div>
-                                    <input type="range" min="10" max="32" value={styles.groupHeaderFontSize} onChange={e => onStylesChange({ ...styles, groupHeaderFontSize: parseInt(e.target.value) })} className="w-full h-1.5 bg-slate-800 rounded-full appearance-none accent-blue-500" />
+                                    <input type="range" min="10" max="32" value={styles.groupHeaderFontSize} onChange={e => onStylesChange({ ...styles, groupHeaderFontSize: parseInt(e.target.value) })} className="w-full h-1.5 bg-[var(--sidebar-muted)] rounded-full appearance-none accent-blue-500" />
                                 </div>
                             </div>
 
                             {/* Section 3: Items (Other Nodes) */}
-                            <div className="space-y-3 pt-4 border-t border-slate-800/50">
+                            <div className="space-y-3 pt-4 border-t border-[var(--sidebar-border)]/50">
                                 <div className="flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">其他节点 (Items)</span>
+                                    <span className="text-[10px] font-bold text-[var(--sidebar-text)] uppercase tracking-wider">其他节点 (Items)</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest pl-1">背景色</span>
-                                        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">背景色</span>
+                                        <div className="flex items-center gap-2 bg-[var(--input-bg)] p-1.5 rounded-xl border border-[var(--input-border)]">
                                             <input type="color" value={styles.itemBackgroundColor} onChange={e => onStylesChange({ ...styles, itemBackgroundColor: e.target.value })} className="w-6 h-6 rounded-lg bg-transparent cursor-pointer border-none p-0" />
-                                            <span className="text-[10px] font-mono text-slate-400">{styles.itemBackgroundColor}</span>
+                                            <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.itemBackgroundColor}</span>
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest pl-1">文字颜色</span>
-                                        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">文字颜色</span>
+                                        <div className="flex items-center gap-2 bg-[var(--input-bg)] p-1.5 rounded-xl border border-[var(--input-border)]">
                                             <input type="color" value={styles.itemTextColor} onChange={e => onStylesChange({ ...styles, itemTextColor: e.target.value })} className="w-6 h-6 rounded-lg bg-transparent cursor-pointer border-none p-0" />
-                                            <span className="text-[10px] font-mono text-slate-400">{styles.itemTextColor}</span>
+                                            <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.itemTextColor}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-1 pt-1">
                                     <div className="flex justify-between px-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest">字号 (px)</span>
-                                        <span className="text-[9px] font-mono text-slate-400">{styles.itemFontSize}px</span>
+                                        <span className="text-[9px] text-[var(--sidebar-text)] uppercase tracking-widest">字号 (px)</span>
+                                        <span className="text-[9px] font-mono text-[var(--sidebar-text)]">{styles.itemFontSize}px</span>
                                     </div>
-                                    <input type="range" min="8" max="24" value={styles.itemFontSize} onChange={e => onStylesChange({ ...styles, itemFontSize: parseInt(e.target.value) })} className="w-full h-1.5 bg-slate-800 rounded-full appearance-none accent-emerald-500" />
+                                    <input type="range" min="8" max="24" value={styles.itemFontSize} onChange={e => onStylesChange({ ...styles, itemFontSize: parseInt(e.target.value) })} className="w-full h-1.5 bg-[var(--sidebar-muted)] rounded-full appearance-none accent-emerald-500" />
                                 </div>
                             </div>
 
                             {/* Section 4: Lines & Borders */}
-                            <div className="space-y-3 pt-4 border-t border-slate-800/50">
-                                <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider block mb-2">连接与边框</span>
+                            <div className="space-y-3 pt-4 border-t border-[var(--sidebar-border)]">
+                                <span className="text-[10px] font-bold text-[var(--sidebar-text)] uppercase tracking-wider block mb-2">连接与边框</span>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest pl-1">边框颜色</span>
-                                        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">边框颜色</span>
+                                        <div className="flex items-center gap-2 bg-[var(--input-bg)] p-1.5 rounded-xl border border-[var(--input-border)]">
                                             <input type="color" value={styles.borderColor} onChange={e => onStylesChange({ ...styles, borderColor: e.target.value })} className="w-6 h-6 rounded-lg bg-transparent cursor-pointer border-none p-0" />
-                                            <span className="text-[10px] font-mono text-slate-400">{styles.borderColor}</span>
+                                            <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.borderColor}</span>
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-slate-500 uppercase tracking-widest pl-1">连线颜色 (Tree)</span>
-                                        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                        <span className="text-[9px] text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">连线颜色 (Tree)</span>
+                                        <div className="flex items-center gap-2 bg-[var(--input-bg)] p-1.5 rounded-xl border border-[var(--input-border)]">
                                             <input type="color" value={styles.lineColor} onChange={e => onStylesChange({ ...styles, lineColor: e.target.value })} className="w-6 h-6 rounded-lg bg-transparent cursor-pointer border-none p-0" />
-                                            <span className="text-[10px] font-mono text-slate-400">{styles.lineColor}</span>
+                                            <span className="text-[10px] font-mono text-[var(--sidebar-text)]">{styles.lineColor}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -549,7 +549,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                         <textarea
                             value={dsl}
                             onChange={(e) => handleDSLChange(e.target.value)}
-                            className="flex-1 w-full bg-black/40 text-orange-100 p-6 font-mono text-[11px] leading-relaxed border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all resize-none custom-scrollbar"
+                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-6 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all resize-none custom-scrollbar"
                             placeholder="输入 DSL 指令..."
                             spellCheck={false}
                         />
@@ -557,9 +557,9 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                     </div>
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="p-8 bg-black/30 rounded-[2.5rem] border border-slate-800/50 space-y-8 shadow-2xl relative overflow-hidden group">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">智能亲和分析描述</span>
+                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                            <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
+                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能亲和分析描述</span>
                                 <div className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_8px_#6366f1]" />
                                     <span className="text-[9px] font-black text-indigo-500 uppercase">Engine Active: {engineName}</span>
@@ -568,13 +568,13 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                             <textarea
                                 value={aiPrompt}
                                 onChange={(e) => setAiPrompt(e.target.value)}
-                                className="w-full h-56 bg-slate-900/50 text-slate-200 p-8 text-sm leading-relaxed border border-slate-800 rounded-[2rem] focus:outline-none focus:border-indigo-500 transition-all resize-none shadow-inner"
+                                className="w-full h-56 bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-indigo-500 transition-all resize-none shadow-inner"
                                 placeholder="输入待整理的信息或想法，例如：'整理关于提升团队效率的头脑风暴想法，包括简化流程、工具引入等'..."
                             />
                             <button
                                 onClick={generateAI}
                                 disabled={isGenerating || !aiPrompt.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-slate-800' : 'bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -591,7 +591,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
 
                             <div className="p-8 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl space-y-4">
                                 <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">推理提示</p>
-                                <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                                <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以输入一堆杂乱的观点、反馈或想法，AI 将自动使用 **KJ法 (亲和图)** 对其进行归纳、分类和层级整理，并生成结构化的亲和图。
                                 </p>
                             </div>
@@ -601,26 +601,26 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
             </div>
 
             {showDocs && createPortal(
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[#0f172a] w-[800px] max-h-[85vh] rounded-[3rem] border border-slate-800 flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md">
+                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         {/* Header */}
-                        <div className="px-10 py-8 flex flex-col border-b border-slate-800 shrink-0 gap-6">
+                        <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="p-3 bg-violet-600/20 rounded-2xl border border-violet-500/30">
                                         <Boxes size={24} className="text-violet-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">亲和图知识库</h3>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Affinity Logic Base V2.1</p>
+                                        <h3 className="text-xl font-black text-[var(--sidebar-text)] uppercase tracking-tighter">亲和图知识库</h3>
+                                        <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Affinity Logic Base V2.1</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-slate-800 rounded-xl transition-all text-slate-500 hover:text-white">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-xl transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-black/40 p-1 rounded-2xl border border-slate-800/80 w-fit">
+                            <nav className="flex bg-[var(--nav-bg)] p-1 rounded-2xl border border-[var(--sidebar-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -628,7 +628,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-violet-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                     >
                                         {t.label}
                                     </button>
@@ -637,7 +637,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-slate-300">
+                        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar text-[var(--sidebar-muted)]">
                             {docTab === 'dsl' ? (
                                 <div className="space-y-12">
                                     <section className="space-y-6">
@@ -648,27 +648,27 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                                         <div className="space-y-4">
                                             <table className="w-full text-xs font-mono border-collapse">
                                                 <thead>
-                                                    <tr className="text-slate-500 text-left border-b border-slate-800">
+                                                    <tr className="text-[var(--sidebar-text)] text-left border-b border-[var(--sidebar-border)]">
                                                         <th className="py-3 font-black uppercase">语法</th>
                                                         <th className="py-3 font-black uppercase">说明</th>
                                                         <th className="py-3 font-black uppercase">示例</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-slate-800/50">
+                                                <tbody className="divide-y divide-[var(--sidebar-border)]/50">
                                                     <tr>
                                                         <td className="py-3 text-violet-400 font-bold">Title:</td>
                                                         <td className="py-3">图表标题</td>
-                                                        <td className="py-3 text-slate-500">Title: 市场调研整理</td>
+                                                        <td className="py-3 text-[var(--sidebar-text)]">Title: 市场调研整理</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="py-3 text-emerald-400 font-bold">Type:</td>
                                                         <td className="py-3">渲染模式 (Card/Label)</td>
-                                                        <td className="py-3 text-slate-500">Type: Card</td>
+                                                        <td className="py-3 text-[var(--sidebar-text)]">Type: Card</td>
                                                     </tr>
                                                     <tr>
                                                         <td className="py-3 text-amber-400 font-bold">Layout:</td>
                                                         <td className="py-3">布局方向 (Horizontal/Vertical)</td>
-                                                        <td className="py-3 text-slate-500">Layout: Horizontal</td>
+                                                        <td className="py-3 text-[var(--sidebar-text)]">Layout: Horizontal</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -681,22 +681,22 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                                             <span className="text-[12px] font-black uppercase tracking-widest">2. 样式定义</span>
                                         </div>
                                         <div className="grid grid-cols-1 gap-4 font-mono text-xs">
-                                            <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3">
-                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                            <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-3">
+                                                <div className="flex justify-between border-b border-[var(--sidebar-border)]/50 pb-2">
                                                     <span className="text-violet-400">Color[TitleBg|TitleText]:</span>
-                                                    <span className="text-slate-400">#HEX 标题样式</span>
+                                                    <span className="text-[var(--sidebar-text)]">#HEX 标题样式</span>
                                                 </div>
-                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                <div className="flex justify-between border-b border-[var(--sidebar-border)]/50 pb-2">
                                                     <span className="text-emerald-400">Color[GroupHeaderBg]:</span>
-                                                    <span className="text-slate-400">#HEX 分组头背景</span>
+                                                    <span className="text-[var(--sidebar-text)]">#HEX 分组头背景</span>
                                                 </div>
-                                                <div className="flex justify-between border-b border-slate-800/50 pb-2">
+                                                <div className="flex justify-between border-b border-[var(--sidebar-border)]/50 pb-2">
                                                     <span className="text-blue-400">Color[ItemBg|ItemText]:</span>
-                                                    <span className="text-slate-400">#HEX 卡片样式</span>
+                                                    <span className="text-[var(--sidebar-text)]">#HEX 卡片样式</span>
                                                 </div>
                                                 <div className="flex justify-between">
-                                                    <span className="text-slate-400">Font[Title|GroupHeader|Item]:</span>
-                                                    <span className="text-slate-500">px 字号</span>
+                                                    <span className="text-[var(--sidebar-text)]">Font[Title|GroupHeader|Item]:</span>
+                                                    <span className="text-[var(--sidebar-text)]">px 字号</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -708,7 +708,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                                             <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
                                         </div>
                                         <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-4">
-                                            <div className="text-[11px] font-bold text-slate-500 mb-2">语法格式：Item: [ID], [Label], [ParentID]</div>
+                                            <div className="text-[11px] font-bold text-[var(--sidebar-text)] mb-2">语法格式：Item: [ID], [Label], [ParentID]</div>
                                             <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-xl">
                                                 Item: root, 核心主题, null<br />
                                                 Item: g1, 市场因素, root<br />
@@ -721,7 +721,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-violet-400 uppercase tracking-widest border-b border-violet-900/50 pb-2">KJ法 (Affinity Diagram)</h4>
-                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)] shadow-sm">
                                             <p>亲和图法，又称KJ法，是将收集到的事实、意见、想法等语言信息，按其相互亲和性（相近性）归纳整理，使问题条理化的方法。</p>
                                             <ul className="list-disc list-inside space-y-2">
                                                 <li><strong>发散</strong>: 收集尽可能多的想法。</li>
@@ -732,7 +732,7 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">逻辑构建逻辑</h4>
-                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-400">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)] shadow-sm">
                                             <p>通过层级化的定义，亲和图可以帮助团队从混乱的信息中理出头绪。一个好的亲和图应该具有清晰的因果或从属逻辑。</p>
                                         </div>
                                     </section>
@@ -742,14 +742,14 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
                                             <Zap size={14} className="text-indigo-500" />
                                             <span className="text-[10px] font-black uppercase text-indigo-500">思维洞察</span>
                                         </div>
-                                        <p className="text-[11px] text-slate-400 font-medium italic mb-2">
+                                        <p className="text-[11px] text-[var(--sidebar-text)] font-medium italic mb-2">
                                             "当多个想法无法归入现有分组时，可能意味着存在一个新的维度或未被识别的根本问题。"
                                         </p>
                                     </div>
                                 </div>
                             )}
                         </div>
-                        <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
+                        <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowDocs(false)}
                                 className="px-16 py-4 bg-violet-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-violet-500 transition-all font-sans"

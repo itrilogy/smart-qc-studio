@@ -430,6 +430,16 @@ const App: React.FC = () => {
   const [controlDsl, setControlDsl] = useState<string>(INITIAL_CONTROL_DSL);
   const [showParetoLine, setShowParetoLine] = useState(true);
   const [matrixOrientation, setMatrixOrientation] = useState<'top-down' | 'bottom-up'>('top-down');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  // Apply theme to document
+  React.useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   // Derived Control Chart Data
   const { series: controlSeries, styles: controlStyles } = React.useMemo(() => parseControlDSL(controlDsl), [controlDsl]);
@@ -470,17 +480,17 @@ const App: React.FC = () => {
   };
 
   if (selectedTool === QCToolType.DASHBOARD) {
-    return <DashboardView onSelectTool={setSelectedTool} cols={dashboardCols} setCols={setDashboardCols} />;
+    return <DashboardView onSelectTool={setSelectedTool} cols={dashboardCols} setCols={setDashboardCols} theme={theme} setTheme={setTheme} />;
   }
 
   const currentTool = TOOL_CONFIGS.find(t => t.type === selectedTool);
 
   return (
-    <div className="flex h-screen bg-[#fcfdfe] text-slate-900 overflow-hidden font-sans">
+    <div className="flex h-screen bg-[var(--bg-page)] text-[var(--text-main)] overflow-hidden font-sans transition-colors duration-500">
       <Workspace
         sidebarContent={
-          <div className="flex flex-col h-full bg-[#0f172a]">
-            <div className="p-8 h-20 flex items-center justify-between border-b border-slate-800/60 bg-slate-900/40 shrink-0">
+          <div className="flex flex-col h-full bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)]">
+            <div className="p-8 h-20 flex items-center justify-between border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] shrink-0">
               <button
                 onClick={() => setSelectedTool(QCToolType.DASHBOARD)}
                 className="flex items-center gap-5 active:scale-95 transition-all group"
@@ -489,7 +499,7 @@ const App: React.FC = () => {
                   <Zap className="w-5 h-5 text-white fill-current" />
                 </div>
                 <div>
-                  <h1 className="font-black text-white text-lg tracking-tighter leading-none uppercase">Studio</h1>
+                  <h1 className="font-black text-[var(--sidebar-text)] text-lg tracking-tighter leading-none uppercase">Studio</h1>
                   <p className="text-[8px] text-blue-400 uppercase font-black tracking-[0.2em] mt-1 opacity-60">Logic Core</p>
                 </div>
               </button>
@@ -616,76 +626,76 @@ const App: React.FC = () => {
           </div>
         }
         canvasContent={
-          <div className="w-full h-full flex flex-col relative bg-white">
-            <header className="h-24 bg-white/70 backdrop-blur-2xl border-b border-slate-200/50 flex items-center justify-between px-12 shrink-0 z-40">
+          <div className="w-full h-full flex flex-col relative bg-[var(--bg-page)]">
+            <header className="h-24 bg-[var(--header-bg)] backdrop-blur-2xl border-b border-[var(--border-light)] flex items-center justify-between px-12 shrink-0 z-40 transition-colors">
               <div className="flex items-center gap-6">
                 <div className="w-1.5 h-12 bg-blue-600 rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)]" />
                 <div>
-                  <h2 className="font-black text-slate-900 text-2xl tracking-tighter uppercase">{currentTool?.name}</h2>
-                  <div className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black tracking-widest border border-blue-100 uppercase mt-1">Live Engine</div>
+                  <h2 className="font-black text-[var(--text-main)] text-2xl tracking-tighter uppercase">{currentTool?.name}</h2>
+                  <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-[10px] font-black tracking-widest border border-blue-100 dark:border-blue-800 uppercase mt-1">Live Engine</div>
                 </div>
               </div>
 
               <div className="flex items-center gap-6">
-                <div className="flex gap-2 bg-slate-100/50 p-1.5 rounded-2xl border border-slate-200/50 items-center">
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-3 mr-1">画布操作</span>
+                <div className="flex gap-2 bg-[var(--input-bg)] p-1.5 rounded-2xl border border-[var(--input-border)] items-center">
+                  <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-3 mr-1">画布操作</span>
                   <button
                     onClick={() => diagramRef.current?.tidyLayout?.()}
-                    className="p-3 bg-white shadow-sm rounded-xl text-slate-700 hover:text-blue-600 hover:shadow-md transition-all flex items-center gap-2 group"
+                    className="p-3 bg-[var(--card-bg)] shadow-sm rounded-xl text-[var(--text-main)] hover:text-blue-600 hover:shadow-md transition-all flex items-center gap-2 group border border-[var(--border-light)]"
                   >
                     <LayoutGrid size={16} />
                     <span className="text-[10px] font-black uppercase tracking-widest">整理布局</span>
                   </button>
-                  <div className="w-px h-6 bg-slate-200 mx-1" />
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 mr-1">导出</span>
+                  <div className="w-px h-6 bg-[var(--border-light)] mx-1" />
+                  <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-1 mr-1">导出</span>
                   <button
                     onClick={() => diagramRef.current?.exportPNG?.(false)}
-                    className="p-3 bg-white shadow-sm rounded-xl text-slate-700 hover:text-blue-600 hover:shadow-md transition-all flex items-center gap-2 group"
+                    className="p-3 bg-[var(--card-bg)] shadow-sm rounded-xl text-[var(--text-main)] hover:text-blue-600 hover:shadow-md transition-all flex items-center gap-2 group border border-[var(--border-light)]"
                   >
                     <Image size={16} />
                     <span className="text-[10px] font-black uppercase tracking-widest">有底 PNG</span>
                   </button>
                   <button
                     onClick={() => diagramRef.current?.exportPNG?.(true)}
-                    className="p-3 bg-white shadow-sm rounded-xl text-slate-700 hover:text-emerald-600 hover:shadow-md transition-all flex items-center gap-2 group"
+                    className="p-3 bg-[var(--card-bg)] shadow-sm rounded-xl text-[var(--text-main)] hover:text-emerald-600 hover:shadow-md transition-all flex items-center gap-2 group border border-[var(--border-light)]"
                   >
                     <Download size={16} />
                     <span className="text-[10px] font-black uppercase tracking-widest">透明 PNG</span>
                   </button>
                   <button
                     onClick={() => diagramRef.current?.exportPDF?.(false)}
-                    className="p-3 bg-white shadow-sm rounded-xl text-slate-700 hover:text-red-600 hover:shadow-md transition-all flex items-center gap-2"
+                    className="p-3 bg-[var(--card-bg)] shadow-sm rounded-xl text-[var(--text-main)] hover:text-red-600 hover:shadow-md transition-all flex items-center gap-2 border border-[var(--border-light)]"
                   >
                     <FileText size={16} />
                     <span className="text-[10px] font-black uppercase tracking-widest">有底 PDF</span>
                   </button>
                   <button
                     onClick={() => diagramRef.current?.exportPDF?.(true)}
-                    className="p-3 bg-white shadow-sm rounded-xl text-slate-700 hover:text-indigo-600 hover:shadow-md transition-all flex items-center gap-2"
+                    className="p-3 bg-[var(--card-bg)] shadow-sm rounded-xl text-[var(--text-main)] hover:text-indigo-600 hover:shadow-md transition-all flex items-center gap-2 border border-[var(--border-light)]"
                   >
                     <Download size={16} />
                     <span className="text-[10px] font-black uppercase tracking-widest">透明 PDF</span>
                   </button>
                 </div>
                 {selectedTool === QCToolType.MATRIX && (
-                  <div className="flex gap-2 ml-4 bg-slate-100/50 p-1.5 rounded-2xl border border-slate-200/50 items-center">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-3 mr-1">视图</span>
+                  <div className="flex gap-2 ml-4 bg-[var(--input-bg)] p-1.5 rounded-2xl border border-[var(--input-border)] items-center">
+                    <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-3 mr-1">视图</span>
                     <button
                       onClick={() => setMatrixOrientation(prev => prev === 'top-down' ? 'bottom-up' : 'top-down')}
-                      className={`p-3 shadow-sm rounded-xl text-slate-700 hover:shadow-md transition-all flex items-center gap-2 group ${matrixOrientation === 'bottom-up' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-white'}`}
+                      className={`p-3 shadow-sm rounded-xl text-[var(--text-main)] hover:shadow-md transition-all flex items-center gap-2 group border border-[var(--border-light)] ${matrixOrientation === 'bottom-up' ? 'bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800' : 'bg-[var(--card-bg)]'}`}
                     >
                       <Globe size={16} />
                       <span className="text-[10px] font-black uppercase tracking-widest">{matrixOrientation === 'top-down' ? '俯视' : '仰视'}</span>
                     </button>
                   </div>
                 )}
-                <div className="w-12 h-12 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl overflow-hidden shadow-2xl border-2 border-white ring-8 ring-slate-50">
+                <div className="w-12 h-12 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl overflow-hidden shadow-2xl border-2 border-[var(--card-bg)] ring-8 ring-[var(--border-light)]">
                   <img src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=${selectedTool}`} alt="avatar" />
                 </div>
               </div>
             </header>
 
-            <div className="flex-1 relative min-h-0 bg-white">
+            <div className="flex-1 relative min-h-0 bg-[var(--bg-page)] transition-colors">
               {(() => {
                 switch (selectedTool) {
                   case QCToolType.FISHBONE: return <FishboneDiagram ref={diagramRef} data={fishboneData} styles={fishboneStyles} />;
@@ -721,30 +731,30 @@ const App: React.FC = () => {
                   case QCToolType.MERMAID:
                     return <MermaidDiagram ref={diagramRef} data={mermaidData} styles={mermaidStyles} />;
                   default: return (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-white">
-                      <Cpu className="w-32 h-32 text-slate-100 mb-8" />
-                      <p className="text-3xl font-black text-slate-200 uppercase tracking-[0.4em]">Unit Offline</p>
-                      <p className="text-[11px] text-slate-400 mt-4 font-black uppercase tracking-[0.2em]">Logic injection required from terminal</p>
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--bg-page)]">
+                      <Cpu className="w-32 h-32 text-[var(--border-light)] mb-8" />
+                      <p className="text-3xl font-black text-[var(--border-light)] uppercase tracking-[0.4em]">Unit Offline</p>
+                      <p className="text-[11px] text-[var(--text-muted)] mt-4 font-black uppercase tracking-[0.2em]">Logic injection required from terminal</p>
                     </div>
                   );
                 }
               })()}
             </div>
 
-            <footer className="h-20 border-t border-slate-100 px-12 flex items-center justify-between shrink-0 bg-white/50 backdrop-blur-xl">
+            <footer className="h-20 border-t border-[var(--border-light)] px-12 flex items-center justify-between shrink-0 bg-[var(--header-bg)] backdrop-blur-xl transition-colors">
               <div className="flex items-center gap-10">
-                <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.25em] flex items-center gap-4">
+                <p className="text-[11px] text-[var(--text-muted)] font-black uppercase tracking-[0.25em] flex items-center gap-4">
                   <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_12px_#10b981]" />
                   Precision Computing Active
                 </p>
-                <div className="h-5 w-px bg-slate-200" />
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.2em]">Sample Rate: 60Hz</p>
+                <div className="h-5 w-px bg-[var(--border-light)]" />
+                <p className="text-[11px] text-[var(--text-muted)] font-bold uppercase tracking-[0.2em]">Sample Rate: 60Hz</p>
               </div>
               <div className="flex gap-6">
-                <button className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-all">导出原始数据 (CSV)</button>
+                <button className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest hover:text-[var(--text-main)] transition-all">导出原始数据 (CSV)</button>
                 <button
                   onClick={() => diagramRef.current?.exportPNG?.()}
-                  className="text-[12px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-700 transition-all"
+                  className="text-[12px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest hover:text-blue-700 transition-all"
                 >
                   导出分析报告
                 </button>

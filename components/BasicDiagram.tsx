@@ -186,7 +186,7 @@ export const BasicDiagram = forwardRef<BasicDiagramRef, Props>(({ data, styles }
                     type: 'pie',
                     radius: [`${innerRadius}%`, `${outerRadius}%`],
                     label: {
-                        show: idx === ringCount - 1,
+                        show: finalStyles.showValues && idx === ringCount - 1,
                         position: 'outside',
                         formatter: '{b}: {c} ({d}%)'
                     },
@@ -221,6 +221,11 @@ export const BasicDiagram = forwardRef<BasicDiagramRef, Props>(({ data, styles }
                     type: type === 'line' ? 'line' : 'bar',
                     smooth: finalStyles.smooth,
                     stack: finalStyles.stacked ? 'total' : undefined,
+                    label: {
+                        show: finalStyles.showValues,
+                        position: isHorizontal ? 'right' : 'top',
+                        formatter: '{c}'
+                    },
                     [isHorizontal ? 'xAxisIndex' : 'yAxisIndex']: yAxisMap[String(ds.axisMatch)] || 0,
                     data: ds.values,
                     itemStyle: ds.color ? { color: ds.color } : undefined,
