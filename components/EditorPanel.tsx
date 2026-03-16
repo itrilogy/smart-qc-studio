@@ -37,17 +37,17 @@ export const EditorPanel: React.FC<Props> = ({ toolType, onDataUpdate, currentDa
           <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">Logic Terminal v2.1</h2>
         </div>
 
-        <div className="flex gap-2 p-1.5 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+        <div className="flex gap-2 p-1.5 bg-slate-800/50 rounded-lg border border-slate-700/50">
           <button
             onClick={() => setActiveTab('ai')}
-            className={`flex-1 flex items-center justify-center gap-3 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'ai' ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'
+            className={`flex-1 flex items-center justify-center gap-3 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'ai' ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'
               }`}
           >
             <Sparkles size={16} /> AI Inference
           </button>
           <button
             onClick={() => setActiveTab('source')}
-            className={`flex-1 flex items-center justify-center gap-3 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'source' ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'
+            className={`flex-1 flex items-center justify-center gap-3 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'source' ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'
               }`}
           >
             <Code size={16} /> Source
@@ -88,10 +88,10 @@ export const EditorPanel: React.FC<Props> = ({ toolType, onDataUpdate, currentDa
       </div>
 
       <div className="p-10 border-t border-slate-800 bg-slate-900/80 backdrop-blur-xl flex gap-4">
-        <button className="flex-1 h-14 bg-slate-800 border border-slate-700 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all">
+        <button className="flex-1 h-14 bg-slate-800 border border-slate-700 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all">
           <Trash2 className="w-4 h-4 mr-2 inline" /> Purge
         </button>
-        <button className="flex-1 h-14 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:-translate-y-0.5 transition-all">
+        <button className="flex-1 h-14 bg-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:-translate-y-0.5 transition-all">
           <Save className="w-4 h-4 mr-2 inline" /> Commit
         </button>
       </div>

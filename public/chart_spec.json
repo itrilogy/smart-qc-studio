@@ -1,7 +1,7 @@
 {
-    "project": "Smart QC Studio",
-    "version": "1.0.0",
-    "description": "Chart specification and few-shot examples for LLM-driven automated charting.",
+    "project": "IQS (Intelligent QC Studio)",
+    "version": "1.1.0",
+    "description": "IQS Chart specification and few-shot examples for LLM-driven automated charting.",
     "ai_config": {
         "active_profile": "deepseek_public",
         "profiles": {
@@ -61,6 +61,7 @@
                 "rules": [
                     "Title: [文字]",
                     "Color[Bar/Line/MarkLine]: #HEX",
+                    "ShowValues: true/false - 显示数据标记",
                     "Font[Title/Base/Bar]: [Size]",
                     "- [Name]: [Value] - 数据行 (无需排序, 系统自动降序)"
                 ],
@@ -118,6 +119,7 @@
                     "Title: [文字]",
                     "XAxis/YAxis/ZAxis: [Label]",
                     "ShowTrend: true/false - 趋势线",
+                    "ShowValues: true/false - 显示数据标记",
                     "Font[Title/Base]: [Size] - 字号控制",
                     "- x, y, [z] - 数据行 (z为气泡大小)"
                 ],
@@ -218,6 +220,7 @@
                     "Size: [N] - 子组样本容量 (计量图: 2-10, 计数图: 每次抽检数)",
                     "Rules: [Nelson/Western-Electric/Basic] - 判异规则启用",
                     "Decimals: [N] - 数值精度 (默认2)",
+                    "ShowValues: true/false - 显示数据标记",
                     "UCL/LCL/CL: [Value] - 手动指定控制限 (可选)",
                     "Color[Line/Point/UCL/CL]: #HEX - 样式定制",
                     "[series]: [名称] ... [/series] - 数据序列定义块"
@@ -412,6 +415,7 @@
                     "Type: bar | line | pie - 图表类型",
                     "View: v | h - 纵横切换 (柱状图有效)",
                     "Stacked: true | false - 是否堆叠 (柱状/折线有效)",
+                    "ShowMarkers: true | false - 是否显示数据标记",
                     "Axis: [Label], [X/Y/Y2] - 轴定义",
                     "Dataset: [Name], [Values], [#Color?], [AxisMatch] - 数据序列",
                     "  - AxisMatch: X (对应分类标签), Y (对应主值轴), Y2 (对应副值轴)"

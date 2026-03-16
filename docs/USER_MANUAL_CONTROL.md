@@ -1,4 +1,4 @@
-# 《Smart QC Tools 控制图模块》使用手册
+# 《IQS 控制图模块》使用手册 (Intelligent QC Studio)
 **（软件著作权申请建议参考文档版本）**
 
 ---

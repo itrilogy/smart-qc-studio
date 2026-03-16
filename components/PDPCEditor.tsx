@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import {
+    createPortal } from 'react-dom';
 import {
     PDPCNode,
     PDPCLink,
@@ -12,8 +13,28 @@ import {
 } from '../types';
 import { INITIAL_PDPC_DSL } from '../constants';
 import {
-    ChevronRight, Save, Trash2, Plus, Edit3, Settings2, ArrowRight, LayoutGrid, Circle,
-    Workflow, Sparkles, HelpCircle, X, Loader2, Database, Code, GitFork, Layers, LogOut, RotateCcw, Zap
+    ChevronRight,
+    Save,
+    Trash2,
+    Plus,
+    Edit3,
+    Settings2,
+    ArrowRight,
+    LayoutGrid,
+    Circle,
+    Workflow,
+    Sparkles,
+    HelpCircle,
+    X,
+    Loader2,
+    Database,
+    Code,
+    GitFork,
+    Layers,
+    LogOut,
+    RotateCcw,
+    Cpu,
+    Zap
 } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 import { QCToolType } from '../types';
@@ -255,33 +276,33 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative">
             <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-emerald-600/20 rounded-xl flex items-center justify-center border border-emerald-500/30">
-                            <GitFork size={20} className="text-emerald-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-[var(--sidebar-text)]">PDPC 引擎</h2>
-                            <p className="text-[9px] font-bold text-[var(--sidebar-muted)] uppercase tracking-widest mt-1">DECISION PROGRAM ENGINE V1.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">过程决策程序图分析 (PDPC)</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS PDPC Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
+                            className="p-3 bg-[var(--input-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
-                        <button onClick={() => setShowDocs(true)} className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]">
+                        <button onClick={() => setShowDocs(true)} className="p-3 bg-[var(--input-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]">
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
 
-                <nav className="flex gap-2 p-1.5 bg-[var(--nav-bg)] rounded-2xl border border-[var(--sidebar-border)]">
+                <nav className="flex gap-2 p-1.5 bg-[var(--nav-bg)] rounded-lg border border-[var(--sidebar-border)]">
                     {[
                         { id: 'manual', label: '手动录入', icon: <Database size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -293,7 +314,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                 if (t.id === 'dsl' && activeTab !== 'dsl') setDsl(generateDSLFromData());
                                 setActiveTab(t.id as any);
                             }}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-emerald-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--sidebar-muted)]/10'}`}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-emerald-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--sidebar-muted)]/10'}`}
                         >
                             {t.icon} {t.label}
                         </button>
@@ -305,7 +326,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                 {activeTab === 'manual' ? (
                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
                         {/* Layout Section */}
-                        <div className="p-6 bg-[var(--card-bg)] rounded-[2rem] border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
+                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <LayoutGrid size={16} className="text-emerald-500" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">全局布局构建</span>
@@ -317,7 +338,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                         <input
                                             value={data.title}
                                             onChange={e => onDataChange({ ...data, title: e.target.value })}
-                                            className="flex-1 h-12 px-4 text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-xl focus:border-emerald-500 transition-all shadow-inner"
+                                            className="flex-1 h-12 px-4 text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-lg focus:border-emerald-500 transition-all shadow-inner"
                                             placeholder="输入图表标题..."
                                         />
                                         <button
@@ -325,7 +346,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                                 const newLayout = styles.layout === 'Directional' ? 'Standard' : 'Directional';
                                                 onStylesChange({ ...styles, layout: newLayout });
                                             }}
-                                            className="w-12 h-12 flex items-center justify-center bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-[var(--sidebar-text)] hover:text-emerald-400 hover:border-emerald-500/50 transition-all group shadow-lg"
+                                            className="w-12 h-12 flex items-center justify-center bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-[var(--sidebar-text)] hover:text-emerald-400 hover:border-emerald-500/50 transition-all group shadow-lg"
                                             title="切换排版方向"
                                         >
                                             <Workflow size={18} className={`transition-transform duration-500 ${styles.layout === 'Standard' ? 'rotate-90' : ''}`} />
@@ -336,7 +357,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                         </div>
 
                         {/* Style Section */}
-                        <div className="p-6 bg-[var(--card-bg)] rounded-[2rem] border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
+                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <Settings2 size={16} className="text-emerald-500" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">视觉配置</span>
@@ -344,7 +365,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
 
                             <div className="space-y-4">
                                 {/* BG Colors Row */}
-                                <div className="flex flex-col gap-2 p-4 bg-[var(--input-bg)]/30 rounded-2xl border border-[var(--sidebar-border)]/50">
+                                <div className="flex flex-col gap-2 p-4 bg-[var(--input-bg)]/30 rounded-lg border border-[var(--sidebar-border)]/50">
                                     <span className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">背景颜色 (起点/过程/对策/终点)</span>
                                     <div className="grid grid-cols-4 gap-3">
                                         {[
@@ -353,7 +374,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                             { key: 'countermeasureColor', label: 'Counter' },
                                             { key: 'endColor', label: 'End' }
                                         ].map(c => (
-                                            <div key={c.key} className="flex items-center gap-2 bg-[var(--input-bg)]/50 p-2 rounded-xl border border-[var(--input-border)]">
+                                            <div key={c.key} className="flex items-center gap-2 bg-[var(--input-bg)]/50 p-2 rounded-lg border border-[var(--input-border)]">
                                                 <input
                                                     type="color"
                                                     value={(styles as any)[c.key]}
@@ -367,7 +388,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                 </div>
 
                                 {/* Text Colors Row */}
-                                <div className="flex flex-col gap-2 p-4 bg-[var(--input-bg)]/30 rounded-2xl border border-[var(--sidebar-border)]/50">
+                                <div className="flex flex-col gap-2 p-4 bg-[var(--input-bg)]/30 rounded-lg border border-[var(--sidebar-border)]/50">
                                     <span className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">文字颜色 (起点/过程/对策/终点)</span>
                                     <div className="grid grid-cols-4 gap-3">
                                         {[
@@ -376,7 +397,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                             { key: 'countermeasureTextColor', label: 'Counter' },
                                             { key: 'endTextColor', label: 'End' }
                                         ].map(c => (
-                                            <div key={c.key} className="flex items-center gap-2 bg-[var(--input-bg)]/50 p-2 rounded-xl border border-[var(--input-border)]">
+                                            <div key={c.key} className="flex items-center gap-2 bg-[var(--input-bg)]/50 p-2 rounded-lg border border-[var(--input-border)]">
                                                 <input
                                                     type="color"
                                                     value={(styles as any)[c.key]}
@@ -390,11 +411,11 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                 </div>
 
                                 {/* Line Row */}
-                                <div className="flex flex-col gap-2 p-4 bg-[var(--input-bg)]/30 rounded-2xl border border-[var(--sidebar-border)]/50">
+                                <div className="flex flex-col gap-2 p-4 bg-[var(--input-bg)]/30 rounded-lg border border-[var(--sidebar-border)]/50">
                                     <span className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">连接设置 (颜色 & 粗细)</span>
                                     <div className="flex items-center gap-4">
                                         {/* Line Picker aligned with first column (roughly 1/4 of width) */}
-                                        <div className="w-[calc(25%-9px)] flex items-center gap-2 bg-[var(--input-bg)]/50 p-2 rounded-xl border border-[var(--input-border)]">
+                                        <div className="w-[calc(25%-9px)] flex items-center gap-2 bg-[var(--input-bg)]/50 p-2 rounded-lg border border-[var(--input-border)]">
                                             <input
                                                 type="color"
                                                 value={styles.lineColor}
@@ -405,7 +426,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                         </div>
 
                                         {/* Slider taking the rest of the space */}
-                                        <div className="flex-1 flex items-center gap-4 bg-[var(--input-bg)]/50 p-2 rounded-xl border border-[var(--input-border)] h-[38px] px-4">
+                                        <div className="flex-1 flex items-center gap-4 bg-[var(--input-bg)]/50 p-2 rounded-lg border border-[var(--input-border)] h-[38px] px-4">
                                             <input
                                                 type="range"
                                                 min="1"
@@ -422,7 +443,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                         </div>
 
                         {/* Elements Management Section */}
-                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <div className="flex items-center gap-4">
                                     <Database size={16} className="text-emerald-500" />
@@ -458,7 +479,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
 
                             <div className="space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
                                 {data.groups.map(group => (
-                                    <div key={group.id} className="p-4 bg-[var(--input-bg)]/30 rounded-2xl border border-blue-500/20 space-y-3">
+                                    <div key={group.id} className="p-4 bg-[var(--input-bg)]/30 rounded-lg border border-blue-500/20 space-y-3">
                                         <div className="flex items-center gap-3">
                                             <input
                                                 value={group.label}
@@ -559,7 +580,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                 <div className="space-y-2">
                                     <div className="text-[8px] font-black text-[var(--sidebar-muted)] uppercase tracking-widest pl-2">未分组节点</div>
                                     {data.nodes.filter(n => !n.groupId).map(node => (
-                                        <div key={node.id} className="flex items-center gap-2 bg-[var(--input-bg)]/50 p-2 rounded-xl border border-[var(--sidebar-border)] group/node">
+                                        <div key={node.id} className="flex items-center gap-2 bg-[var(--input-bg)]/50 p-2 rounded-lg border border-[var(--sidebar-border)] group/node">
                                             <select
                                                 value={node.type}
                                                 onChange={e => {
@@ -619,7 +640,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                         </div>
 
                         {/* Logical Connections Section */}
-                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <div className="flex items-center gap-4">
                                     <GitFork size={16} className="text-emerald-500" />
@@ -640,7 +661,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                             </div>
                             <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                                 {data.links.map((link, idx) => (
-                                    <div key={idx} className="flex items-center gap-2 bg-[var(--input-bg)]/50 p-3 rounded-xl border border-[var(--sidebar-border)] group/link">
+                                    <div key={idx} className="flex items-center gap-2 bg-[var(--input-bg)]/50 p-3 rounded-lg border border-[var(--sidebar-border)] group/link">
                                         <select
                                             value={link.source}
                                             onChange={e => {
@@ -701,7 +722,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                         <textarea
                             value={dsl}
                             onChange={(e) => handleDSLChange(e.target.value)}
-                            className="flex-1 w-full bg-[var(--input-bg)] text-emerald-100 p-6 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none custom-scrollbar shadow-inner"
+                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-6 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none custom-scrollbar shadow-inner"
                             placeholder="输入 PDPC DSL..."
                             spellCheck={false}
                         />
@@ -709,7 +730,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                     </div>
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-8 shadow-2xl relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能风险推演描述</span>
                                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
@@ -721,14 +742,14 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                             <textarea
                                 value={aiPrompt}
                                 onChange={(e) => setAiPrompt(e.target.value)}
-                                className="w-full h-56 bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-emerald-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="描述您的计划和可能的风险，例如：'分析新药研发流程，识别临床试验失败的风险并制定补救措施'..."
                             />
 
                             <button
                                 onClick={generateAI}
                                 disabled={isGenerating || !aiPrompt.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-slate-800' : 'bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-slate-800' : 'bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -743,7 +764,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                 )}
                             </button>
 
-                            <div className="p-8 bg-emerald-900/10 border border-emerald-800/20 rounded-3xl space-y-4 shadow-sm">
+                            <div className="p-8 bg-emerald-900/10 border border-emerald-800/20 rounded-lg space-y-4 shadow-sm">
                                 <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">推理提示</p>
                                 <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以输入如“实验室火灾应急”、“支付系统故障应急”等场景描述。AI 将自动为您推演完整的 PDPC 决策路径，包含正常路径 (OK) 与异常对策 (NG)。
@@ -756,12 +777,12 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
 
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-[#020617]/90 backdrop-blur-3xl">
-                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         {/* Header */}
                         <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6 bg-[var(--sidebar-bg)]/80 backdrop-blur-xl">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-emerald-600/20 rounded-2xl border border-emerald-500/30">
+                                    <div className="p-3 bg-emerald-600/20 rounded-lg border border-emerald-500/30">
                                         <GitFork size={24} className="text-emerald-400" />
                                     </div>
                                     <div>
@@ -769,12 +790,12 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                         <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Decision Process Logic Base V1.2</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-xl transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-lg transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-[var(--nav-bg)] p-1 rounded-2xl border border-[var(--sidebar-border)] w-fit">
+                            <nav className="flex bg-[var(--nav-bg)] p-1 rounded-lg border border-[var(--sidebar-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -782,7 +803,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-emerald-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
+                                        className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-emerald-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                     >
                                         {t.label}
                                     </button>
@@ -841,7 +862,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">PDPC 分析法 (决策程序图)</h4>
-                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-100">
+                                        <div className="p-6 bg-slate-900/50 rounded-lg border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-100">
                                             <p>过程决策程序图 (Process Decision Program Chart) 是在制定计划阶段，对目标实现过程中可能出现的障碍进行预见，并设计多种应对手段的工具。</p>
                                             <ul className="list-disc list-inside space-y-2">
                                                 <li><strong>顺向思维</strong>: 从起点出发，推演正常路径 (OK)。</li>
@@ -852,12 +873,12 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">动态决策逻辑</h4>
-                                        <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-100">
+                                        <div className="p-6 bg-slate-900/50 rounded-lg border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-100">
                                             <p>PDPC 的核心在于“走一步看一步”。根据实时执行结果（OK 或 NG），决策者可以迅速从预设的备选方案中选择最合适的后续路径。</p>
                                         </div>
                                     </section>
 
-                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl">
+                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Zap size={14} className="text-indigo-500" />
                                             <span className="text-[10px] font-black uppercase text-indigo-500">思维启发</span>
@@ -872,7 +893,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                         <div className="p-10 border-t border-slate-800 bg-slate-900/50 flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowDocs(false)}
-                                className="px-16 py-4 bg-emerald-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-emerald-500 transition-all font-sans"
+                                className="px-16 py-4 bg-emerald-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-emerald-500 transition-all font-sans"
                             >
                                 已阅读规范
                             </button>
@@ -882,6 +903,7 @@ const PDPCEditor: React.FC<PDPCEditorProps> = ({
                 document.body
             )}
         </div>
+        
     );
 };
 

@@ -1,4 +1,4 @@
-# 《Smart QC Tools 排列图模块》使用手册
+# 《IQS 排列图模块》使用手册 (Intelligent QC Studio)
 **（软件著作权申请建议参考文档版本）**
 
 ---
@@ -59,6 +59,8 @@
 - `Color[MarkLine]: #HEX`：定义 80% 关键参考线颜色。
 - `Font[Base]: [Size]`：统一调整坐标轴字号。
 - `Decimals: [0-4]`：精准控制频率百分比的小数点位数。
+62: - `ShowFreq: true/false`：控制柱形上方频数标签的显隐。
+63: - `ShowPercent: true/false`：控制曲线节点百分比标签的显隐。
 - `- 项目: 频数`：定义数据条目。
 
 **操作规程**：

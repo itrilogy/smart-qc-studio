@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MermaidChartStyles, DEFAULT_MERMAID_STYLES, QCToolType } from '../types';
 import {
-    Edit3, Code, Sparkles, Settings2, HelpCircle, X, RotateCcw,
+    Cpu, Edit3, Code, Sparkles, Settings2, HelpCircle, X, RotateCcw,
     Loader2, Zap, LayoutGrid, ChevronRight, Palette, Type,
     Database, GitBranch
 } from 'lucide-react';
@@ -89,30 +89,30 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative">
             {/* Header Area */}
             <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center border border-blue-500/30">
-                            <GitBranch size={22} className="text-blue-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">Mermaid 引擎</h2>
-                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1">LOGIC PROCESSOR V3.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">Mermaid 流程图分析</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS Mermaid Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
+                            className="p-3 bg-[var(--input-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
                         <button
                             onClick={() => setShowDocs(true)}
-                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]"
+                            className="p-3 bg-[var(--input-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]"
                             title="帮助文档"
                         >
                             <HelpCircle size={18} />
@@ -120,7 +120,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                     </div>
                 </div>
 
-                <nav className="flex gap-2 p-1.5 bg-[var(--nav-bg)] rounded-2xl border border-[var(--sidebar-border)]">
+                <nav className="flex gap-2 p-1.5 bg-[var(--nav-bg)] rounded-lg border border-[var(--sidebar-border)]">
                     {[
                         { id: 'style', label: '面板配置', icon: <Database size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -129,7 +129,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                         <button
                             key={t.id}
                             onClick={() => setActiveTab(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-blue-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--input-bg)]'
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-blue-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--input-bg)]'
                                 }`}
                         >
                             {t.icon} {t.label}
@@ -150,12 +150,12 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                             <input
                                 value={styles.title}
                                 onChange={e => onStylesChange({ ...styles, title: e.target.value })}
-                                className="w-full h-12 px-4 logic-terminal-input text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border-[var(--input-border)] rounded-xl focus:border-blue-500"
+                                className="w-full h-12 px-4 logic-terminal-input text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border-[var(--input-border)] rounded-lg focus:border-blue-500"
                                 placeholder="图表标题"
                             />
                         </div>
 
-                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
                             <div className="flex items-center gap-3 border-b border-[var(--sidebar-border)] pb-3">
                                 <Palette size={14} className="text-blue-400" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">颜色方案与样式</span>
@@ -167,7 +167,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                     <select
                                         value={styles.theme}
                                         onChange={e => onStylesChange({ ...styles, theme: e.target.value as any })}
-                                        className="w-full h-12 px-4 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm font-bold text-[var(--sidebar-text)] outline-none focus:border-blue-500 transition-all appearance-none cursor-pointer"
+                                        className="w-full h-12 px-4 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-sm font-bold text-[var(--sidebar-text)] outline-none focus:border-blue-500 transition-all appearance-none cursor-pointer"
                                     >
                                         <option value="default">默认主题 (Default)</option>
                                         <option value="forest">森林草木 (Forest)</option>
@@ -179,7 +179,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
 
                                 <div className="space-y-2">
                                     <span className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase tracking-widest pl-1">背景颜色</span>
-                                    <div className="flex items-center gap-1.5 bg-[var(--input-bg)] p-2 rounded-xl border border-[var(--input-border)]">
+                                    <div className="flex items-center gap-1.5 bg-[var(--input-bg)] p-2 rounded-lg border border-[var(--input-border)]">
                                         <input
                                             type="color"
                                             value={styles.backgroundColor}
@@ -234,7 +234,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                         <select
                                             value={styles.elkNodePlacementStrategy}
                                             onChange={e => onStylesChange({ ...styles, elkNodePlacementStrategy: e.target.value as any })}
-                                            className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-[10px] font-bold text-[var(--sidebar-text)] outline-none focus:border-blue-500 transition-all appearance-none cursor-pointer"
+                                            className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-[10px] font-bold text-[var(--sidebar-text)] outline-none focus:border-blue-500 transition-all appearance-none cursor-pointer"
                                         >
                                             <option value="SIMPLE">简单策略 (SIMPLE)</option>
                                             <option value="NETWORK_SIMPLE">网络简单 (NETWORK_SIMPLE)</option>
@@ -246,7 +246,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                             )}
                         </div>
 
-                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-6 shadow-2xl">
                             <div className="flex items-center gap-3 border-b border-[var(--sidebar-border)] pb-3">
                                 <Type size={14} className="text-blue-400" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">排版设置</span>
@@ -259,7 +259,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                         type="number"
                                         value={styles.titleFontSize}
                                         onChange={e => onStylesChange({ ...styles, titleFontSize: parseInt(e.target.value) })}
-                                        className="w-full h-10 px-3 text-[10px] font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-xl focus:border-blue-500"
+                                        className="w-full h-10 px-3 text-[10px] font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-lg focus:border-blue-500"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -268,7 +268,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                         type="number"
                                         value={styles.fontSize}
                                         onChange={e => onStylesChange({ ...styles, fontSize: parseInt(e.target.value) })}
-                                        className="w-full h-10 px-3 text-[10px] font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-xl focus:border-blue-500"
+                                        className="w-full h-10 px-3 text-[10px] font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-lg focus:border-blue-500"
                                     />
                                 </div>
                             </div>
@@ -282,14 +282,14 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                         <textarea
                             value={data}
                             onChange={(e) => onDataChange(e.target.value)}
-                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-[2.5rem] focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all resize-none custom-scrollbar shadow-inner"
+                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all resize-none custom-scrollbar shadow-inner"
                             placeholder="输入 Mermaid 脚本..."
                             spellCheck={false}
                         />
                     </div>
                 ) : activeTab === 'ai' ? (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-8 shadow-2xl relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">AI 智能逻辑推演</span>
                                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
@@ -300,13 +300,13 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                             <textarea
                                 value={aiPrompt}
                                 onChange={(e) => setAiPrompt(e.target.value)}
-                                className="w-full h-56 bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-blue-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="例如：画一个电商购物流程图，包含浏览、下单、支付、发货等环节..."
                             />
                             <button
                                 onClick={generateAI}
                                 disabled={isGenerating || !aiPrompt.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'
+                                className={`w-full h-16 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'
                                     }`}
                             >
                                 {isGenerating ? (
@@ -322,7 +322,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                 )}
                             </button>
 
-                            <div className="p-8 bg-blue-900/10 border border-blue-800/20 rounded-3xl space-y-4">
+                            <div className="p-8 bg-blue-900/10 border border-blue-800/20 rounded-lg space-y-4">
                                 <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">推理提示</p>
                                 <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以输入原始文本、逻辑流程描述或业务规则。AI 会自动识别**节点关系**与**流程走向**，并依据“逻辑建模”为您配置好分析视角与架构。
@@ -336,12 +336,12 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
             {
                 showDocs && createPortal(
                     <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md">
-                        <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                        <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                             {/* Header */}
                             <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className="p-3 bg-blue-600/20 rounded-2xl border border-blue-500/30">
+                                        <div className="p-3 bg-blue-600/20 rounded-lg border border-blue-500/30">
                                             <Zap size={24} className="text-blue-400" />
                                         </div>
                                         <div>
@@ -349,12 +349,12 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                             <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Logic Mapping Base V3.0</p>
                                         </div>
                                     </div>
-                                    <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-xl transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
+                                    <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-lg transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
                                         <X size={24} />
                                     </button>
                                 </div>
 
-                                <nav className="flex bg-[var(--nav-bg)] p-1 rounded-2xl border border-[var(--sidebar-border)] w-fit">
+                                <nav className="flex bg-[var(--nav-bg)] p-1 rounded-lg border border-[var(--sidebar-border)] w-fit">
                                     {[
                                         { id: 'syntax', label: '语法规范说明' },
                                         { id: 'examples', label: '常用示例手册' },
@@ -362,7 +362,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                         <button
                                             key={t.id}
                                             onClick={() => setDocTab(t.id as any)}
-                                            className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
+                                            className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                         >
                                             {t.label}
                                         </button>
@@ -380,52 +380,52 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                                 <span className="text-[12px] font-black uppercase tracking-widest">核心语法规范</span>
                                             </div>
                                             <div className="grid grid-cols-2 gap-6">
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">流程图 (Flowchart)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">使用 `graph TD` (自上而下) 或 `graph LR` (从左至右)。节点使用 `[]` (矩形), `()` (圆角), `{ }` (菱形)。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">A[开始] --{'>'} B{'{'}判断{'}'}</pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">思维导图 (Mindmap)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">树状知识梳理。根节点使用 `(( ))`，分支使用缩进区分。支持多种形状如 `[ ]`, `( )`。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">mindmap\n  root((\"中心\"))\n    [分支]</pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">序列图 (Sequence)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">描述对象间的交互。使用 `participant` 定义角色，`-{'>>'}` 表示异步消息。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">Alice -{'>'}{'>>'} Bob: 你好</pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">看板图 (Kanban)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">任务状态跟踪。使用 `kanban` 声明，节点支持 `@{ }` 属性（如负责人、优先级）。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">kanban\n  [待办]\n    [任务] </pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">状态图 (State)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">描述状态流转。`[*]` 表示起点/终点，`--&gt;` 表示状态转移。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">[*] --{'>'} 流转 --{'>'} [*]</pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">类图 (Class)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">面向对象结构。`{'{'}` `{'}'}` 定义类内容，`&lt;|--` 定义继承等关系。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">A &lt;|-- B\nclass A {'{'} +move() {'}'}</pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">实体关系 (ER)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">数据建模。`||--o{'{'}` 等符号表示数量关系，块内定义实体属性。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">USER ||--o{'{'} ORDER : places</pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">饼图 (Pie)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">占比分布。`pie title xxx`，每行 `"标签" : 数值`。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">pie title 分布\n  "A" : 60\n  "B" : 40</pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">旅程图 (Journey)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">用户体验旅程。使用 `journey`，`section` 分段，评分 `任务: 分数: 角色`。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">任务: 5: 用户</pre>
                                                 </div>
-                                                <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                                <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                     <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest underline decoration-blue-500 decoration-2 underline-offset-4">时间线 (Timeline)</h5>
                                                     <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">发展历程记录。格式 `节点名 : 事件描述`。</p>
                                                     <pre className="text-[9px] font-mono text-blue-300/70 p-2 bg-[var(--card-bg)] rounded">2024 : 发布 V1.0</pre>
@@ -463,9 +463,9 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                 ) : (
                                     <div className="space-y-12">
                                         <section className="space-y-6">
-                                            <div className="p-8 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-3xl space-y-4">
+                                            <div className="p-8 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg space-y-4">
                                                 <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest">标准流程图示例</h4>
-                                                <div className="bg-[var(--card-bg)] p-6 rounded-2xl font-mono text-[10px] text-blue-300/80 leading-relaxed whitespace-pre">
+                                                <div className="bg-[var(--card-bg)] p-6 rounded-lg font-mono text-[10px] text-blue-300/80 leading-relaxed whitespace-pre">
                                                     {`graph TD
     A[用户请求] --> B{鉴权中心}
     B -- 成功 --> C[访问资源]
@@ -474,9 +474,9 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                                 </div>
                                             </div>
 
-                                            <div className="p-8 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-3xl space-y-4">
+                                            <div className="p-8 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg space-y-4">
                                                 <h4 className="text-sm font-black text-purple-400 uppercase tracking-widest">思维导图示例</h4>
-                                                <div className="bg-[var(--card-bg)] p-6 rounded-2xl font-mono text-[10px] text-purple-300/80 leading-relaxed whitespace-pre">
+                                                <div className="bg-[var(--card-bg)] p-6 rounded-lg font-mono text-[10px] text-purple-300/80 leading-relaxed whitespace-pre">
                                                     {`mindmap
   root(("知识管理"))
     输入
@@ -490,9 +490,9 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                                 </div>
                                             </div>
 
-                                            <div className="p-8 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-3xl space-y-4">
+                                            <div className="p-8 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg space-y-4">
                                                 <h4 className="text-sm font-black text-amber-400 uppercase tracking-widest">工作看板示例</h4>
-                                                <div className="bg-[var(--card-bg)] p-6 rounded-2xl font-mono text-[10px] text-amber-300/80 leading-relaxed whitespace-pre">
+                                                <div className="bg-[var(--card-bg)] p-6 rounded-lg font-mono text-[10px] text-amber-300/80 leading-relaxed whitespace-pre">
                                                     {`kanban
     待办[制作计划]
         [任务A] @{ assigned: "张三", priority: "High" }
@@ -501,9 +501,9 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                                 </div>
                                             </div>
 
-                                            <div className="p-8 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-3xl space-y-4">
+                                            <div className="p-8 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg space-y-4">
                                                 <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest">甘特图示例</h4>
-                                                <div className="bg-[var(--card-bg)] p-6 rounded-2xl font-mono text-[10px] text-emerald-300/80 leading-relaxed whitespace-pre">
+                                                <div className="bg-[var(--card-bg)] p-6 rounded-lg font-mono text-[10px] text-emerald-300/80 leading-relaxed whitespace-pre">
                                                     {`gantt
     title 产品迭代计划
     dateFormat  YYYY-MM-DD
@@ -520,7 +520,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                             <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                                 <button
                                     onClick={() => setShowDocs(false)}
-                                    className="px-16 py-4 bg-blue-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all font-sans"
+                                    className="px-16 py-4 bg-blue-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all font-sans"
                                 >
                                     我已了解语法
                                 </button>
@@ -532,6 +532,7 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
             }
 
         </div >
+        
     );
 };
 

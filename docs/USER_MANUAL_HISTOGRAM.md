@@ -1,4 +1,4 @@
-# 《Smart QC Tools 分布直方图模块》使用手册
+# 《IQS 分布直方图模块》使用手册 (Intelligent QC Studio)
 **（软件著作权申请建议参考文档版本）**
 
 ---
@@ -46,6 +46,7 @@
 - `LSL: [Number]`：设置下规格限。
 - `Bins: [auto/Number]`：控制频数分布的组宽。
 - `ShowCurve: [true/false]`：控制拟合曲线显示。
+49: - `ShowFreq: [true/false]`：控制柱体上方频数标签显示。
 - `- [Value]`：定义原始测量点。
 
 ---

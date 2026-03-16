@@ -1,8 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { MatrixPlotData, MatrixPlotStyles, DEFAULT_MATRIX_PLOT_STYLES, QCToolType } from '../types';
+import {
+    createPortal } from 'react-dom';
+import { MatrixPlotData,
+    MatrixPlotStyles,
+    DEFAULT_MATRIX_PLOT_STYLES,
+    QCToolType } from '../types';
 import { INITIAL_MATRIX_PLOT_DSL } from '../constants';
-import { Grid3X3, Sparkles, HelpCircle, X, Loader2, Database, Code, RotateCcw } from 'lucide-react';
+import { Grid3X3,
+    Sparkles,
+    HelpCircle,
+    X,
+    Loader2,
+    Database,
+    Code,
+    RotateCcw,
+    Cpu
+} from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 
 interface MatrixPlotEditorProps {
@@ -245,37 +258,37 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] overflow-hidden">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] overflow-hidden">
             {/* Header */}
             <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center border border-blue-500/30">
-                            <Grid3X3 size={22} className="text-blue-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">图矩阵引擎</h2>
-                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1">MATRIX PLOT V1.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">矩阵散点图分析</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS Matrix Plot Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
+                            className="p-3 bg-[var(--input-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
                         <button
                             onClick={() => setShowDocs(true)}
-                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]"
+                            className="p-3 bg-[var(--input-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]"
                         >
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
 
-                <nav className="flex bg-[var(--nav-bg)] p-1.5 rounded-2xl border border-[var(--sidebar-border)] gap-1">
+                <nav className="flex bg-[var(--nav-bg)] p-1.5 rounded-lg border border-[var(--sidebar-border)] gap-1">
                     {[
                         { id: 'manual', label: '配置参数', icon: <Database size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -284,7 +297,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                         <button
                             key={t.id}
                             onClick={() => setActiveTab(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-blue-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-blue-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'
                                 }`}
                         >
                             {t.icon} {t.label}
@@ -298,7 +311,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                 {activeTab === 'manual' && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {/* Basic Config */}
-                        <div className="p-6 bg-[var(--card-bg)] rounded-[2rem] border border-[var(--sidebar-border)] space-y-6 text-[var(--sidebar-text)]">
+                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-6 text-[var(--sidebar-text)]">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">核心配置</span>
                             </div>
@@ -310,7 +323,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                         <input
                                             value={data.title}
                                             onChange={e => onDataChange({ ...data, title: e.target.value })}
-                                            className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl px-4 py-2 text-sm text-[var(--sidebar-text)] focus:outline-none focus:border-blue-500 shadow-inner"
+                                            className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg px-4 py-2 text-sm text-[var(--sidebar-text)] focus:outline-none focus:border-blue-500 shadow-inner"
                                         />
                                     </div>
                                     <div className="self-end pb-[2px]">
@@ -320,7 +333,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                                 const idx = modes.indexOf(styles.displayMode);
                                                 onStylesChange({ ...styles, displayMode: modes[(idx + 1) % modes.length] });
                                             }}
-                                            className="h-[38px] px-4 bg-[var(--sidebar-muted)]/20 hover:bg-[var(--sidebar-muted)]/30 text-[var(--sidebar-text)] rounded-xl border border-[var(--sidebar-border)] transition-all flex items-center gap-2 whitespace-nowrap shadow-lg active:scale-95"
+                                            className="h-[38px] px-4 bg-[var(--sidebar-muted)]/20 hover:bg-[var(--sidebar-muted)]/30 text-[var(--sidebar-text)] rounded-lg border border-[var(--sidebar-border)] transition-all flex items-center gap-2 whitespace-nowrap shadow-lg active:scale-95"
                                         >
                                             <span className="text-[10px] font-black uppercase tracking-widest">范围:</span>
                                             <span className="text-xs font-bold text-blue-400">
@@ -337,7 +350,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                     <select
                                         value={data.mode}
                                         onChange={e => onDataChange({ ...data, mode: e.target.value as any })}
-                                        className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl px-4 py-2 text-sm text-[var(--sidebar-text)] focus:outline-none"
+                                        className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg px-4 py-2 text-sm text-[var(--sidebar-text)] focus:outline-none"
                                     >
                                         <option value="matrix">变量矩阵</option>
                                         <option value="yvsx">每个 Y 对每个 X</option>
@@ -345,7 +358,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                 </div>
                                 <div className="space-y-2">
                                     <span className="text-[10px] font-bold text-[var(--sidebar-muted)] uppercase">趋势线</span>
-                                    <div className="flex items-center justify-between h-10 px-4 bg-[var(--input-bg)]/50 border border-[var(--sidebar-border)]/50 rounded-xl">
+                                    <div className="flex items-center justify-between h-10 px-4 bg-[var(--input-bg)]/50 border border-[var(--sidebar-border)]/50 rounded-lg">
                                         <div className="flex items-center gap-2">
                                             <input
                                                 type="checkbox"
@@ -403,7 +416,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                     {data.mode === 'matrix' ? (
                                         <div className="space-y-2">
                                             <span className="text-[10px] font-bold text-[var(--sidebar-muted)] uppercase">分析变量</span>
-                                            <div className="flex flex-wrap gap-2 p-3 bg-[var(--input-bg)]/10 border border-[var(--sidebar-border)]/40 rounded-xl min-h-[50px]">
+                                            <div className="flex flex-wrap gap-2 p-3 bg-[var(--input-bg)]/10 border border-[var(--sidebar-border)]/40 rounded-lg min-h-[50px]">
                                                 {keys.map(k => (
                                                     <button
                                                         key={k}
@@ -422,7 +435,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                         <div className="grid grid-cols-1 gap-4">
                                             <div className="space-y-2">
                                                 <span className="text-[10px] font-bold text-emerald-500 uppercase">Y 变量</span>
-                                                <div className="flex flex-wrap gap-2 p-3 bg-[var(--input-bg)]/10 border border-[var(--sidebar-border)]/40 rounded-xl min-h-[50px]">
+                                                <div className="flex flex-wrap gap-2 p-3 bg-[var(--input-bg)]/10 border border-[var(--sidebar-border)]/40 rounded-lg min-h-[50px]">
                                                     {keys.map(k => (
                                                         <button
                                                             key={k}
@@ -439,7 +452,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                             </div>
                                             <div className="space-y-2">
                                                 <span className="text-[10px] font-bold text-blue-500 uppercase">X 变量</span>
-                                                <div className="flex flex-wrap gap-2 p-3 bg-[var(--input-bg)]/10 border border-[var(--sidebar-border)]/40 rounded-xl min-h-[50px]">
+                                                <div className="flex flex-wrap gap-2 p-3 bg-[var(--input-bg)]/10 border border-[var(--sidebar-border)]/40 rounded-lg min-h-[50px]">
                                                     {keys.map(k => (
                                                         <button
                                                             key={k}
@@ -460,7 +473,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                     {data.mode === 'matrix' && (
                                         <div className="space-y-2">
                                             <span className="text-[10px] font-bold text-[var(--sidebar-text)] uppercase">对角线展示</span>
-                                            <div className="flex flex-wrap gap-2 p-3 bg-[var(--input-bg)]/10 border border-[var(--sidebar-border)]/40 rounded-xl min-h-[50px]">
+                                            <div className="flex flex-wrap gap-2 p-3 bg-[var(--input-bg)]/10 border border-[var(--sidebar-border)]/40 rounded-lg min-h-[50px]">
                                                 {/* Analysis Modes */}
                                                 {[
                                                     { id: 'Histogram', label: '直方图' },
@@ -493,7 +506,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                         <textarea
                             value={localDsl}
                             onChange={(e) => handleDSLChange(e.target.value)}
-                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-[2.5rem] focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all resize-none custom-scrollbar shadow-inner"
+                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all resize-none custom-scrollbar shadow-inner"
                             spellCheck={false}
                         />
                         {error && <p className="text-red-500 text-[10px] font-bold px-4">{error}</p>}
@@ -502,7 +515,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
 
                 {activeTab === 'ai' && (
                     <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-8 shadow-2xl relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能图矩阵推演</span>
                                 <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center gap-2">
@@ -514,14 +527,14 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                             <textarea
                                 value={aiPrompt}
                                 onChange={(e) => setAiPrompt(e.target.value)}
-                                className="w-full h-64 p-8 bg-[var(--input-bg)] text-[var(--sidebar-text)] text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-blue-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="输入分析需求，例如：'分析温度、压力与产量的关系，区分高/低速两组数据'..."
                             />
 
                             <button
                                 onClick={handleGenerateAI}
                                 disabled={isGenerating || !aiPrompt.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-border)]' : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-border)]' : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -536,7 +549,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                 )}
                             </button>
 
-                            <div className="p-8 bg-blue-900/10 border border-blue-800/20 rounded-3xl space-y-4 shadow-sm">
+                            <div className="p-8 bg-blue-900/10 border border-blue-800/20 rounded-lg space-y-4 shadow-sm">
                                 <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">推理提示</p>
                                 <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以描述多个变量及其数据样本，AI 将自动识别分析维度并推荐合适的布局模式（全矩阵或 Y 对 X）。例如：“对比分析 10 组产品的厚度与强度关系”。
@@ -550,11 +563,11 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
             {/* Docs Modal */}
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md">
-                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl">
+                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl">
                         <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6 bg-[var(--sidebar-bg)]/80 backdrop-blur-xl">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-blue-600/20 rounded-2xl border border-blue-500/30">
+                                    <div className="p-3 bg-blue-600/20 rounded-lg border border-blue-500/30">
                                         <Grid3X3 size={24} className="text-blue-400" />
                                     </div>
                                     <div>
@@ -562,12 +575,12 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                         <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Matrix Plot Knowledge Base V1.0</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-xl transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-lg transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-[var(--nav-bg)] p-1 rounded-2xl border border-[var(--sidebar-border)] w-fit">
+                            <nav className="flex bg-[var(--nav-bg)] p-1 rounded-lg border border-[var(--sidebar-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -575,7 +588,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'
+                                        className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'
                                             }`}
                                     >
                                         {t.label}
@@ -589,7 +602,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">1. 基础配置元数据</h4>
-                                        <div className="grid grid-cols-[180px_1fr] gap-4 text-xs font-mono bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--sidebar-border)]">
+                                        <div className="grid grid-cols-[180px_1fr] gap-4 text-xs font-mono bg-[var(--input-bg)] p-6 rounded-lg border border-[var(--sidebar-border)]">
                                             <span className="text-blue-300 font-bold">Title:</span>
                                             <span className="text-[var(--sidebar-text)]">图表主标题，支持中文。</span>
 
@@ -612,9 +625,9 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">2. 数据样本定义</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-4">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4">
                                             <p className="text-xs">数据块紧跟在元数据之后，使用 YAML-lite 格式定义：</p>
-                                            <pre className="text-[10px] font-mono text-emerald-400 bg-black/40 p-4 rounded-xl">
+                                            <pre className="text-[10px] font-mono text-emerald-400 bg-black/40 p-4 rounded-lg">
                                                 {`Data:
 - { Temp: 200, Press: 10.2, Group: "A" }
 - { Temp: 210, Press: 11.5, Group: "A" }
@@ -625,7 +638,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">3. 视觉样式控制 (Styles)</h4>
-                                        <div className="grid grid-cols-[180px_1fr] gap-4 text-xs font-mono bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--sidebar-border)]">
+                                        <div className="grid grid-cols-[180px_1fr] gap-4 text-xs font-mono bg-[var(--input-bg)] p-6 rounded-lg border border-[var(--sidebar-border)]">
                                             <span className="text-amber-400 font-bold">DisplayMode:</span>
                                             <span className="text-[var(--sidebar-text)]">Full (全矩阵), Lower (左下三角), Upper (右上三角)。</span>
 
@@ -651,13 +664,13 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-6">
-                                            <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-3">
+                                            <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-3">
                                                 <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">Lowess 平滑逻辑</h5>
                                                 <p className="text-[10px] leading-relaxed text-[var(--sidebar-text)]">
                                                     采用局部加权散点平滑（Locally Weighted Regression），基于 Tri-cube 权重函数。与普通线性回归不同，它能捕捉局部趋势，对孤立点具有更强的鲁棒性，是专业质量控制软件（如 Minitab）的标准配置。
                                                 </p>
                                             </div>
-                                            <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-3">
+                                            <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-3">
                                                 <h5 className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">分类特征识别</h5>
                                                 <p className="text-[10px] leading-relaxed text-[var(--sidebar-text)]">
                                                     通过引入 Group 变量，系统将自动映射不同的颜色和几何形状。这对于识别“分层数据”至关重要——有时整体看起来不相关的变量，在特定层别下却呈现极强的规律性。
@@ -665,7 +678,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                                             </div>
                                         </div>
 
-                                        <div className="p-8 bg-blue-600/10 rounded-3xl border border-blue-500/20">
+                                        <div className="p-8 bg-blue-600/10 rounded-lg border border-blue-500/20">
                                             <h4 className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-4">分析建议 (Analytic Strategy)</h4>
                                             <ul className="text-xs space-y-4 text-slate-300">
                                                 <li className="flex gap-3">
@@ -690,7 +703,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                         <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowDocs(false)}
-                                className="px-16 py-4 bg-blue-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all shadow-lg"
+                                className="px-16 py-4 bg-blue-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all shadow-lg"
                             >
                                 已阅读规范
                             </button>
@@ -700,6 +713,7 @@ const MatrixPlotEditor: React.FC<MatrixPlotEditorProps> = ({ data, styles, onDat
                 document.body
             )}
         </div>
+        
     );
 };
 

@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import {
-    Plus, Trash2, Sparkles, Database, Code,
-    ChevronRight, BarChart2, HelpCircle, X, Loader2, RotateCcw, Zap
+    createPortal } from 'react-dom';
+import {
+    Plus,
+    Trash2,
+    Sparkles,
+    Database,
+    Code,
+    ChevronRight,
+    BarChart2,
+    HelpCircle,
+    X,
+    Loader2,
+    RotateCcw,
+    Cpu,
+    Zap
 } from 'lucide-react';
 import { HistogramChartStyles, DEFAULT_HISTOGRAM_STYLES } from '../types';
 import { generateHistogramDSL, getAIStatus } from '../services/aiService';
@@ -155,37 +167,37 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
-            {/* Header */}
-            <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
+                {/* Header */}
+                <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-indigo-600/20 rounded-xl flex items-center justify-center border border-indigo-500/30">
-                            <BarChart2 size={20} className="text-indigo-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-[var(--sidebar-text)]">直方图配置</h2>
-                            <p className="text-[9px] font-bold text-[var(--sidebar-muted)] uppercase tracking-widest mt-1">Histogram Engine v2.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">直方图分析</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS Histogram Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
+                            className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
                         <button
                             onClick={() => setShowDocs(true)}
-                            className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-600 transition-all border border-[var(--sidebar-border)] shadow-sm"
+                            className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-600 transition-all border border-[var(--sidebar-border)] shadow-sm"
                         >
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
 
-                <nav className="flex gap-2 p-1.5 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)]">
+                <nav className="flex gap-2 p-1.5 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)]">
                     {[
                         { id: 'manual', label: '手动录入', icon: <Database size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -194,7 +206,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                         <button
                             key={t.id}
                             onClick={() => handleTabChange(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'}`}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'}`}
                         >
                             {t.icon} {t.label}
                         </button>
@@ -215,13 +227,13 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                             <input
                                 value={styles.title || ''}
                                 onChange={e => onUpdate(data, { ...styles, title: e.target.value })}
-                                className="w-full h-14 px-6 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-2xl text-sm font-bold shadow-inner focus:outline-none focus:border-indigo-500 transition-all text-[var(--sidebar-text)]"
+                                className="w-full h-14 px-6 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-sm font-bold shadow-inner focus:outline-none focus:border-indigo-500 transition-all text-[var(--sidebar-text)]"
                                 placeholder="例如：产品直径分布图"
                             />
                         </div>
 
                         {/* Specs */}
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-2xl">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-6 shadow-2xl">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">规格限配置</span>
                             </div>
@@ -232,7 +244,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                         type="number"
                                         value={styles.usl ?? ''}
                                         onChange={e => onUpdate(data, { ...styles, usl: e.target.value ? parseFloat(e.target.value) : undefined })}
-                                        className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-xs font-mono text-red-200"
+                                        className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-xs font-mono text-red-200"
                                         placeholder="--"
                                     />
                                 </div>
@@ -242,7 +254,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                         type="number"
                                         value={styles.lsl ?? ''}
                                         onChange={e => onUpdate(data, { ...styles, lsl: e.target.value ? parseFloat(e.target.value) : undefined })}
-                                        className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-xs font-mono text-red-200"
+                                        className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-xs font-mono text-red-200"
                                         placeholder="--"
                                     />
                                 </div>
@@ -252,7 +264,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                         type="number"
                                         value={styles.target ?? ''}
                                         onChange={e => onUpdate(data, { ...styles, target: e.target.value ? parseFloat(e.target.value) : undefined })}
-                                        className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-xs font-mono text-emerald-200"
+                                        className="w-full h-10 px-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-xs font-mono text-emerald-200"
                                         placeholder="--"
                                     />
                                 </div>
@@ -260,7 +272,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                         </div>
 
                         {/* Config */}
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-2xl">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-6 shadow-2xl">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">显示配置</span>
                             </div>
@@ -305,7 +317,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                         </div>
 
                         {/* Styles */}
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-2xl">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-6 shadow-2xl">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">颜色方案</span>
                             </div>
@@ -339,7 +351,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                             <textarea
                                 value={rawDataInput}
                                 onChange={e => handleRawDataChange(e.target.value)}
-                                className="w-full h-64 p-6 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-2xl text-xs font-mono leading-relaxed text-[var(--sidebar-text)] shadow-inner focus:outline-none focus:border-indigo-500 transition-all resize-none"
+                                className="w-full h-64 p-6 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-xs font-mono leading-relaxed text-[var(--sidebar-text)] shadow-inner focus:outline-none focus:border-indigo-500 transition-all resize-none"
                                 placeholder="输入数值，每行一个..."
                                 spellCheck={false}
                             />
@@ -354,7 +366,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                     <textarea
                         value={dsl}
                         onChange={e => { setDsl(e.target.value); handleParseDSL(e.target.value); }}
-                        className="w-full h-full min-h-[500px] p-8 bg-[var(--input-bg)] text-blue-600 dark:text-blue-400 font-mono text-sm leading-relaxed border border-[var(--input-border)] rounded-2xl shadow-inner focus:outline-none focus:border-indigo-500 transition-all whitespace-pre overflow-auto resize-none"
+                        className="w-full h-full min-h-[500px] p-8 bg-[var(--input-bg)] text-[var(--sidebar-text)] font-mono text-sm leading-relaxed border border-[var(--input-border)] rounded-lg shadow-inner focus:outline-none focus:border-indigo-500 transition-all whitespace-pre overflow-auto resize-none"
                         spellCheck={false}
                         placeholder="输入 Histogram DSL..."
                     />
@@ -362,7 +374,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
 
                 {activeTab === 'ai' && (
                     <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-8 shadow-2xl relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能分布场景模拟</span>
                                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
@@ -374,14 +386,14 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                             <textarea
                                 value={aiInput}
                                 onChange={e => setAiInput(e.target.value)}
-                                className="w-full h-64 p-8 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-indigo-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="例如：生成一组均值10.0，标准差0.05的正态分布数据，规格上10.15，下限9.85..."
                             />
 
                             <button
                                 onClick={generateAiData}
                                 disabled={isGenerating || !aiInput.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -396,7 +408,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                 )}
                             </button>
 
-                            <div className="p-8 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl space-y-4">
+                            <div className="p-8 bg-indigo-900/10 border border-indigo-800/20 rounded-lg space-y-4">
                                 <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">推理提示</p>
                                 <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以输入业务场景描述（如“活塞环厚度测量数据”）或具体统计参数。AI 将为您模拟符合业务逻辑的数据分布，并自动配置合适的规格限与均值线。
@@ -409,12 +421,12 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
 
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md transition-all">
-                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         {/* Header */}
                         <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-indigo-600/20 rounded-2xl border border-indigo-500/30">
+                                    <div className="p-3 bg-indigo-600/20 rounded-lg border border-indigo-500/30">
                                         <BarChart2 size={24} className="text-indigo-400" />
                                     </div>
                                     <div>
@@ -422,12 +434,12 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                         <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Histogram Knowledge Base V2.1</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-xl transition-all text-[var(--sidebar-text)] hover:text-indigo-400">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-lg transition-all text-[var(--sidebar-text)] hover:text-indigo-400">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-2xl border border-[var(--input-border)] w-fit">
+                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-lg border border-[var(--input-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -435,7 +447,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
+                                        className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                     >
                                         {t.label}
                                     </button>
@@ -503,7 +515,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                             <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式定义</span>
                                         </div>
                                         <div className="grid grid-cols-1 gap-4 font-mono text-xs">
-                                            <div className="p-6 bg-[var(--card-bg)] rounded-2xl border border-[var(--input-border)] space-y-3">
+                                            <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--input-border)] space-y-3">
                                                 <div className="flex justify-between border-b border-[var(--sidebar-border)]/50 pb-2">
                                                     <span className="text-amber-500">Color[Bar]:</span>
                                                     <span className="text-slate-100">#HEX 直方柱颜色</span>
@@ -533,9 +545,9 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                             <Plus size={18} />
                                             <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
                                         </div>
-                                        <div className="p-6 bg-[var(--card-bg)] rounded-2xl border border-[var(--input-border)] space-y-4">
+                                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--input-border)] space-y-4">
                                             <div className="text-[11px] font-bold text-[var(--sidebar-text)] mb-2">语法格式：- [数值]</div>
-                                            <code className="block text-xs text-blue-200 leading-relaxed bg-[var(--sidebar-bg)]/30 p-4 rounded-xl">
+                                            <code className="block text-xs text-blue-200 leading-relaxed bg-[var(--sidebar-bg)]/30 p-4 rounded-lg">
                                                 # 原始测量数据<br />
                                                 - 10.5<br />
                                                 - 10.2<br />
@@ -549,7 +561,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-indigo-400 uppercase tracking-widest border-b border-indigo-500/20 pb-2">正态分布分析 (Normal Distribution)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
                                             <p>直方图通过对大量随机样本的观察，识别生产过程是否受控。完美的生产过程通常呈现对称的“钟形”曲线。</p>
                                             <ul className="list-disc list-inside space-y-2">
                                                 <li><strong>均值 (μ)</strong>: 反映了加工的中心位置。</li>
@@ -560,9 +572,9 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 pb-2">工序能力指标 (Process Capability)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
                                             <p>当定义了规格限 (USL/LSL) 时，系统会自动评估工序能力：</p>
-                                            <div className="bg-[var(--card-bg)] p-4 rounded-xl font-mono text-[10px] space-y-2">
+                                            <div className="bg-[var(--card-bg)] p-4 rounded-lg font-mono text-[10px] space-y-2">
                                                 <div>Cp / Cpk: 指标越大，代表工序的质量保证能力越强。</div>
                                                 <div>1.33: 视为工业级的“合格”门槛。</div>
                                                 <div>1.67: 优秀水平。</div>
@@ -570,7 +582,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                                         </div>
                                     </section>
 
-                                    <div className="p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl">
+                                    <div className="p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Zap size={14} className="text-indigo-500" />
                                             <span className="text-[10px] font-black uppercase text-indigo-500">统计洞察</span>
@@ -585,7 +597,7 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                         <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowDocs(false)}
-                                className="px-16 py-4 bg-indigo-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-indigo-500 transition-all"
+                                className="px-16 py-4 bg-indigo-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-indigo-500 transition-all"
                             >
                                 已阅读规范
                             </button>
@@ -595,5 +607,6 @@ export const HistogramEditor: React.FC<Props> = ({ data, styles, onUpdate }) => 
                 document.body
             )}
         </div>
+        
     );
 };

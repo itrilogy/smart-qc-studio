@@ -1,4 +1,4 @@
-# 《Smart QC Tools 雷达图模块》使用手册
+# 《IQS 雷达分析图模块》使用手册 (Intelligent QC Studio)
 **（软件著作权申请建议参考文档版本）**
 
 ---
@@ -47,6 +47,8 @@
 - `Standardize: true`
 - `Axis: 成本, 100, 10` (名称, 最大, [最小])
 - `Series: 产品 A, [80, 70, 90], #3b82f6, 0.4` (名称, 数据, [颜色], [透明度])
+50: - `ShowMarker: true` (显隐数据节点)
+51: - `ShowLabel: true` (显隐数值标签)
 
 ---
 

@@ -496,11 +496,11 @@ const App: React.FC = () => {
                 className="flex items-center gap-5 active:scale-95 transition-all group"
               >
                 <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-blue-500 transition-all">
-                  <Zap className="w-5 h-5 text-white fill-current" />
+                  <Cpu className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-black text-[var(--sidebar-text)] text-lg tracking-tighter leading-none uppercase">Studio</h1>
-                  <p className="text-[8px] text-blue-400 uppercase font-black tracking-[0.2em] mt-1 opacity-60">Logic Core</p>
+                  <h1 className="font-black text-[var(--sidebar-text)] text-lg tracking-tighter leading-none uppercase">Intelligent QC Studio</h1>
+                  <p className="text-[8px] text-blue-400 uppercase font-black tracking-[0.2em] mt-1 opacity-60">IQS Logic Core</p>
                 </div>
               </button>
             </div>
@@ -695,7 +695,7 @@ const App: React.FC = () => {
               </div>
             </header>
 
-            <div className="flex-1 relative min-h-0 bg-[var(--bg-page)] transition-colors">
+            <div className="flex-1 relative min-h-0 bg-[var(--card-bg)] transition-colors">
               {(() => {
                 switch (selectedTool) {
                   case QCToolType.FISHBONE: return <FishboneDiagram ref={diagramRef} data={fishboneData} styles={fishboneStyles} />;

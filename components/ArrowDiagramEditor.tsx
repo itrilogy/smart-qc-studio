@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import {
+    createPortal } from 'react-dom';
 import {
     ArrowData,
     ArrowChartStyles,
@@ -11,9 +12,27 @@ import {
 } from '../types';
 import { INITIAL_ARROW_DSL } from '../constants';
 import {
-    Settings2, LayoutGrid, Workflow, Sparkles, HelpCircle, X,
-    Loader2, Database, Code, Network, Activity, Maximize, GitFork,
-    Plus, Trash2, Edit3, ArrowRight, Save, RotateCcw, Zap
+    Settings2,
+    LayoutGrid,
+    Workflow,
+    Sparkles,
+    HelpCircle,
+    X,
+    Loader2,
+    Database,
+    Code,
+    Network,
+    Activity,
+    Maximize,
+    GitFork,
+    Plus,
+    Trash2,
+    Edit3,
+    ArrowRight,
+    Save,
+    RotateCcw,
+    Cpu,
+    Zap
 } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 
@@ -461,30 +480,30 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative">
-            {/* Header Area */}
-            <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative">
+                {/* Header Area */}
+                <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-indigo-600/20 rounded-xl flex items-center justify-center border border-indigo-500/30">
-                            <Network size={20} className="text-indigo-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-[var(--sidebar-text)]">矢线图引擎</h2>
-                            <p className="text-[9px] font-bold text-[var(--sidebar-muted)] uppercase tracking-widest mt-1">ARROW DIAGRAM ENGINE V1.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">双代号网络图分析</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS Arrow Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
+                            className="p-3 bg-[var(--input-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--input-border)]"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
                         <button
                             onClick={() => setShowHelp(true)}
-                            className="p-3 bg-[var(--input-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]"
+                            className="p-3 bg-[var(--input-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--input-border)]"
                             title="DSL Specification"
                         >
                             <HelpCircle size={18} />
@@ -493,7 +512,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                 </div>
 
                 {/* Navigation Tabs */}
-                <nav className="flex gap-2 p-1.5 bg-[var(--nav-bg)] rounded-2xl border border-[var(--sidebar-border)]">
+                <nav className="flex gap-2 p-1.5 bg-[var(--nav-bg)] rounded-lg border border-[var(--sidebar-border)]">
                     {[
                         { id: 'manual', label: '手动录入', icon: <Settings2 size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -502,7 +521,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                         <button
                             key={t.id}
                             onClick={() => setActiveTab(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id
                                 ? 'bg-indigo-600 text-white shadow-xl'
                                 : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--input-bg)]'
                                 }`}
@@ -518,7 +537,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                 {activeTab === 'manual' && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
                         {/* Global Settings */}
-                        <div className="p-6 bg-[var(--card-bg)] rounded-[2rem] border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
+                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <LayoutGrid size={16} className="text-indigo-500" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">全局布局与显示</span>
@@ -530,11 +549,11 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                     <input
                                         value={data.title || ''}
                                         onChange={(e) => updateFromManual({ ...data, title: e.target.value }, styles)}
-                                        className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl px-3 py-2 text-xs font-bold text-[var(--sidebar-text)] focus:outline-none focus:border-indigo-500 shadow-sm"
+                                        className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg px-3 py-2 text-xs font-bold text-[var(--sidebar-text)] focus:outline-none focus:border-indigo-500 shadow-sm"
                                     />
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <div className="flex-1 p-4 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] flex flex-col gap-3 shadow-sm">
+                                    <div className="flex-1 p-4 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] flex flex-col gap-3 shadow-sm">
                                         <div className="flex items-center justify-between">
                                             <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest pl-1">显示关键路径</span>
                                             <button
@@ -554,7 +573,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="flex-1 p-4 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-2 shadow-sm">
+                                    <div className="flex-1 p-4 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-2 shadow-sm">
                                         <div className="flex justify-between items-center">
                                             <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">节点半径</span>
                                             <span className="text-[10px] font-mono text-indigo-400">{styles.nodeRadius}px</span>
@@ -572,7 +591,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                         </div>
 
                         {/* Node Management */}
-                        <div className="p-6 bg-[var(--card-bg)] rounded-[2rem] border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
+                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <div className="flex items-center gap-4">
                                     <Database size={16} className="text-emerald-500" />
@@ -582,7 +601,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                             </div>
                             <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
                                 {data.nodes.map((node, idx) => (
-                                    <div key={idx} className="flex gap-2 items-center bg-[var(--input-bg)] p-2 rounded-xl border border-[var(--sidebar-border)]/50">
+                                    <div key={idx} className="flex gap-2 items-center bg-[var(--input-bg)] p-2 rounded-lg border border-[var(--sidebar-border)]/50">
                                         <div className="w-8 shrink-0 flex items-center justify-center text-[10px] font-mono text-[var(--sidebar-text)]">{idx + 1}</div>
                                         <input
                                             value={node.id}
@@ -603,7 +622,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                         </div>
 
                         {/* Link Management */}
-                        <div className="p-6 bg-[var(--card-bg)] rounded-[2rem] border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
+                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <div className="flex items-center gap-4">
                                     <Activity size={16} className="text-blue-500" />
@@ -613,7 +632,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                             </div>
                             <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
                                 {data.links.map((link, idx) => (
-                                    <div key={idx} className="flex flex-col gap-2 bg-[var(--input-bg)] p-3 rounded-xl border border-[var(--sidebar-border)]/50">
+                                    <div key={idx} className="flex flex-col gap-2 bg-[var(--input-bg)] p-3 rounded-lg border border-[var(--sidebar-border)]/50">
                                         <div className="flex justify-between items-center">
                                             <div className="flex items-center gap-2 flex-1">
                                                 <select
@@ -671,13 +690,13 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                             </div>
                         </div>
 
-                        <div className="p-6 bg-[var(--card-bg)] rounded-[2rem] border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
+                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4 shadow-2xl">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <Sparkles size={16} className="text-indigo-500" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">色彩风格配置</span>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)]/50 space-y-3">
+                                <div className="p-4 bg-[var(--input-bg)] rounded-lg border border-[var(--sidebar-border)]/50 space-y-3">
                                     <span className="text-[9px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">节点样式</span>
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center">
@@ -690,7 +709,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)]/50 space-y-3">
+                                <div className="p-4 bg-[var(--input-bg)] rounded-lg border border-[var(--sidebar-border)]/50 space-y-3">
                                     <span className="text-[9px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">连线样式</span>
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center">
@@ -723,7 +742,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                         <textarea
                             value={dslContent}
                             onChange={(e) => handleDSLChange(e.target.value)}
-                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-6 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none custom-scrollbar shadow-inner"
+                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-6 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all resize-none custom-scrollbar shadow-inner"
                             spellCheck={false}
                             placeholder="Enter Arrow Diagram DSL..."
                         />
@@ -732,7 +751,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
 
                 {activeTab === 'ai' && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-                        <div className="p-8 bg-[var(--card-bg)] rounded-[2.5rem] border border-[var(--sidebar-border)] space-y-6 shadow-2xl relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-6 shadow-2xl relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">AI 智能助手</span>
                                 <div className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center gap-2">
@@ -741,7 +760,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                 </div>
                             </div>
                             <textarea
-                                className="w-full h-48 bg-[var(--input-bg)] text-[var(--sidebar-text)] p-6 text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-indigo-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="请输入您的项目描述，例如：'我们需要在这周内完成新办公室的搬迁，包含打包、运输、网络布线和设备调试，打包和网络布线可以同时开始...'"
                                 value={aiPrompt}
                                 onChange={(e) => setAiPrompt(e.target.value)}
@@ -749,7 +768,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                             <button
                                 onClick={handleGenerateAI}
                                 disabled={!aiPrompt.trim() || isGenerating}
-                                className={`w-full h-14 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98]'
+                                className={`w-full h-14 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98]'
                                     }`}
                             >
                                 {isGenerating ? (
@@ -766,7 +785,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                             </button>
 
                             {/* Inference Hint Card */}
-                            <div className="bg-[var(--input-bg)] rounded-2xl p-6 border border-[var(--input-border)] space-y-3 shadow-sm">
+                            <div className="bg-[var(--input-bg)] rounded-lg p-6 border border-[var(--input-border)] space-y-3 shadow-sm">
                                 <h4 className="text-[11px] font-black text-emerald-500 uppercase tracking-widest">推理提示</h4>
                                 <p className="text-[10px] text-[var(--sidebar-text)] leading-relaxed">
                                     您可以输入如“某新产品研发流程，包含立项、研发、测试、市场推广及发布，其中研发和市场推广并行...”等自然语言描述。
@@ -781,12 +800,12 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
             {/* Help Modal */}
             {showHelp && createPortal(
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md">
-                    <div className="bg-[var(--sidebar-bg)] w-[900px] h-[800px] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl relative">
+                    <div className="bg-[var(--sidebar-bg)] w-[900px] h-[800px] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl relative">
                         {/* Modal Header */}
                         <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6 bg-[var(--sidebar-bg)]/80 backdrop-blur-xl">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-2 bg-indigo-500/20 rounded-xl">
+                                    <div className="p-2 bg-indigo-500/20 rounded-lg">
                                         <HelpCircle size={24} className="text-indigo-400" />
                                     </div>
                                     <div>
@@ -794,13 +813,13 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                         <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Version 2.0 • CPM & PERT Engine</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowHelp(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-xl transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
+                                <button onClick={() => setShowHelp(false)} className="p-3 hover:bg-[var(--input-bg)] rounded-lg transition-all text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]">
                                     <X size={24} />
                                 </button>
                             </div>
 
                             {/* Tab Navigation */}
-                            <nav className="flex bg-[var(--nav-bg)] p-1 rounded-2xl border border-[var(--sidebar-border)] w-fit">
+                            <nav className="flex bg-[var(--nav-bg)] p-1 rounded-lg border border-[var(--sidebar-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '核心算法与指南' },
@@ -808,7 +827,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'
+                                        className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'
                                             }`}
                                     >
                                         {t.label}
@@ -829,7 +848,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                         <div className="space-y-6">
                                             <div className="space-y-3">
                                                 <p className="text-[10px] font-bold text-[var(--sidebar-text)] uppercase tracking-widest">A. 全局配置指令</p>
-                                                <table className="w-full text-xs font-mono border-collapse bg-[var(--input-bg)] rounded-xl overflow-hidden text-left shadow-sm">
+                                                <table className="w-full text-xs font-mono border-collapse bg-[var(--input-bg)] rounded-lg overflow-hidden text-left shadow-sm">
                                                     <thead>
                                                         <tr className="text-[var(--sidebar-text)] bg-indigo-500/10">
                                                             <th className="p-4 font-black uppercase w-32">指令</th>
@@ -846,7 +865,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                             </div>
                                             <div className="space-y-3">
                                                 <p className="text-[10px] font-bold text-[var(--sidebar-text)] uppercase tracking-widest">B. 节点与任务语法</p>
-                                                <table className="w-full text-xs font-mono border-collapse bg-[var(--input-bg)] rounded-xl overflow-hidden text-left shadow-sm">
+                                                <table className="w-full text-xs font-mono border-collapse bg-[var(--input-bg)] rounded-lg overflow-hidden text-left shadow-sm">
                                                     <thead>
                                                         <tr className="text-[var(--sidebar-text)] bg-indigo-500/10">
                                                             <th className="p-4 font-black uppercase w-32">类型</th>
@@ -869,7 +888,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                             <Code size={18} />
                                             <span className="text-[12px] font-black uppercase tracking-widest">2. 完整 DSL 脚本示例</span>
                                         </div>
-                                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] font-mono text-[11px] leading-relaxed relative shadow-inner">
+                                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] font-mono text-[11px] leading-relaxed relative shadow-inner">
                                             <div className="text-emerald-500">Title: 某系统升级项目网络图</div>
                                             <div className="text-emerald-500">ShowCritical: true</div>
                                             <br />
@@ -896,13 +915,13 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                             <Activity size={18} />
                                             <span className="text-[12px] font-black uppercase tracking-widest">关键路径法 (CPM) 深度解析</span>
                                         </div>
-                                        <div className="p-8 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-6 text-sm leading-relaxed text-[var(--sidebar-text)] font-sans shadow-sm">
+                                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-6 text-sm leading-relaxed text-[var(--sidebar-text)] font-sans shadow-sm">
                                             <p>
                                                 前置进度图（Arrow Diagram）是项目管理中用于计划、调度和控制复杂项目的核心工具。本系统采用 <b>CPM (Critical Path Method)</b> 算法。
                                             </p>
 
                                             <div className="grid grid-cols-2 gap-6">
-                                                <div className="space-y-3 bg-[var(--card-bg)] p-5 rounded-xl border border-[var(--sidebar-border)] shadow-sm">
+                                                <div className="space-y-3 bg-[var(--card-bg)] p-5 rounded-lg border border-[var(--sidebar-border)] shadow-sm">
                                                     <h5 className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">1. 计算模型：双向递推</h5>
                                                     <p className="text-[11px]">系统自动执行两次扫描以确定时间参数：</p>
                                                     <ul className="list-disc pl-4 text-[11px] space-y-1 text-[var(--sidebar-muted)]">
@@ -910,7 +929,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                                         <li><b>反向递推 (Backward Pass):</b> 确定各节点最晚开始时间 (LS)。</li>
                                                     </ul>
                                                 </div>
-                                                <div className="space-y-3 bg-[var(--card-bg)] p-5 rounded-xl border border-[var(--sidebar-border)] shadow-sm">
+                                                <div className="space-y-3 bg-[var(--card-bg)] p-5 rounded-lg border border-[var(--sidebar-border)] shadow-sm">
                                                     <h5 className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">2. 核心指标定义</h5>
                                                     <div className="text-[10px] bg-[var(--nav-bg)] p-3 rounded-lg border border-[var(--sidebar-border)] font-mono">
                                                         <div className="text-indigo-300">Duration = 项目总工期</div>
@@ -920,7 +939,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-3 bg-blue-900/10 p-5 rounded-xl border border-blue-500/20 shadow-sm">
+                                            <div className="space-y-3 bg-blue-900/10 p-5 rounded-lg border border-blue-500/20 shadow-sm">
                                                 <h5 className="text-[11px] font-black text-blue-400 uppercase tracking-widest">3. 优化与缩短工期的策略</h5>
                                                 <div className="text-[11px] text-[var(--sidebar-text)] space-y-2">
                                                     <p>● <b>赶工 (Crashing):</b> 增加资源到关键活动中，以最小成本代价缩短时间。</p>
@@ -931,7 +950,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                                         </div>
                                     </section>
 
-                                    <div className="p-6 bg-blue-900/10 border border-blue-800/20 rounded-3xl shadow-sm">
+                                    <div className="p-6 bg-blue-900/10 border border-blue-800/20 rounded-lg shadow-sm">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Zap size={14} className="text-blue-500" />
                                             <span className="text-[10px] font-black uppercase text-blue-500">专家贴士</span>
@@ -948,7 +967,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                         <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowHelp(false)}
-                                className="px-16 py-4 bg-indigo-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-indigo-500 transition-all font-sans"
+                                className="px-16 py-4 bg-indigo-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-indigo-500 transition-all font-sans"
                             >
                                 我理解了 CPM 逻辑
                             </button>
@@ -957,6 +976,7 @@ export const ArrowDiagramEditor: React.FC<ArrowDiagramEditorProps> = ({
                 </div>,
                 document.body
             )}
-        </div >
+        </div>
+        
     );
 };

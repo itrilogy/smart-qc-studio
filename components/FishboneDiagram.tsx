@@ -343,8 +343,8 @@ const FishboneDiagram = forwardRef<FishboneDiagramRef, FishboneDiagramProps>(({ 
       style={{
         width: '100%',
         height: '100%',
-        backgroundColor: '#ffffff',
-        transition: 'background-color 0.3s ease'
+        backgroundColor: 'var(--card-bg)',
+        transition: 'background-color 0.5s ease'
       }}
     >
     </div>

@@ -271,7 +271,7 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
         <div
             ref={containerRef}
             className={className}
-            style={{ width: '100%', height: '100%', backgroundColor: '#ffffff' }}
+            style={{ width: '100%', height: '100%', backgroundColor: 'var(--card-bg)', transition: 'background-color 0.5s ease' }}
         />
     );
 });

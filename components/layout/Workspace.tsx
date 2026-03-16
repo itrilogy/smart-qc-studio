@@ -38,9 +38,9 @@ export function Workspace({ sidebarContent, canvasContent, toolbarContent }: Wor
                 </div>
             </button>
 
-            <main className="flex-1 min-w-0 relative flex flex-col overflow-hidden bg-[#f8fafc] dot-grid">
+            <main className="flex-1 min-w-0 relative flex flex-col overflow-hidden bg-[var(--bg-page)] stripe-grid transition-colors duration-500">
                 <div className="flex-1 relative z-0 flex items-center justify-center p-20 overflow-auto custom-scrollbar">
-                    <div className="w-full h-full max-w-[1600px] flex flex-col relative rounded-[4rem] bg-white shadow-[0_80px_150px_-40px_rgba(0,0,0,0.12)] border border-slate-100/60 overflow-hidden panel-transition">
+                    <div className="w-full h-full max-w-[1600px] flex flex-col relative rounded-xl bg-[var(--card-bg)] shadow-[0_80px_150px_-40px_rgba(0,0,0,0.12)] border border-[var(--border-light)] overflow-hidden panel-transition">
                         {canvasContent}
                     </div>
                 </div>

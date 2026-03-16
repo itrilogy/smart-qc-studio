@@ -366,7 +366,7 @@ export const ControlChart = forwardRef<ControlChartRef, ControlChartProps>(
         }, [draw]);
 
         return (
-            <div ref={containerRef} className={`${className || ''} w-full h-full relative bg-white rounded-xl overflow-hidden`}>
+            <div ref={containerRef} className={`${className || ''} w-full h-full relative bg-[var(--card-bg)] rounded-lg overflow-hidden transition-colors duration-500`}>
                 {!stats ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
                         <p className="text-[10px] font-black uppercase tracking-widest mb-2">No Valid Data</p>

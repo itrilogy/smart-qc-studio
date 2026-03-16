@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
 import {
-    Plus, Trash2, Sparkles, Database, Code,
-    ChevronRight, BarChart3, Sliders, HelpCircle, X, Loader2, RotateCcw, Zap
+    createPortal } from 'react-dom';
+import {
+    Plus,
+    Trash2,
+    Sparkles,
+    Database,
+    Code,
+    ChevronRight,
+    BarChart3,
+    Sliders,
+    HelpCircle,
+    X,
+    Loader2,
+    RotateCcw,
+    Cpu,
+    Zap
 } from 'lucide-react';
 import { ParetoItem, ParetoChartStyles, DEFAULT_PARETO_STYLES } from '../types';
 import { generateParetoDSL, getAIStatus } from '../services/aiService';
@@ -135,36 +148,36 @@ export const ParetoEditor: React.FC<Props> = ({
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
             <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center border border-blue-500/30">
-                            <BarChart3 size={20} className="text-blue-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-[var(--sidebar-text)]">排列图引擎</h2>
-                            <p className="text-[9px] font-bold text-[var(--sidebar-muted)] uppercase tracking-widest mt-1">Pareto Processor v3.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">排列图分析 (Pareto)</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS Pareto Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
+                            className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
                         <button
                             onClick={() => setShowDocs(true)}
-                            className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--sidebar-border)] shadow-sm"
+                            className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--sidebar-border)] shadow-sm"
                         >
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
 
-                <nav className="flex gap-2 p-1.5 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)]">
+                <nav className="flex gap-2 p-1.5 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)]">
                     {[
                         { id: 'manual', label: '手动录入', icon: <Database size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -173,7 +186,7 @@ export const ParetoEditor: React.FC<Props> = ({
                         <button
                             key={t.id}
                             onClick={() => handleTabChange(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-blue-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-blue-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'
                                 }`}
                         >
                             {t.icon} {t.label}
@@ -200,7 +213,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                     <input
                                         value={styles.title || ''}
                                         onChange={e => onUpdate(data, { ...styles, title: e.target.value })}
-                                        className="w-full h-14 px-6 logic-terminal-input text-sm font-bold bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--sidebar-text)] rounded-xl"
+                                        className="w-full h-14 px-6 logic-terminal-input text-sm font-bold bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--sidebar-text)] rounded-lg"
                                         placeholder="例如：故障频数排列图"
                                     />
                                 </div>
@@ -216,7 +229,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                     <div className="space-y-3">
                                         {data.map((item, idx) => (
                                             <div key={item.id} className="flex gap-3 group">
-                                                <div className="flex-1 h-12 flex items-center bg-[var(--input-bg)] rounded-xl border border-[var(--input-border)] overflow-hidden px-4 group-hover:border-blue-500 transition-colors">
+                                                <div className="flex-1 h-12 flex items-center bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] overflow-hidden px-4 group-hover:border-blue-500 transition-colors">
                                                     <span className="text-[10px] font-black text-[var(--sidebar-muted)] mr-4">0{idx + 1}</span>
                                                     <input
                                                         value={item.name}
@@ -229,7 +242,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                                         placeholder="项目名称"
                                                     />
                                                 </div>
-                                                <div className="w-24 h-12 flex items-center bg-[var(--input-bg)] rounded-xl border border-[var(--input-border)] overflow-hidden px-4 group-hover:border-blue-500 transition-colors shadow-inner">
+                                                <div className="w-24 h-12 flex items-center bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] overflow-hidden px-4 group-hover:border-blue-500 transition-colors shadow-inner">
                                                     <input
                                                         type="number"
                                                         value={item.value}
@@ -243,7 +256,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                                 </div>
                                                 <button
                                                     onClick={() => onUpdate(data.filter(i => i.id !== item.id), styles)}
-                                                    className="w-12 h-12 flex items-center justify-center bg-[var(--card-bg)] border border-[var(--sidebar-border)] rounded-xl text-[var(--sidebar-muted)] hover:text-red-400 hover:bg-red-400/10 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                                                    className="w-12 h-12 flex items-center justify-center bg-[var(--card-bg)] border border-[var(--sidebar-border)] rounded-lg text-[var(--sidebar-muted)] hover:text-red-400 hover:bg-red-400/10 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
                                                 >
                                                     <Trash2 size={16} />
                                                 </button>
@@ -251,7 +264,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                         ))}
                                         <button
                                             onClick={() => onUpdate([...data, { id: Math.random().toString(), name: '新统计项', value: 0 }], styles)}
-                                            className="w-full h-14 border border-dashed border-[var(--sidebar-border)] rounded-xl flex items-center justify-center gap-3 text-[var(--sidebar-text)] hover:text-blue-400 hover:border-blue-500/50 transition-all group bg-[var(--card-bg)] shadow-sm"
+                                            className="w-full h-14 border border-dashed border-[var(--sidebar-border)] rounded-lg flex items-center justify-center gap-3 text-[var(--sidebar-text)] hover:text-blue-400 hover:border-blue-500/50 transition-all group bg-[var(--card-bg)] shadow-sm"
                                         >
                                             <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
                                             <span className="text-[10px] font-black uppercase tracking-widest">添加统计项</span>
@@ -262,7 +275,7 @@ export const ParetoEditor: React.FC<Props> = ({
                         )}
 
                         {/* 图表高级配置 */}
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-8 shadow-sm">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-8 shadow-sm">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">图表高级配置</span>
                             </div>
@@ -302,7 +315,7 @@ export const ParetoEditor: React.FC<Props> = ({
                         </div>
 
                         {/* 颜色方案配置 */}
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-sm">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-6 shadow-sm">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">颜色方案配置</span>
                             </div>
@@ -333,7 +346,7 @@ export const ParetoEditor: React.FC<Props> = ({
                         <textarea
                             value={dsl}
                             onChange={e => { setDsl(e.target.value); handleParseDSL(e.target.value); }}
-                            className="flex-1 w-full min-h-[400px] p-8 logic-terminal-input text-sm leading-relaxed border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--sidebar-text)] rounded-[2rem] whitespace-pre overflow-auto shadow-inner"
+                            className="flex-1 w-full min-h-[400px] p-8 logic-terminal-input text-sm leading-relaxed border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--sidebar-text)] rounded-lg whitespace-pre overflow-auto shadow-inner"
                             spellCheck={false}
                             placeholder="输入排列图 DSL..."
                         />
@@ -342,7 +355,7 @@ export const ParetoEditor: React.FC<Props> = ({
 
                 {activeTab === 'ai' && (
                     <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-8 shadow-sm relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-8 shadow-sm relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能频率分布推演</span>
                                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
@@ -354,14 +367,14 @@ export const ParetoEditor: React.FC<Props> = ({
                             <textarea
                                 value={aiInput}
                                 onChange={e => setAiInput(e.target.value)}
-                                className="w-full h-64 p-8 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-blue-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="例如：描述2024年客户投诉的主要类别及其频数，模型将自动转化为 DSL 脚本并生成图表..."
                             />
 
                             <button
                                 onClick={generateAiData}
                                 disabled={isGenerating || !aiInput.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-border)]' : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-border)]' : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -376,7 +389,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                 )}
                             </button>
 
-                            <div className="p-8 bg-blue-900/10 border border-blue-800/20 rounded-3xl space-y-4">
+                            <div className="p-8 bg-blue-900/10 border border-blue-800/20 rounded-lg space-y-4">
                                 <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">推理提示</p>
                                 <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以输入原始文本、统计报表摘要 or 口语化描述。AI 会自动识别**分类项目**与**频数/金额**，并依据“二八准则”为您配置好分析视角与色系。
@@ -391,12 +404,12 @@ export const ParetoEditor: React.FC<Props> = ({
             {/* Docs Modal */}
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md transition-all">
-                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         {/* Header */}
                         <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-blue-600/20 rounded-2xl border border-blue-500/30">
+                                    <div className="p-3 bg-blue-600/20 rounded-lg border border-blue-500/30">
                                         <BarChart3 size={24} className="text-blue-400" />
                                     </div>
                                     <div>
@@ -404,12 +417,12 @@ export const ParetoEditor: React.FC<Props> = ({
                                         <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Pareto Knowledge Base V3.1</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-xl transition-all text-[var(--sidebar-text)] hover:text-white">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-lg transition-all text-[var(--sidebar-text)] hover:text-white">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-2xl border border-[var(--input-border)] w-fit">
+                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-lg border border-[var(--input-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -417,7 +430,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
+                                        className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                     >
                                         {t.label}
                                     </button>
@@ -451,8 +464,13 @@ export const ParetoEditor: React.FC<Props> = ({
                                                     </tr>
                                                     <tr>
                                                         <td className="py-3 text-emerald-400 font-bold">Decimals:</td>
-                                                        <td className="py-3">累计百分比精度</td>
+                                                        <td className="py-3 text-[var(--sidebar-muted)]">数值显示精度</td>
                                                         <td className="py-3 text-[var(--sidebar-text)]">Decimals: 2</td>
+                                                    </tr>
+                                                    <tr className="border-b border-white/5">
+                                                        <td className="py-3 text-emerald-400 font-bold">ShowValues:</td>
+                                                        <td className="py-3 text-[var(--sidebar-muted)]">显示数据标记</td>
+                                                        <td className="py-3 text-[var(--sidebar-text)]">ShowValues: true</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -465,7 +483,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                             <span className="text-[12px] font-black uppercase tracking-widest">2. 视觉样式定义</span>
                                         </div>
                                         <div className="grid grid-cols-1 gap-4 font-mono text-xs">
-                                            <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-3">
+                                            <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-3">
                                                 <div className="flex justify-between border-b border-[var(--sidebar-border)] pb-2">
                                                     <span className="text-amber-500">Color[Bar]:</span>
                                                     <span className="text-[var(--sidebar-text)]">#HEX 柱形颜色</span>
@@ -491,9 +509,9 @@ export const ParetoEditor: React.FC<Props> = ({
                                             <Plus size={18} />
                                             <span className="text-[12px] font-black uppercase tracking-widest">3. 数据项录入语法</span>
                                         </div>
-                                        <div className="p-6 bg-[var(--card-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-4">
+                                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4">
                                             <div className="text-[11px] font-bold text-[var(--sidebar-text)] mb-2">语法格式：- [项目名称]: [频数]</div>
-                                            <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-xl">
+                                            <code className="block text-xs text-blue-200 leading-relaxed bg-black/30 p-4 rounded-lg">
                                                 - 物流破损: 420<br />
                                                 - 包装变形: 156<br />
                                                 - 标签缺失: 89
@@ -508,7 +526,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">ABC 分类法 (Pareto Principle)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
                                             <p>排列图基于“二八定律”，旨在帮助管理者从众多的质量问题中，找出影响质量的“关键少数”。</p>
                                             <ul className="list-disc list-inside space-y-2">
                                                 <li><strong className="text-blue-300">A类因素</strong> (0% - 80%): 主要影响因素，必须重点解决。</li>
@@ -520,9 +538,9 @@ export const ParetoEditor: React.FC<Props> = ({
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">核心算法 (Core Algorithms)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--sidebar-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--sidebar-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
                                             <p>本引擎内置严密的数理逻辑：</p>
-                                            <div className="bg-black/40 p-4 rounded-xl font-mono text-[10px] space-y-2">
+                                            <div className="bg-black/40 p-4 rounded-lg font-mono text-[10px] space-y-2">
                                                 <div>1. 自动降序：Value[i] ≥ Value[i+1]</div>
                                                 <div>2. 累计百分比：P[i] = (Σ V[0...i]) / Σ V[all]</div>
                                                 <div>3. 80% 标识线：自动寻找 P[i] ≈ 80% 的临界坐标</div>
@@ -530,7 +548,7 @@ export const ParetoEditor: React.FC<Props> = ({
                                         </div>
                                     </section>
 
-                                    <div className="p-6 bg-blue-900/10 border border-blue-800/20 rounded-3xl">
+                                    <div className="p-6 bg-blue-900/10 border border-blue-800/20 rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Zap size={14} className="text-blue-500" />
                                             <span className="text-[10px] font-black uppercase text-blue-500">质量改进提示</span>
@@ -545,7 +563,7 @@ export const ParetoEditor: React.FC<Props> = ({
                         <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowDocs(false)}
-                                className="px-16 py-4 bg-blue-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all"
+                                className="px-16 py-4 bg-blue-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-500 transition-all"
                             >
                                 已阅读规范
                             </button>
@@ -555,5 +573,6 @@ export const ParetoEditor: React.FC<Props> = ({
                 document.body
             )}
         </div>
+        
     );
 };

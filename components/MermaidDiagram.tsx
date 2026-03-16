@@ -157,7 +157,7 @@ export const MermaidDiagram = forwardRef<MermaidDiagramRef, Props>(({ data, styl
                     }
                 } catch (error) {
                     console.error('Mermaid render error:', error);
-                    containerRef.current.innerHTML = `<div class="p-8 text-red-500 font-mono text-sm bg-red-50 rounded-xl border border-red-100">
+                    containerRef.current.innerHTML = `<div class="p-8 text-red-500 font-mono text-sm bg-red-50 rounded-lg border border-red-100">
             <p className="font-bold mb-2">渲染错误:</p>
             <pre className="whitespace-pre-wrap">${error instanceof Error ? error.message : String(error)}</pre>
           </div>`;

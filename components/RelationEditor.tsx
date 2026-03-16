@@ -1,9 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { RelationNode, RelationLink, RelationChartStyles, DEFAULT_RELATION_STYLES, RelationLayoutType } from '../types';
 import {
-    ChevronRight, Save, Trash2, Plus, Edit3, Settings2, ArrowRight, LayoutGrid, Circle,
-    Workflow, Sparkles, HelpCircle, X, Loader2, Database, Code, RotateCcw, Zap
+    createPortal } from 'react-dom';
+import { RelationNode,
+    RelationLink,
+    RelationChartStyles,
+    DEFAULT_RELATION_STYLES,
+    RelationLayoutType } from '../types';
+import {
+    ChevronRight,
+    Save,
+    Trash2,
+    Plus,
+    Edit3,
+    Settings2,
+    ArrowRight,
+    LayoutGrid,
+    Circle,
+    Workflow,
+    Sparkles,
+    HelpCircle,
+    X,
+    Loader2,
+    Database,
+    Code,
+    RotateCcw,
+    Cpu,
+    Zap
 } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 import { QCToolType } from '../types';
@@ -274,37 +296,37 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
             {/* Header Area */}
             <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-purple-600/20 rounded-xl flex items-center justify-center border border-purple-500/30">
-                            <Workflow size={20} className="text-purple-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-[var(--sidebar-text)]">关联图引擎</h2>
-                            <p className="text-[9px] font-bold text-[var(--sidebar-muted)] uppercase tracking-widest mt-1">RELATION ENGINE V1.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">关联度逻辑分析</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS Relation Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
+                            className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
                         <button
                             onClick={() => setShowDocs(true)}
-                            className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--sidebar-border)] shadow-sm"
+                            className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-white transition-all border border-[var(--sidebar-border)] shadow-sm"
                         >
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
 
-                <nav className="flex gap-2 p-1.5 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)]">
+                <nav className="flex gap-2 p-1.5 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)]">
                     {[
                         { id: 'manual', label: '手工录入', icon: <Edit3 size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
@@ -316,7 +338,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                 if (t.id === 'dsl') setDsl(generateDSLFromData());
                                 setActiveTab(t.id as any);
                             }}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-purple-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-purple-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'
                                 }`}
                         >
                             {t.icon} {t.label}
@@ -340,7 +362,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                     <input
                                         value={styles.title || ''}
                                         onChange={e => onStylesChange({ ...styles, title: e.target.value })}
-                                        className="w-full h-12 px-4 logic-terminal-input text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-xl focus:border-purple-500 outline-none shadow-inner"
+                                        className="w-full h-12 px-4 logic-terminal-input text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-lg focus:border-purple-500 outline-none shadow-inner"
                                         placeholder="例如：客户满意度下降分析"
                                     />
                                 </div>
@@ -352,7 +374,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                     <select
                                         value={styles.layout || 'Directional'}
                                         onChange={e => onStylesChange({ ...styles, layout: e.target.value as any })}
-                                        className="w-full h-12 px-4 text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-xl focus:border-blue-500 outline-none appearance-none"
+                                        className="w-full h-12 px-4 text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-lg focus:border-blue-500 outline-none appearance-none"
                                     >
                                         <option value="Directional">单项汇集型</option>
                                         <option value="Centralized">中央集中型</option>
@@ -363,7 +385,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                         </div>
 
                         {/* Nodes Editor */}
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-sm">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-6 shadow-sm">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">节点列表</span>
                                 <button
@@ -389,7 +411,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                         const isEnd = (inDegreeMap.get(node.id) || 0) === 0;
 
                                         return (
-                                            <div key={node.id} className="flex items-center gap-2 bg-[var(--sidebar-bg)] p-2 rounded-xl border border-[var(--sidebar-border)]">
+                                            <div key={node.id} className="flex items-center gap-2 bg-[var(--sidebar-bg)] p-2 rounded-lg border border-[var(--sidebar-border)]">
                                                 <div className="w-16 px-2 py-1 bg-[var(--input-bg)] rounded text-[9px] font-mono text-[var(--sidebar-muted)] truncate">{node.id}</div>
                                                 <input
                                                     value={node.label}
@@ -414,7 +436,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                         </div>
 
                         {/* Links Editor */}
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-sm">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-6 shadow-sm">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">关系列表 (From {'->'} To)</span>
                                 <button
@@ -426,7 +448,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                             </div>
                             <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
                                 {links.map((link, idx) => (
-                                    <div key={idx} className="flex items-center gap-2 bg-[var(--sidebar-bg)] p-2 rounded-xl border border-[var(--sidebar-border)]">
+                                    <div key={idx} className="flex items-center gap-2 bg-[var(--sidebar-bg)] p-2 rounded-lg border border-[var(--sidebar-border)]">
                                         <select
                                             value={link.source}
                                             onChange={e => updateLink(idx, 'source', e.target.value)}
@@ -452,7 +474,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                         </div>
 
                         {/* Styles */}
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-6 shadow-sm">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-6 shadow-sm">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">样式配置</span>
                             </div>
@@ -522,7 +544,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                         <textarea
                             value={dsl}
                             onChange={(e) => handleDSLChange(e.target.value)}
-                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-6 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all resize-none shadow-inner custom-scrollbar"
+                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-6 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all resize-none shadow-inner custom-scrollbar"
                             placeholder="输入 DSL 指令..."
                             spellCheck={false}
                         />
@@ -530,7 +552,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                     </div>
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-8 shadow-sm relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-8 shadow-sm relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能关联分析描述</span>
                                 <div className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full flex items-center gap-2">
@@ -541,13 +563,13 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                             <textarea
                                 value={aiPrompt}
                                 onChange={(e) => setAiPrompt(e.target.value)}
-                                className="w-full h-56 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] p-8 text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-purple-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="输入复杂因果关系描述，例如：'分析导致项目延期的根本原因，包括人员流失、需求变更频繁、技术债务等'..."
                             />
                             <button
                                 onClick={generateAI}
                                 disabled={isGenerating || !aiPrompt.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-slate-800' : 'bg-purple-600 hover:bg-purple-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-slate-800' : 'bg-purple-600 hover:bg-purple-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -562,7 +584,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                 )}
                             </button>
 
-                            <div className="p-8 bg-purple-900/10 border border-purple-800/20 rounded-3xl space-y-4">
+                            <div className="p-8 bg-purple-900/10 border border-purple-800/20 rounded-lg space-y-4">
                                 <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">推理提示</p>
                                 <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以输入复杂的因果描述，例如：“导致项目延期的原因包括人员流失、需求变更频繁等，其中需求变更频繁又导致了技术债务堆积”。AI 将自动梳理出逻辑链条并生成关联图。
@@ -575,12 +597,12 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
 
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md transition-all">
-                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         {/* Header */}
                         <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-purple-600/20 rounded-2xl border border-purple-500/30">
+                                    <div className="p-3 bg-purple-600/20 rounded-lg border border-purple-500/30">
                                         <Workflow size={24} className="text-purple-400" />
                                     </div>
                                     <div>
@@ -588,12 +610,12 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                         <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Relation Analysis Logic Base V1.2</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-xl transition-all text-[var(--sidebar-text)] hover:text-white shadow-sm">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-lg transition-all text-[var(--sidebar-text)] hover:text-white shadow-sm">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-2xl border border-[var(--input-border)] w-fit">
+                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-lg border border-[var(--input-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -601,7 +623,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-purple-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
+                                        className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-purple-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                     >
                                         {t.label}
                                     </button>
@@ -639,7 +661,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
 
                                     <section className="space-y-4">
                                         <h4 className="text-[10px] font-black text-[var(--sidebar-muted)] uppercase tracking-widest border-b border-[var(--sidebar-border)] pb-2">完整代码片段</h4>
-                                        <div className="bg-[var(--input-bg)] p-6 rounded-2xl border border-[var(--input-border)] font-mono text-[10px] text-emerald-400/80 leading-relaxed shadow-inner">
+                                        <div className="bg-[var(--input-bg)] p-6 rounded-lg border border-[var(--input-border)] font-mono text-[10px] text-emerald-400/80 leading-relaxed shadow-inner">
                                             <div className="whitespace-pre">
                                                 {`Title: 效率提升缓慢分析
 Layout: Directional
@@ -656,14 +678,14 @@ Rel: e1 -> m1`}
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-purple-400 uppercase tracking-widest border-b border-purple-900/50 pb-2">关联图 (Relationship Diagram)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)] shadow-sm">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)] shadow-sm">
                                             <p>关联图是将问题及其各种因素之间的复杂因果关系，用箭头连接起来的图形分析工具。它特别适用于原因相互交织、难以用鱼骨图等层级工具分析的场景。</p>
                                         </div>
                                     </section>
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">因果识别逻辑</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)] shadow-sm">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)] shadow-sm">
                                             <ul className="list-disc list-inside space-y-2">
                                                 <li><strong>末端因素 (End/Source)</strong>: 只有引出箭头，没有指向自身的箭头。通常是根本原因。</li>
                                                 <li><strong>中间因素 (Middle)</strong>: 既有接收箭头，也有引出箭头。</li>
@@ -672,7 +694,7 @@ Rel: e1 -> m1`}
                                         </div>
                                     </section>
 
-                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-3xl">
+                                    <div className="p-6 bg-indigo-900/10 border border-indigo-800/20 rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Zap size={14} className="text-indigo-500" />
                                             <span className="text-[10px] font-black uppercase text-indigo-500">专家技巧</span>
@@ -687,7 +709,7 @@ Rel: e1 -> m1`}
                         <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowDocs(false)}
-                                className="px-16 py-4 bg-purple-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-purple-500 transition-all font-sans"
+                                className="px-16 py-4 bg-purple-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-purple-500 transition-all font-sans"
                             >
                                 已阅读规范
                             </button>
@@ -697,6 +719,7 @@ Rel: e1 -> m1`}
                 document.body
             )}
         </div>
+        
     );
 };
 

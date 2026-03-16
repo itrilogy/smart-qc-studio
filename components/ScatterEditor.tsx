@@ -1,8 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { ScatterPoint, ScatterChartStyles, DEFAULT_SCATTER_STYLES } from '../types';
-import { INITIAL_SCATTER_DSL, INITIAL_SCATTER_DATA } from '../constants';
-import { ScatterChart as ScatterIcon, Sparkles, HelpCircle, X, Loader2, Database, Code, ChevronRight, Box, Waves, Grid3X3, RotateCcw, Zap } from 'lucide-react';
+import {
+    createPortal } from 'react-dom';
+import { ScatterPoint,
+    ScatterChartStyles,
+    DEFAULT_SCATTER_STYLES } from '../types';
+import { INITIAL_SCATTER_DSL,
+    INITIAL_SCATTER_DATA } from '../constants';
+import { ScatterChart as ScatterIcon,
+    Sparkles,
+    HelpCircle,
+    X,
+    Loader2,
+    Database,
+    Code,
+    ChevronRight,
+    Box,
+    Waves,
+    Grid3X3,
+    RotateCcw,
+    Cpu,
+    Zap
+} from 'lucide-react';
 import { generateScatterDSL, getAIStatus } from '../services/aiService';
 
 interface ScatterEditorProps {
@@ -174,36 +192,36 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
             {/* Header */}
             <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-amber-600/20 rounded-xl flex items-center justify-center border border-amber-500/30">
-                            <ScatterIcon size={22} className="text-amber-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">散点图引擎</h2>
-                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1">SCATTER PROCESSOR V1.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">相关性散点图分析</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS Scatter Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={handleReset}
-                            className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-amber-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
+                            className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-amber-400 transition-all border border-[var(--sidebar-border)] shadow-sm"
                             title="恢复示例"
                         >
                             <RotateCcw size={18} />
                         </button>
-                        <button onClick={() => setShowDocs(true)} className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-600 transition-all border border-[var(--sidebar-border)] shadow-sm">
+                        <button onClick={() => setShowDocs(true)} className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-600 transition-all border border-[var(--sidebar-border)] shadow-sm">
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
-                <nav className="flex bg-[var(--input-bg)] p-1.5 rounded-2xl border border-[var(--input-border)] gap-1">
+                <nav className="flex bg-[var(--input-bg)] p-1.5 rounded-lg border border-[var(--input-border)] gap-1">
                     {[{ id: 'manual', label: '手动录入', icon: <Database size={14} /> }, { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> }, { id: 'ai', label: 'AI 推理', icon: <Sparkles size={14} /> }].map(t => (
                         <button key={t.id} onClick={() => handleTabChange(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-amber-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}>
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-amber-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}>
                             {t.icon} {t.label}
                         </button>
                     ))}
@@ -221,11 +239,11 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                                 <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">图表元数据</span>
                             </div>
                             <div className="grid grid-cols-1 gap-3">
-                                <input value={styles.title || ''} onChange={e => onStylesChange({ ...styles, title: e.target.value })} className="w-full h-10 px-4 logic-terminal-input text-xs font-bold bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-[var(--sidebar-text)]" placeholder="图表标题" />
+                                <input value={styles.title || ''} onChange={e => onStylesChange({ ...styles, title: e.target.value })} className="w-full h-10 px-4 logic-terminal-input text-xs font-bold bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-[var(--sidebar-text)]" placeholder="图表标题" />
                                 <div className="grid grid-cols-3 gap-3">
-                                    <input value={styles.xAxisLabel || ''} onChange={e => onStylesChange({ ...styles, xAxisLabel: e.target.value })} className="w-full h-10 px-4 logic-terminal-input text-xs bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-[var(--sidebar-text)]" placeholder="X轴标签" />
-                                    <input value={styles.yAxisLabel || ''} onChange={e => onStylesChange({ ...styles, yAxisLabel: e.target.value })} className="w-full h-10 px-4 logic-terminal-input text-xs bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-[var(--sidebar-text)]" placeholder="Y轴标签" />
-                                    <input value={styles.zAxisLabel || ''} onChange={e => onStylesChange({ ...styles, zAxisLabel: e.target.value })} className="w-full h-10 px-4 logic-terminal-input text-xs bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-[var(--sidebar-text)]" placeholder="Z轴标签" />
+                                    <input value={styles.xAxisLabel || ''} onChange={e => onStylesChange({ ...styles, xAxisLabel: e.target.value })} className="w-full h-10 px-4 logic-terminal-input text-xs bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-[var(--sidebar-text)]" placeholder="X轴标签" />
+                                    <input value={styles.yAxisLabel || ''} onChange={e => onStylesChange({ ...styles, yAxisLabel: e.target.value })} className="w-full h-10 px-4 logic-terminal-input text-xs bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-[var(--sidebar-text)]" placeholder="Y轴标签" />
+                                    <input value={styles.zAxisLabel || ''} onChange={e => onStylesChange({ ...styles, zAxisLabel: e.target.value })} className="w-full h-10 px-4 logic-terminal-input text-xs bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-[var(--sidebar-text)]" placeholder="Z轴标签" />
                                 </div>
                             </div>
                         </div>
@@ -242,14 +260,14 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                             <textarea
                                 value={manualInput}
                                 onChange={e => handleManualChange(e.target.value)}
-                                className="w-full h-96 bg-[var(--input-bg)] text-[var(--sidebar-text)] p-4 font-mono text-xs border border-[var(--input-border)] rounded-2xl resize-none focus:border-amber-500/50 focus:outline-none"
+                                className="w-full h-96 bg-[var(--input-bg)] text-[var(--sidebar-text)] p-4 font-mono text-xs border border-[var(--input-border)] rounded-lg resize-none focus:border-amber-500/50 focus:outline-none"
                                 placeholder={"10.5, 20.3\n15.2, 25.1\n..."}
                                 spellCheck={false}
                             />
                         </div>
 
                         {/* Configuration */}
-                        <div className="p-6 bg-[var(--input-bg)] rounded-[2rem] border border-[var(--input-border)] space-y-4">
+                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4">
                             <div className="flex items-center gap-4 border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">样式配置</span>
                             </div>
@@ -258,20 +276,20 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => onStylesChange({ ...styles, showValues: !styles.showValues })}
-                                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border transition-all ${styles.showValues ? 'bg-amber-600 border-amber-500 text-white' : 'bg-[var(--sidebar-bg)] border-[var(--input-border)] text-[var(--sidebar-muted)]'}`}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg border transition-all ${styles.showValues ? 'bg-amber-600 border-amber-500 text-white' : 'bg-[var(--sidebar-bg)] border-[var(--input-border)] text-[var(--sidebar-muted)]'}`}
                                 >
                                     <span className="text-[10px] font-black uppercase tracking-widest">{styles.showValues ? '显示数值' : '隐藏数值'}</span>
                                 </button>
                                 <button
                                     onClick={() => onStylesChange({ ...styles, showTrend: !styles.showTrend })}
-                                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border transition-all ${styles.showTrend ? 'bg-blue-600 border-blue-500 text-white' : 'bg-[var(--sidebar-bg)] border-[var(--input-border)] text-[var(--sidebar-muted)]'}`}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg border transition-all ${styles.showTrend ? 'bg-blue-600 border-blue-500 text-white' : 'bg-[var(--sidebar-bg)] border-[var(--input-border)] text-[var(--sidebar-muted)]'}`}
                                 >
                                     <span className="text-[10px] font-black uppercase tracking-widest">{styles.showTrend ? '趋势线开' : '趋势线关'}</span>
                                 </button>
                             </div>
 
                             {/* Compact Control Row */}
-                            <div className="flex items-center justify-between bg-[var(--sidebar-bg)] p-4 rounded-xl border border-[var(--input-border)]">
+                            <div className="flex items-center justify-between bg-[var(--sidebar-bg)] p-4 rounded-lg border border-[var(--input-border)]">
                                 {/* Point Color */}
                                 <div className="flex flex-col gap-2 items-center">
                                     <span className="text-[10px] font-bold text-[var(--sidebar-text)]">点色</span>
@@ -325,10 +343,10 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                         </div>
                     </div>
                 ) : activeTab === 'dsl' ? (
-                    <textarea value={dsl} onChange={e => { setDsl(e.target.value); handleParseDSL(e.target.value); }} className="w-full h-full bg-[var(--input-bg)] text-amber-500 dark:text-amber-100 p-6 font-mono text-xs border border-[var(--input-border)] rounded-2xl resize-none focus:outline-none" spellCheck={false} />
+                    <textarea value={dsl} onChange={e => { setDsl(e.target.value); handleParseDSL(e.target.value); }} className="w-full h-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-6 font-mono text-xs border border-[var(--input-border)] rounded-lg resize-none focus:outline-none" spellCheck={false} />
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-8 shadow-2xl relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能相关性推演</span>
                                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
@@ -340,14 +358,14 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                             <textarea
                                 value={aiPrompt}
                                 onChange={e => setAiPrompt(e.target.value)}
-                                className="w-full h-56 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] p-8 text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-amber-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="输入描述，例如：'分析广告投入与销售额的关系，生成模拟数据'..."
                             />
 
                             <button
                                 onClick={generateAI}
                                 disabled={isGenerating || !aiPrompt.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-amber-600 hover:bg-amber-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-amber-600 hover:bg-amber-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -362,7 +380,7 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                                 )}
                             </button>
 
-                            <div className="p-8 bg-amber-900/10 border border-amber-800/20 rounded-3xl space-y-4">
+                            <div className="p-8 bg-amber-900/10 border border-amber-800/20 rounded-lg space-y-4">
                                 <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">推理提示</p>
                                 <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以输入变量间的因果猜想（如“温度对粘度的影响”）或具体的数据分布特征。AI 将为您模拟符合科学规律的点集，并自动计算初步的回归趋势。
@@ -376,12 +394,12 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
             {/* Docs Modal */}
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md transition-all">
-                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         {/* Header */}
                         <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-amber-600/20 rounded-2xl border border-amber-500/30">
+                                    <div className="p-3 bg-amber-600/20 rounded-lg border border-amber-500/30">
                                         <ScatterIcon size={24} className="text-amber-400" />
                                     </div>
                                     <div>
@@ -389,12 +407,12 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                                         <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Correlation Knowledge Base V1.2</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-xl transition-all text-[var(--sidebar-text)] hover:text-amber-500">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-lg transition-all text-[var(--sidebar-text)] hover:text-amber-500">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-2xl border border-[var(--input-border)] w-fit">
+                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-lg border border-[var(--input-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -402,7 +420,7 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-amber-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
+                                        className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-amber-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                     >
                                         {t.label}
                                     </button>
@@ -416,7 +434,7 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                                 <div className="space-y-12 font-mono text-xs">
                                     <section className="space-y-4">
                                         <h4 className="text-amber-500 font-bold uppercase tracking-wider text-[10px] mb-2">基础元数据</h4>
-                                        <div className="grid grid-cols-1 gap-3 p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)]">
+                                        <div className="grid grid-cols-1 gap-3 p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)]">
                                             <p className="text-[var(--sidebar-text)]"><span className="text-amber-400 font-bold">Title:</span> 图表标题</p>
                                             <p className="text-[var(--sidebar-text)]"><span className="text-amber-400 font-bold">XAxis:</span> X轴标签</p>
                                             <p className="text-[var(--sidebar-text)]"><span className="text-amber-400 font-bold">YAxis:</span> Y轴标签</p>
@@ -426,7 +444,7 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
 
                                     <section className="space-y-4">
                                         <h4 className="text-blue-500 font-bold uppercase tracking-wider text-[10px] mb-2">样式控制</h4>
-                                        <div className="grid grid-cols-1 gap-3 p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)]">
+                                        <div className="grid grid-cols-1 gap-3 p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)]">
                                             <p className="text-[var(--sidebar-text)]"><span className="text-blue-400 font-bold">Color[Point]:</span> #HEX (点颜色)</p>
                                             <p className="text-[var(--sidebar-text)]"><span className="text-blue-400 font-bold">Color[Trend]:</span> #HEX (趋势线颜色)</p>
                                             <p className="text-[var(--sidebar-text)]"><span className="text-blue-400 font-bold">Size[Base]:</span> Number (基准点大小, 默认10)</p>
@@ -436,17 +454,18 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
 
                                     <section className="space-y-4">
                                         <h4 className="text-emerald-500 font-bold uppercase tracking-wider text-[10px] mb-2">功能开关</h4>
-                                        <div className="grid grid-cols-1 gap-3 p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)]">
+                                        <div className="grid grid-cols-1 gap-3 p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)]">
                                             <p className="text-[var(--sidebar-text)]"><span className="text-emerald-400 font-bold">ShowTrend:</span> true/false (显示回归线)</p>
+                                            <p className="text-[var(--sidebar-text)]"><span className="text-emerald-400 font-bold">ShowValues:</span> true/false (显示数据标记)</p>
                                             <p className="text-[var(--sidebar-text)]"><span className="text-emerald-400 font-bold">3D:</span> true/false (启用3D模式)</p>
                                         </div>
                                     </section>
 
                                     <section className="space-y-4">
                                         <h4 className="text-[var(--sidebar-text)] font-bold uppercase tracking-wider text-[10px] mb-2">数据格式</h4>
-                                        <div className="p-6 bg-[var(--card-bg)] rounded-2xl border border-[var(--input-border)] space-y-4">
+                                        <div className="p-6 bg-[var(--card-bg)] rounded-lg border border-[var(--input-border)] space-y-4">
                                             <p className="text-[var(--sidebar-muted)] mb-2">使用 "- " 开头定义数据点，格式为 X, Y, [Z]</p>
-                                            <code className="block p-4 bg-[var(--sidebar-bg)] rounded-xl space-y-1">
+                                            <code className="block p-4 bg-[var(--sidebar-bg)] rounded-lg space-y-1">
                                                 <p className="text-[var(--sidebar-muted)]/60"># 格式示例</p>
                                                 <p>- <span className="text-amber-400">10.5</span>, <span className="text-blue-400">20.2</span> <span className="text-[var(--sidebar-muted)]/60">// X, Y (2D)</span></p>
                                                 <p>- <span className="text-amber-400">15.0</span>, <span className="text-blue-400">30.5</span>, <span className="text-emerald-400">50</span> <span className="text-[var(--sidebar-muted)]/60">// X, Y, Z (3D/Bubble)</span></p>
@@ -458,7 +477,7 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-amber-500 uppercase tracking-widest border-b border-amber-500/20 pb-2">相关性分析 (Correlation)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
                                             <p>散点图是判断两个（或三个）变量之间是否存在相关关系的数学工具。通过观察点集的分布形态，可以得出以下结论：</p>
                                             <ul className="list-disc list-inside space-y-2">
                                                 <li><strong>正相关</strong>: X 增加，Y 也随之增加。</li>
@@ -470,12 +489,12 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-blue-500 uppercase tracking-widest border-b border-blue-500/20 pb-2">回归分析 (Regression)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4 text-xs leading-relaxed text-[var(--sidebar-text)]">
                                             <p>系统自动计算线性回归线，作为预测模型的基础。通过趋势线，我们可以对未知的 X 值预测其对应的 Y 值位置。</p>
                                         </div>
                                     </section>
 
-                                    <div className="p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl">
+                                    <div className="p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Zap size={14} className="text-indigo-500" />
                                             <span className="text-[10px] font-black uppercase text-indigo-500">专家提示</span>
@@ -490,7 +509,7 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                         <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowDocs(false)}
-                                className="px-16 py-4 bg-amber-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-amber-500 transition-all font-sans"
+                                className="px-16 py-4 bg-amber-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-amber-500 transition-all font-sans"
                             >
                                 已阅读规范
                             </button>
@@ -500,6 +519,7 @@ const ScatterEditor: React.FC<ScatterEditorProps> = ({ data, styles, onDataChang
                 document.body
             )}
         </div>
+        
     );
 };
 

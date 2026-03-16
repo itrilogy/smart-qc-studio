@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RadarData, RadarChartStyles, DEFAULT_RADAR_STYLES } from '../types';
+import {
+    RadarData, RadarChartStyles, DEFAULT_RADAR_STYLES, QCToolType } from '../types';
 import { INITIAL_RADAR_DSL } from '../constants';
-import { Sparkles, HelpCircle, RotateCcw, Code, Settings2, ChevronRight, Palette, Layout, Loader2, X, Zap, Database, Trash2, Plus } from 'lucide-react';
+import {
+    Cpu, Sparkles, HelpCircle, X, Loader2, Database, Code,
+    ChevronRight, Save, Trash2, Plus, Edit3, Target, RotateCcw,
+    Layout, Zap
+} from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
-import { QCToolType } from '../types';
 import { createPortal } from 'react-dom';
 
 interface RadarEditorProps {
@@ -155,36 +159,36 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
     };
 
     return (
-        <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
-            {/* Header */}
-            <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] relative transition-colors">
+                {/* Header */}
+                <div className="p-6 border-b border-[var(--sidebar-border)] space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-amber-600/20 rounded-xl flex items-center justify-center border border-amber-500/30">
-                            <Sparkles size={22} className="text-amber-400" />
+                        <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+                            <Cpu size={22} className="text-blue-400" />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">雷达图分析引擎</h2>
-                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1">RADAR ENGINE V2.0</p>
+                            <h2 className="text-sm font-black text-[var(--sidebar-text)] tracking-widest uppercase">雷达图多维分析</h2>
+                            <p className="text-[8px] text-[var(--sidebar-muted)] font-bold tracking-[0.2em] mt-1 uppercase">IQS Radar Engine | LUXI LAB</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <button onClick={handleReset} className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-amber-400 transition-all border border-[var(--sidebar-border)] shadow-sm">
+                        <button onClick={handleReset} className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-amber-400 transition-all border border-[var(--sidebar-border)] shadow-sm">
                             <RotateCcw size={18} />
                         </button>
-                        <button onClick={() => setShowDocs(true)} className="p-3 bg-[var(--card-bg)] rounded-xl text-[var(--sidebar-text)] hover:text-blue-600 transition-all border border-[var(--sidebar-border)] shadow-sm">
+                        <button onClick={() => setShowDocs(true)} className="p-3 bg-[var(--card-bg)] rounded-lg text-[var(--sidebar-text)] hover:text-blue-600 transition-all border border-[var(--sidebar-border)] shadow-sm">
                             <HelpCircle size={18} />
                         </button>
                     </div>
                 </div>
-                <nav className="flex bg-[var(--input-bg)] p-1.5 rounded-2xl border border-[var(--input-border)] gap-1">
+                <nav className="flex bg-[var(--input-bg)] p-1.5 rounded-lg border border-[var(--input-border)] gap-1">
                     {[
                         { id: 'manual', label: '手动编辑', icon: <Database size={14} /> },
                         { id: 'dsl', label: 'DSL 编辑器', icon: <Code size={14} /> },
                         { id: 'ai', label: 'AI 推理', icon: <Sparkles size={14} /> }
                     ].map(t => (
                         <button key={t.id} onClick={() => setActiveTab(t.id as any)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-amber-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'}`}>
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-amber-600 text-white shadow-xl' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--card-bg)]'}`}>
                             {t.icon} {t.label}
                         </button>
                     ))}
@@ -206,7 +210,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                     onDataChange({ ...data, title: e.target.value });
                                     onStylesChange({ ...styles, title: e.target.value });
                                 }}
-                                className="w-full h-10 px-4 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-xs font-bold focus:outline-none focus:border-amber-500 text-[var(--sidebar-text)]"
+                                className="w-full h-10 px-4 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-xs font-bold focus:outline-none focus:border-amber-500 text-[var(--sidebar-text)]"
                                 placeholder="图表标题"
                             />
                             <div className="grid grid-cols-2 gap-3">
@@ -226,7 +230,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                 <ChevronRight size={14} className="text-amber-500" />
                                 <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">统计分析算子</span>
                             </div>
-                            <div className="p-4 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] grid grid-cols-1 gap-4">
+                            <div className="p-4 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] grid grid-cols-1 gap-4">
                                 <label className="flex items-center justify-between cursor-pointer group">
                                     <span className="text-[10px] font-bold text-[var(--sidebar-text)] group-hover:text-amber-500 uppercase tracking-wider transition-colors">自动数据标准化</span>
                                     <input type="checkbox" checked={styles.standardize} onChange={e => onStylesChange({ ...styles, standardize: e.target.checked })} className="w-4 h-4 rounded border-[var(--input-border)] bg-[var(--sidebar-bg)] text-amber-600 focus:ring-amber-500" />
@@ -247,7 +251,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                 <ChevronRight size={14} className="text-amber-500" />
                                 <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">坐标与显示</span>
                             </div>
-                            <div className="p-4 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] grid grid-cols-1 gap-4">
+                            <div className="p-4 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] grid grid-cols-1 gap-4">
                                 <label className="flex items-center gap-3 cursor-pointer group">
                                     <input type="checkbox" checked={styles.isClosed} onChange={e => onStylesChange({ ...styles, isClosed: e.target.checked })} className="w-4 h-4 rounded border-[var(--input-border)] bg-[var(--sidebar-bg)] text-amber-600 focus:ring-amber-500" />
                                     <span className="text-[10px] font-bold text-[var(--sidebar-text)] group-hover:text-amber-500 uppercase tracking-wider transition-colors">多边形坐标系</span>
@@ -284,7 +288,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                             <div className="grid grid-cols-1 gap-2">
                                 {data.axes.map((axis, idx) => (
                                     <div key={idx} className="group flex items-center gap-2 animate-in slide-in-from-left duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
-                                        <div className="flex-1 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl px-3 h-10 flex items-center gap-2 group-hover:border-amber-500/30 transition-all">
+                                        <div className="flex-1 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg px-3 h-10 flex items-center gap-2 group-hover:border-amber-500/30 transition-all">
                                             <input
                                                 value={axis.name}
                                                 onChange={e => {
@@ -327,7 +331,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                                 const newSeries = data.series.map(s => ({ ...s, values: s.values.filter((_, i) => i !== idx) }));
                                                 onDataChange({ ...data, axes: newAxes, series: newSeries });
                                             }}
-                                            className="w-10 h-10 flex items-center justify-center bg-[var(--card-bg)] border border-[var(--sidebar-border)] rounded-xl text-[var(--sidebar-muted)] hover:text-red-500 group-hover:opacity-100 transition-all shadow-sm"
+                                            className="w-10 h-10 flex items-center justify-center bg-[var(--card-bg)] border border-[var(--sidebar-border)] rounded-lg text-[var(--sidebar-muted)] hover:text-red-500 group-hover:opacity-100 transition-all shadow-sm"
                                         >
                                             <Trash2 size={14} />
                                         </button>
@@ -360,7 +364,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                             </div>
                             <div className="grid grid-cols-1 gap-2">
                                 {data.series.map((s, idx) => (
-                                    <div key={idx} className="flex flex-col bg-[var(--input-bg)] rounded-xl border border-[var(--input-border)] overflow-hidden group transition-all hover:border-amber-500/30">
+                                    <div key={idx} className="flex flex-col bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] overflow-hidden group transition-all hover:border-amber-500/30">
                                         <div className="flex items-center justify-between px-4 h-12 border-b border-[var(--sidebar-border)]">
                                             <div className="flex items-center gap-3">
                                                 <input type="color" value={s.color || '#3b82f6'} onChange={e => {
@@ -420,7 +424,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                             </div>
                         </div>
 
-                        <div className="p-4 bg-amber-900/10 border border-amber-800/20 rounded-2xl">
+                        <div className="p-4 bg-amber-900/10 border border-amber-800/20 rounded-lg">
                             <p className="text-[9px] text-amber-400 font-bold leading-relaxed uppercase">
                                 💡 进阶提示：当变量超过 15 个时，雷达图可能会显得拥挤，建议精简指标或关注前 5 个关键特征。
                             </p>
@@ -431,14 +435,14 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                         <textarea
                             value={dsl}
                             onChange={e => { setDsl(e.target.value); handleParseDSL(e.target.value); }}
-                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-[2.5rem] focus:outline-none focus:ring-4 focus:ring-amber-500/10 transition-all resize-none shadow-inner custom-scrollbar"
+                            className="flex-1 w-full bg-[var(--input-bg)] text-[var(--sidebar-text)] p-8 font-mono text-[11px] leading-relaxed border border-[var(--input-border)] rounded-lg focus:outline-none focus:ring-4 focus:ring-amber-500/10 transition-all resize-none shadow-inner custom-scrollbar"
                             placeholder="输入 DSL 指令..."
                             spellCheck={false}
                         />
                     </div>
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-                        <div className="p-8 bg-[var(--input-bg)] rounded-[2.5rem] border border-[var(--input-border)] space-y-8 shadow-2xl relative overflow-hidden group">
+                        <div className="p-8 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-8 shadow-2xl relative overflow-hidden group">
                             <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-3">
                                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--sidebar-text)]">智能评估描述</span>
                                 <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
@@ -449,13 +453,13 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                             <textarea
                                 value={aiPrompt}
                                 onChange={e => setAiPrompt(e.target.value)}
-                                className="w-full h-56 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] p-8 text-sm leading-relaxed border border-[var(--input-border)] rounded-[2rem] focus:outline-none focus:border-amber-500 transition-all resize-none shadow-inner"
+                                className="w-full  rounded-lg "
                                 placeholder="输入评估指标和数值，例如：'对比 A 和 B 产品的 5 个维度性能，维度包括：价格、功能、美观度、易用性、稳定性'..."
                             />
                             <button
                                 onClick={generateAI}
                                 disabled={isGenerating || !aiPrompt.trim()}
-                                className={`w-full h-16 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-amber-600 hover:bg-amber-500 active:scale-[0.98]'}`}
+                                className={`w-full h-16 rounded-lg flex items-center justify-center gap-4 transition-all shadow-2xl relative overflow-hidden group ${isGenerating ? 'bg-[var(--sidebar-muted)]' : 'bg-amber-600 hover:bg-amber-500 active:scale-[0.98]'}`}
                             >
                                 {isGenerating ? (
                                     <>
@@ -470,7 +474,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                 )}
                             </button>
 
-                            <div className="p-8 bg-amber-900/10 border border-amber-800/20 rounded-3xl space-y-4">
+                            <div className="p-8 bg-amber-900/10 border border-amber-800/20 rounded-lg space-y-4">
                                 <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">推理提示</p>
                                 <p className="text-xs text-[var(--sidebar-text)] leading-relaxed font-medium">
                                     您可以输入如“对比两款手机的硬件参数”或“部门月度 KPI 达成情况”等核心描述。AI 将自动识别维度轴与数值序列，为您生成具备专业配色的雷达图 DSL 配置。
@@ -483,25 +487,25 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
 
             {showDocs && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md transition-all">
-                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-[3rem] border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <div className="bg-[var(--sidebar-bg)] w-[800px] max-h-[85vh] rounded-lg border border-[var(--sidebar-border)] flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         {/* Header */}
                         <div className="px-10 py-8 flex flex-col border-b border-[var(--sidebar-border)] shrink-0 gap-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-amber-600/20 rounded-2xl border border-amber-500/30">
+                                    <div className="p-3 bg-amber-600/20 rounded-lg border border-amber-500/30">
                                         <Layout size={24} className="text-amber-400" />
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-black text-[var(--sidebar-text)] uppercase tracking-tighter">雷达图知识库</h3>
-                                        <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">Radar Knowledge Base V2.1</p>
+                                        <p className="text-[10px] text-[var(--sidebar-muted)] font-bold uppercase tracking-widest mt-1">IQS Radar Engine V3.1.0</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-xl transition-all text-[var(--sidebar-text)] hover:text-amber-500">
+                                <button onClick={() => setShowDocs(false)} className="p-3 hover:bg-[var(--card-bg)] rounded-lg transition-all text-[var(--sidebar-text)] hover:text-amber-500">
                                     <X size={24} />
                                 </button>
                             </div>
 
-                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-2xl border border-[var(--input-border)] w-fit">
+                            <nav className="flex bg-[var(--input-bg)] p-1 rounded-lg border border-[var(--input-border)] w-fit">
                                 {[
                                     { id: 'dsl', label: 'DSL 规范说明' },
                                     { id: 'logic', label: '分析逻辑与指南' },
@@ -509,7 +513,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                     <button
                                         key={t.id}
                                         onClick={() => setDocTab(t.id as any)}
-                                        className={`px-8 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-amber-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
+                                        className={`px-8 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docTab === t.id ? 'bg-amber-600 text-white shadow-lg' : 'text-[var(--sidebar-muted)] hover:text-[var(--sidebar-text)]'}`}
                                     >
                                         {t.label}
                                     </button>
@@ -523,7 +527,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-amber-400 uppercase tracking-widest border-b border-amber-900/50 pb-2">1. 基础配置说明 (Global Configuration)</h4>
-                                        <div className="grid grid-cols-[180px_1fr] gap-4 text-xs font-mono bg-[var(--sidebar-bg)] p-6 rounded-2xl border border-[var(--sidebar-border)] leading-relaxed">
+                                        <div className="grid grid-cols-[180px_1fr] gap-4 text-xs font-mono bg-[var(--sidebar-bg)] p-6 rounded-lg border border-[var(--sidebar-border)] leading-relaxed">
                                             <span className="text-amber-300 font-bold">Title:</span>
                                             <span className="text-[var(--sidebar-text)]">图表名称。示例: `Title: 综合性能分析`</span>
 
@@ -541,13 +545,16 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
 
                                             <span className="text-amber-300 font-bold">Closed:</span>
                                             <span className="text-[var(--sidebar-text)]">布尔值。网格线显示为多边形 (true) 或圆形 (false)。</span>
+
+                                            <span className="text-amber-300 font-bold">ShowValues:</span>
+                                            <span className="text-[var(--sidebar-text)]">布尔值。是否在数据点上显示具体数值标签。</span>
                                         </div>
                                     </section>
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-blue-400 uppercase tracking-widest border-b border-blue-900/50 pb-2">2. 指标定义 (Axis Definitions)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4">
-                                            <div className="font-mono text-xs text-amber-200 bg-black/40 p-4 rounded-xl">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4">
+                                            <div className="font-mono text-xs text-amber-200 bg-black/40 p-4 rounded-lg">
                                                 Axis: 指标名称, 最大值, [最小值]
                                             </div>
                                             <p className="text-xs text-[var(--sidebar-text)] leading-relaxed">
@@ -559,8 +566,8 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/50 pb-2">3. 数据系列 (Data Series)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4">
-                                            <div className="font-mono text-xs text-amber-200 bg-black/40 p-4 rounded-xl">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4">
+                                            <div className="font-mono text-xs text-amber-200 bg-black/40 p-4 rounded-lg">
                                                 Series: 系列名称, [数值1, 数值2, ...], [颜色], [透明度]
                                             </div>
                                             <p className="text-xs text-[var(--sidebar-text)] leading-relaxed">
@@ -574,9 +581,9 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                 <div className="space-y-12">
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-cyan-400 uppercase tracking-widest border-b border-cyan-900/50 pb-2">综合得分分析 (Area Score Methodology)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4 text-xs leading-relaxed">
                                             <p>雷达图得分通过计算数据点围成的多边形面积来得出权重。与简单的加权平均不同，面积评分更能反映指标之间的平衡性。</p>
-                                            <div className="bg-[var(--sidebar-bg)]/40 p-4 rounded-xl font-mono text-[10px] text-[var(--sidebar-text)]">
+                                            <div className="bg-[var(--sidebar-bg)]/40 p-4 rounded-lg font-mono text-[10px] text-[var(--sidebar-text)]">
                                                 公式: Area = 1/2 * Σ |xᵢ * yᵢ₊1 - xᵢ₊1 * yᵢ|
                                             </div>
                                             <p className="text-[var(--sidebar-text)]">面积越大，代表该对象在多维度上的综合表现越强。如果某一项指标极低，会导致整体面积锐减，即使其他指标很高。</p>
@@ -585,7 +592,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
 
                                     <section className="space-y-4">
                                         <h4 className="text-sm font-black text-purple-400 uppercase tracking-widest border-b border-purple-900/50 pb-2">相似度检测 (Similarity Analysis)</h4>
-                                        <div className="p-6 bg-[var(--input-bg)] rounded-2xl border border-[var(--input-border)] space-y-4 text-xs leading-relaxed">
+                                        <div className="p-6 bg-[var(--input-bg)] rounded-lg border border-[var(--input-border)] space-y-4 text-xs leading-relaxed">
                                             <p>通过计算欧氏距离 (Euclidean Distance) 来衡量两个对象在所有维度上的“亲疏关系”。</p>
                                             <ul className="list-disc list-inside text-[var(--sidebar-text)] space-y-2">
                                                 <li><strong>100%</strong>: 完全重合。</li>
@@ -595,7 +602,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                                         </div>
                                     </section>
 
-                                    <div className="p-6 bg-amber-900/10 border border-amber-800/20 rounded-3xl">
+                                    <div className="p-6 bg-amber-900/10 border border-amber-800/20 rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Zap size={14} className="text-amber-500" />
                                             <span className="text-[10px] font-black uppercase text-amber-500">使用提示</span>
@@ -612,7 +619,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                         <div className="p-10 border-t border-[var(--sidebar-border)] bg-[var(--input-bg)] flex justify-center shrink-0">
                             <button
                                 onClick={() => setShowDocs(false)}
-                                className="px-16 py-4 bg-amber-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-xl hover:bg-amber-500 transition-all"
+                                className="px-16 py-4 bg-amber-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl hover:bg-amber-500 transition-all"
                             >
                                 已阅读规范
                             </button>
@@ -622,6 +629,7 @@ const RadarEditor: React.FC<RadarEditorProps> = ({ data, styles, onDataChange, o
                 document.body
             )}
         </div>
+        
     );
 };
 
