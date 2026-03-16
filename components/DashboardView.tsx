@@ -34,7 +34,7 @@ export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols, th
             </div>
             <div>
               <h1 className={`text-5xl font-[900] ${isDark ? 'text-white' : 'text-slate-900'} tracking-tighter uppercase leading-none transition-colors`}>Intelligent QC <span className="text-blue-600 font-[400] italic">Studio</span></h1>
-              <p className={`${isDark ? 'text-slate-400' : 'text-slate-500'} font-bold uppercase tracking-[0.4em] text-[10px] mt-3 pl-1 transition-colors uppercase`}>IQS Logic Core v3.1 | LUXI LAB</p>
+              <p className={`${isDark ? 'text-slate-400' : 'text-slate-500'} font-bold uppercase tracking-[0.4em] text-[10px] mt-3 pl-1 transition-colors uppercase`}>IQS Logic Core v3.2 | LUXI LAB</p>
             </div>
           </div>
 
@@ -199,8 +199,12 @@ export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols, th
                 <h3 className={`text-sm font-black uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>版本发布记录 (Release History)</h3>
                 <div className={`p-6 rounded-lg border ${isDark ? 'bg-slate-950/50 border-slate-800' : 'bg-slate-50 border-slate-200'} space-y-4 font-mono text-[11px]`}>
                   <div className="flex gap-4">
-                    <span className="text-blue-500 font-bold shrink-0 w-16 text-right">v3.1.0</span>
-                    <span className={isDark ? "text-slate-300" : "text-slate-700"}>IQS 品牌全域升级：斜纹背景、全新 LOGO 与 UI 深度精进。 (Today)</span>
+                    <span className="text-blue-500 font-bold shrink-0 w-16 text-right">v3.2.0</span>
+                    <span className={isDark ? "text-slate-300" : "text-slate-700"}>feat: 引入 MCP SSE 远程调用与 Docker 混合编排，支持运行时配置注入。 (Today)</span>
+                  </div>
+                  <div className="flex gap-4 opacity-70">
+                    <span className="text-slate-500 font-bold shrink-0 w-16 text-right">v3.1.0</span>
+                    <span className={isDark ? "text-slate-400" : "text-slate-600"}>IQS 品牌全域升级：斜纹背景、全新 LOGO 与 UI 深度精进。</span>
                   </div>
                   <div className="flex gap-4 opacity-70">
                     <span className="text-slate-500 font-bold shrink-0 w-16 text-right">v3.0.0</span>
@@ -255,7 +259,7 @@ export const DashboardView: React.FC<Props> = ({ onSelectTool, cols, setCols, th
                 onClick={() => setShowInfo(false)}
                 className={`px-8 py-3 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-lg ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
               >
-                关闭说明
+                进入工位
               </button>
             </div>
           </div>

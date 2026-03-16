@@ -1,6 +1,6 @@
 {
     "project": "IQS (Intelligent QC Studio)",
-    "version": "1.1.0",
+    "version": "3.2.0",
     "description": "IQS Chart specification and few-shot examples for LLM-driven automated charting.",
     "ai_config": {
         "active_profile": "deepseek_public",
@@ -32,7 +32,7 @@
                     "Color[Root/RootText/Main/MainText/Bone/Line/Text/End]: #HEX - 色彩配置",
                     "Title: [文字] - 定义中心问题",
                     "# 大骨(L1) ## 中骨(L2) ### 小骨(L3) - 最高6级递归",
-                    "经典维度: 人机料法环(5M1E), 4P, 系统分层"
+                    "专家建议: 首选人机料法环(5M1E), 4P 或系统分层维度展开分析"
                 ],
                 "few_shot_examples": [
                     {
@@ -60,9 +60,11 @@
             "dsl_specification": {
                 "rules": [
                     "Title: [文字]",
-                    "Color[Bar/Line/MarkLine]: #HEX",
+                    "Color[Bar/Line/MarkLine/Title]: #HEX",
                     "ShowValues: true/false - 显示数据标记",
-                    "Font[Title/Base/Bar]: [Size]",
+                    "Decimals: [N] - 百分比精度",
+                    "Font[Title/Base/Axis/Bar/Line]: [Size]",
+                    "专家建议: 对于 A 类因素 (累计占比 < 80%) 建议使用红色 (#ef4444) 高亮",
                     "- [Name]: [Value] - 数据行 (无需排序, 系统自动降序)"
                 ],
                 "few_shot_examples": [
@@ -94,6 +96,9 @@
                     "USL/LSL/Target: [Value] - 规格线",
                     "Bins: auto/N - 分组数",
                     "ShowCurve: true/false - 正态曲线",
+                    "ShowLabels: true/false - 显示轴标签",
+                    "ShowValues: true/false - 显示柱顶数值",
+                    "Color[Bar/Curve/USL/LSL/Target]: #HEX",
                     "- [Value] - 原始数据只需数值"
                 ],
                 "few_shot_examples": [
@@ -120,7 +125,10 @@
                     "XAxis/YAxis/ZAxis: [Label]",
                     "ShowTrend: true/false - 趋势线",
                     "ShowValues: true/false - 显示数据标记",
-                    "Font[Title/Base]: [Size] - 字号控制",
+                    "Smoother: Lowess/MovingAverage/false - 平滑算法",
+                    "Opacity: [0.1-1.0] - 点透明度",
+                    "Color[Point/Trend/Label]: #HEX",
+                    "Font[Title/Base/Axis]: [Size] - 字号控制",
                     "- x, y, [z] - 数据行 (z为气泡大小)"
                 ],
                 "few_shot_examples": [
@@ -223,6 +231,7 @@
                     "ShowValues: true/false - 显示数据标记",
                     "UCL/LCL/CL: [Value] - 手动指定控制限 (可选)",
                     "Color[Line/Point/UCL/CL]: #HEX - 样式定制",
+                    "专家建议: 生产监控首选 Nelson 规则, 流程分析建议使用 Western-Electric 规则",
                     "[series]: [名称] ... [/series] - 数据序列定义块"
                 ],
                 "few_shot_examples": [
@@ -320,8 +329,11 @@
                     "X-Dimensions: [X1, X2] - X 轴变量 (YvsX 模式)",
                     "Group: [变量名] - 分类变量 (用于颜色/形状区分)",
                     "Smoother: [Lowess/MovingAverage/false] - 平滑算法",
+                    "PointSize: [Number] - 散点大小 (px)",
+                    "PointOpacity: [0.1-1.0] - 点透明度",
+                    "ColorPalette: [default/vibrant/industrial] - 调色板方案",
                     "Data: - 之后使用 - { K: V, ... } 定义样本",
-                    "Styles: - 之后定义视觉参数 (Diagonal: Histogram/Boxplot/Label)"
+                    "Styles: - 之后定义视觉参数 (Diagonal: Histogram/Boxplot/Label/None)"
                 ],
                 "few_shot_examples": [
                     {
@@ -382,7 +394,8 @@
                 "rules": [
                     "Title: [文字]",
                     "ShowCritical: true/false - 关键路径高亮",
-                    "Color[Node/Line/Critical]: #HEX",
+                    "ShowShortest: true/false - 最短路径标记",
+                    "Color[Node/Line/Critical/Shortest]: #HEX",
                     "Event: [ID], [Label] - 定义事件/里程碑",
                     "ID1 -> ID2 : [Duration], [Label] - 实活动",
                     "ID1 ..> ID2 : 0, [Label] - 虚活动"
@@ -415,7 +428,8 @@
                     "Type: bar | line | pie - 图表类型",
                     "View: v | h - 纵横切换 (柱状图有效)",
                     "Stacked: true | false - 是否堆叠 (柱状/折线有效)",
-                    "ShowMarkers: true | false - 是否显示数据标记",
+                    "ShowValues: true | false - 是否显示数据标记",
+                    "ShowLegend: true | false - 是否显示图例",
                     "Axis: [Label], [X/Y/Y2] - 轴定义",
                     "Dataset: [Name], [Values], [#Color?], [AxisMatch] - 数据序列",
                     "  - AxisMatch: X (对应分类标签), Y (对应主值轴), Y2 (对应副值轴)"
@@ -448,13 +462,16 @@
             "dsl_specification": {
                 "rules": [
                     "Title: [文字] - 图表标题",
-                    "StartAngle: [Number] - 起始角度 (默认 -90, 即12点钟方向)",
-                    "Clockwise: [true/false] - 是否顺时针排列轴",
-                    "Closed: [true/false] - 网格线是否闭合为多边形 (false则为圆形)",
-                    "Standardize: [true/false] - 是否开启数据自动标准化 (0-1 处理)",
-                    "ShowAreaScore: [true/false] - 是否显示多边形面积综合得分",
-                    "ShowSimilarity: [true/false] - 是否显示与首个系列的相似度",
-                    "Axis: [Name], [Max], [Min?] - 定义维度轴 (名称, 最大值, 最小值默认为0)",
+                    "ShowValues: true/false - 显示各维标值",
+                    "ShowLabels: true/false - 显示轴标签(刻度)",
+                    "ShowAreaScore: true/false - 显示综合面积评分",
+                    "ShowSimilarity: true/false - 显示相似度比较",
+                    "Standardize: true/false - 数据标准化 (0-1)",
+                    "Smoother: true/false - 线条平滑",
+                    "StartAngle: [Number] - 起始角度",
+                    "Clockwise: [true/false] - 顺时针排列",
+                    "Closed: [true/false] - 多边形闭合",
+                    "Axis: [Name], [Max], [Min?] - 定义维度轴",
                     "Series: [Name], [Values], [#Color?], [Opacity?] - 定义数据列"
                 ],
                 "few_shot_examples": [

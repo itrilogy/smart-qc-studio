@@ -586,51 +586,70 @@ Event: 6, 项目结束
 ## 📦 快速启动 (Quick Start)
 
 ### 1. 基础配置与环境变量
-项目依赖环境变量来激活 AI 推理功能。在项目根目录下创建一个 `.env` 文件（或参考 `.env.example`）：
+项目依赖环境变量来激活 AI 推理与渲染功能。在项目根目录下创建一个 `.env` 文件（或参考 `.env.example`）：
 
 ```bash
 # AI 服务授权密钥 (如 DeepSeek, OpenAI 或 Gemini 的 Key)
 API_KEY=your_real_api_key
 
 # [可选] 激活的 AI 配置文件名
-# 默认使用 deepseek_public，可切换为 chart_spec.json 中定义的其他方案
 AI_ACTIVE_PROFILE=deepseek_public
+
+# [可选] MCP 服务内部访问地址 (仅生产/Docker 环境推荐)
+IQS_BASE_URL=http://localhost:5173
+PORT=3000
 ```
 
-### 2. 本地开发
+### 2. 开发者模式 (本地运行)
 1. **安装依赖**:
    ```bash
-   npm install
+   npm install && cd mcp-server && npm install && cd ..
    ```
-2. **配置 API Key**:
-   在根目录下创建 `.env` 文件并设置 `API_KEY`（或在 `vite.config.ts` 中定义的对应变量）。
-3. **启动项目**:
+2. **启动 Web 前端**:
    ```bash
    npm run dev
    ```
-4. **访问**: [http://localhost:3000](http://localhost:3000)
+3. **启动 MCP 专家服务 (Stdio)**:
+   在 AI 客户端（如 Claude Desktop）配置中指向本地 `mcp-server/index.js`。详见 [MCP 配置指南](docs/MCP_CONFIG_GUIDE.md)。
 
-### 2. 容器化部署 (Docker)
-项目支持**运行时环境变量注入**，这意味着您可以直接通过环境变量修改配置而无需重新编译镜像。
+### 3. 生产级部署 (Docker 混合编排)
+项目提供了一键全量部署方案，将 **Web 工作站** 与 **MCP 专家服务器 (SSE)** 完美集成在同一个容器中。
 
-1. **启动容器**:
+1. **一键启动**:
    ```bash
-   # 确保根目录下有 .env 文件或直接在命令中传入变量
+   # 确保 .env 已配置好 API_KEY
    docker compose up -d --build
    ```
+
 2. **动态更新配置**:
-   如果您需要更换 API Key，只需修改 `.env` 或 `docker-compose.yml` 中的 `environment` 节点，然后运行：
+   如果您需要更换 API Key 或 AI 方案，只需修改 `.env` 或 `docker-compose.yml` 中的 `environment` 节点，然后运行：
    ```bash
    docker compose up -d
    ```
-   系统将自动重写 `config.js` 并即时生效。
-3. **配置生效原理 (Technical Detail)**:
-   - **开发环境 (`npm run dev`)**: Vite 自动读取 `.env` 并直接注入代码。修改后通常需要重启 Vite 进程（或利用 HMR）。
-   - **生产环境 (Docker)**: 采用“运行时注入”技术。容器内的 `docker-entrypoint.sh` 脚本会在启动时将当前的容器环境变量（来自 `.env` 或 Compose 节点）提取并生成 `/config.js`。
+   系统将通过 `docker-entrypoint.sh` 自动重写 `config.js` 并即时生效。
+
+3. **端口说明**:
+   - **Web 访问**: [http://localhost:5173](http://localhost:5173) (沉浸式分析界面)
+   - **MCP SSE 终端**: `http://localhost:3000/sse` (供远程 AI 客户端调用)
+
+4. **配置生效原理 (Technical Detail)**:
+   - **混合编排**: 内部采用 `docker-entrypoint.sh` 同时拉起前端预览与 MCP SSE 服务，实现资源共享与环境一致性。
+   - **运行时注入**: 采用“运行时注入”技术。容器内的脚本会在启动时将当前的容器环境变量（来自 `.env` 或 Compose 节点）提取并生成 `/app/dist/config.js`。
+   - **内部通信**: MCP Server 默认通过容器内网地址访问前端，避免了复杂的网络映射，提升了渲染响应速度。
    - **优先级**: 运行时配置 (Docker) > 编译时配置 (.env/Dev) > 预置配置 (chart_spec.json)。
 
-4. **访问系统**:
-   通过浏览器访问 [http://localhost:8080](http://localhost:8080)。
+---
+
+## 🤖 MCP 专家知识注入 (Expert Knowledge)
+
+Smart QC Studio 不仅仅是一个绘图工具，它还是一个具备 **“专家知识”** 的大脑。通过内置的 MCP Server，它可以：
+- **自描述语法**: 实时向 AI 客户端推送到全量 DSL 语法细节。
+- **专家逻辑注入**: 将 QC 七大手法、判异规则、分析逻辑作为语境注入到 AI 的推理过程中。
+- **双向联动**: 既支持在 Web 界面手动操作，也支持由 AI 通过指令直接渲染并生成报告。
+
+想要深入了解如何配置与调优 MCP 服务，请参阅：
+👉 **[IQS Chart Rendering MCP 配置指南](docs/MCP_CONFIG_GUIDE.md)**
+👉 **[IQS DSL 代理人宣示录 (Manifesto)](docs/IQS_DSL_AGENT_MANIFESTO.md)**
 
 ---
 
@@ -640,4 +659,4 @@ AI_ACTIVE_PROFILE=deepseek_public
 
 ---
 
-© 2026 Smart QC Studio | Industrial Logic Factory 🏆🏁
+© 2026 Smart QC Studio | Industrial Logic Factory 🏆🏁 - v3.2.0

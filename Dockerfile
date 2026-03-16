@@ -1,33 +1,39 @@
-# Build Stage
-FROM node:20-alpine AS build-stage
+# Multi-service Production Stage
+FROM node:20-slim AS production
+
+# Install Chromium for Puppeteer
+RUN apt-get update && apt-get install -y \
+    chromium \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files from local root and mcp-server
 COPY package*.json ./
-RUN npm install
+COPY mcp-server/package*.json ./mcp-server/
 
-# Copy all project files
+# Install dependencies (including production deps for both)
+RUN npm install --omit=dev
+RUN cd mcp-server && npm install --omit=dev
+
+# Copy project files
 COPY . .
 
-# Build the app
+# Build the Frontend
 RUN npm run build
 
-# Production Stage
-FROM nginx:stable-alpine AS production-stage
+# Expose ports: 
+# 5173 for Frontend (internal/external)
+# 3000 for MCP Server (SSE)
+EXPOSE 5173 3000
 
-# Copy the build output from build-stage to nginx public directory
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+# Environment variables
+ENV NODE_ENV=production
+ENV IQS_BASE_URL=http://localhost:5173
+ENV PORT=3000
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-# Expose port 80
-EXPOSE 80
-
-# Use entrypoint script to inject env vars
-ENTRYPOINT ["/docker-entrypoint.sh"]
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Entrypoint script to start both services
+RUN chmod +x docker-entrypoint.sh
+ENTRYPOINT ["./docker-entrypoint.sh"]

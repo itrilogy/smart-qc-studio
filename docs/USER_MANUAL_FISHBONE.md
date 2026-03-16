@@ -25,7 +25,16 @@
 ### 2.2 软件环境
 - **操作系统**：Windows 10/11, macOS, Linux (通用 Web 架构)
 - **内核驱动**：Node.js Web 渲染引擎
+- **画布平移与整理**：Canvas 绘图区支持自由平移，点击“整理画布”可使鱼骨居中并自动重设视距。
 - **浏览器**：Chrome 90+, Edge, Safari (推荐使用现代主流浏览器)
+
+---
+
+## 5. 专家解读建议 (Professional Interpretation)
+
+*   **深度分析原则 (5 Whys)**：每一个末端因素（小骨）都应是具体的、可验证的“根因”。如果末端因素依然模糊，说明“为什么”问得还不够深。
+*   **维度的一致性**：严禁在一个图表中混用 **5M1E** (Man, Machine, Material, Method, Mother-Nature, Energy) 与 **4P** (Product, Price, Place, Promotion)。制造业优先选 5M1E，互联网/服务业优先选 4P。
+*   **要因锁定**：鱼骨图分析完毕后，应挑选 3-5 个认为最重要的末端因素进行圈定，这即为后续“原因确认”阶段的验证对象。
 
 ---
 

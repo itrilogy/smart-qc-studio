@@ -1,7 +1,7 @@
 {
   "name": "smart-qc-studio",
   "private": true,
-  "version": "1.0.0",
+  "version": "3.2.0",
   "description": "Smart QC Studio - 工业级智能质量控制工作站 (Industrial Grade AI-Powered QC Charts)",
   "author": "Smart QC Team",
   "license": "MIT",

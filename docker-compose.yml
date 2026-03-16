@@ -5,12 +5,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: smart-qc-studio:latest
     container_name: smart-qc-studio
     ports:
-      - "8080:80"
+      - "5173:5173"
+      - "3000:3000"
     environment:
       - API_KEY=${API_KEY}
       - AI_ACTIVE_PROFILE=${AI_ACTIVE_PROFILE:-deepseek_public}
+      - IQS_BASE_URL=http://localhost:5173
+      - PORT=3000
     restart: unless-stopped
     networks:
       - qc-network

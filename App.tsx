@@ -97,9 +97,9 @@ import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loade
 
 // --- DSL Parsing Functions (Move outside to support Lazy Initialization) ---
 
-const parseInitialFishbone = () => {
+const parseInitialFishbone = (customDsl?: string) => {
   try {
-    const lines = INITIAL_FISHBONE_DSL.split('\n');
+    const lines = (customDsl || INITIAL_FISHBONE_DSL).split('\n');
     let title = '生产线停产原因分析';
     const mainBranches: FishboneNode[] = [];
     const newStyles = { ...DEFAULT_FISHBONE_STYLES };
@@ -171,8 +171,8 @@ const parseInitialFishbone = () => {
   }
 };
 
-const parseInitialPareto = () => {
-  const lines = INITIAL_PARETO_DSL.split('\n');
+const parseInitialPareto = (customDsl?: string) => {
+  const lines = (customDsl || INITIAL_PARETO_DSL).split('\n');
   const newItems: any[] = [];
   const newStyles: any = { ...DEFAULT_PARETO_STYLES };
   lines.forEach(line => {
@@ -195,8 +195,8 @@ const parseInitialPareto = () => {
   return { items: newItems.length > 0 ? newItems : INITIAL_PARETO_DATA, styles: newStyles };
 };
 
-const parseInitialHistogram = () => {
-  const lines = INITIAL_HISTOGRAM_DSL.split('\n');
+const parseInitialHistogram = (customDsl?: string) => {
+  const lines = (customDsl || INITIAL_HISTOGRAM_DSL).split('\n');
   const newData: number[] = [];
   const newStyles: any = { ...DEFAULT_HISTOGRAM_STYLES };
 
@@ -219,8 +219,8 @@ const parseInitialHistogram = () => {
   return { data: newData, styles: newStyles };
 };
 
-const parseInitialScatter = () => {
-  const lines = INITIAL_SCATTER_DSL.split('\n');
+const parseInitialScatter = (customDsl?: string) => {
+  const lines = (customDsl || INITIAL_SCATTER_DSL).split('\n');
   const newStyles: any = { ...DEFAULT_SCATTER_STYLES };
   const newPoints: any[] = [];
 
@@ -253,8 +253,8 @@ const parseInitialScatter = () => {
   return { data: finalData, styles: newStyles };
 };
 
-const parseInitialAffinity = () => {
-  const lines = INITIAL_AFFINITY_DSL.split('\n');
+const parseInitialAffinity = (customDsl?: string) => {
+  const lines = (customDsl || INITIAL_AFFINITY_DSL).split('\n');
   const newStyles: any = { ...DEFAULT_AFFINITY_STYLES };
   const items: AffinityItem[] = [];
 
@@ -331,9 +331,9 @@ const parseInitialAffinity = () => {
 
 
 
-const parseInitialRelation = () => {
+const parseInitialRelation = (customDsl?: string) => {
   try {
-    const { nodes, links, styles } = parseRelationDSL(INITIAL_RELATION_DSL);
+    const { nodes, links, styles } = parseRelationDSL(customDsl || INITIAL_RELATION_DSL);
     return { nodes, links, styles };
   } catch (e) {
     console.error('Relation Init Error:', e);
@@ -366,68 +366,146 @@ const parseInitialRadar = () => {
 };
 
 const App: React.FC = () => {
-  // State variables for each tool
-  const [selectedTool, setSelectedTool] = useState<QCToolType>(QCToolType.DASHBOARD);
+  // --- Headless Mode Logic ---
+  const { isHeadless, headlessType, headlessDsl } = React.useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    const typeStr = params.get('type')?.toLowerCase() || '';
+    const TYPE_MAP: Record<string, QCToolType> = {
+      fishbone: QCToolType.FISHBONE,
+      pareto: QCToolType.PARETO,
+      control: QCToolType.CONTROL,
+      spc: QCToolType.CONTROL,
+      affinity: QCToolType.AFFINITY,
+      histogram: QCToolType.HISTOGRAM,
+      scatter: QCToolType.SCATTER,
+      relation: QCToolType.RELATION,
+      matrix: QCToolType.MATRIX,
+      matrix_plot: QCToolType.MATRIX_PLOT,
+      pdpc: QCToolType.PDPC,
+      arrow: QCToolType.ARROW,
+      basic: QCToolType.BASIC,
+      radar: QCToolType.RADAR,
+      mermaid: QCToolType.MERMAID
+    };
 
-  const [fishboneData, setFishboneData] = useState<FishboneNode>(() => parseInitialFishbone().data);
-  const [fishboneStyles, setFishboneStyles] = useState<any>(() => parseInitialFishbone().styles);
+    return {
+      isHeadless: params.get('mode') === 'headless',
+      headlessType: TYPE_MAP[typeStr] || null,
+      headlessDsl: params.get('dsl')
+    };
+  }, []);
 
-  const [paretoData, setParetoData] = useState<ParetoItem[]>(() => parseInitialPareto().items);
-  const [paretoStyles, setParetoStyles] = useState<any>(() => parseInitialPareto().styles);
+  const [selectedTool, setSelectedTool] = useState<QCToolType>(() => {
+    if (isHeadless && headlessType) return headlessType;
+    return QCToolType.DASHBOARD;
+  });
 
-  const [histogramData, setHistogramData] = useState<number[]>(() => parseInitialHistogram().data);
-  const [histogramStyles, setHistogramStyles] = useState<any>(() => parseInitialHistogram().styles);
+  const [fishboneData, setFishboneData] = useState<FishboneNode>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.FISHBONE && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialFishbone(dsl).data;
+  });
+  const [fishboneStyles, setFishboneStyles] = useState<any>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.FISHBONE && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialFishbone(dsl).styles;
+  });
 
-  const [scatterData, setScatterData] = useState<ScatterPoint[]>(() => parseInitialScatter().data as ScatterPoint[]);
-  const [scatterStyles, setScatterStyles] = useState<ScatterChartStyles>(() => parseInitialScatter().styles);
+  const [paretoData, setParetoData] = useState<ParetoItem[]>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.PARETO && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialPareto(dsl).items;
+  });
+  const [paretoStyles, setParetoStyles] = useState<any>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.PARETO && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialPareto(dsl).styles;
+  });
 
-  const [affinityData, setAffinityData] = useState<AffinityItem[]>(() => parseInitialAffinity().data);
-  const [affinityStyles, setAffinityStyles] = useState<AffinityChartStyles>(() => parseInitialAffinity().styles);
+  const [histogramData, setHistogramData] = useState<number[]>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.HISTOGRAM && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialHistogram(dsl).data;
+  });
+  const [histogramStyles, setHistogramStyles] = useState<any>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.HISTOGRAM && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialHistogram(dsl).styles;
+  });
 
-  const [relationNodes, setRelationNodes] = useState<RelationNode[]>(() => parseInitialRelation().nodes);
-  const [relationLinks, setRelationLinks] = useState<RelationLink[]>(() => parseInitialRelation().links);
-  const [relationStyles, setRelationStyles] = useState<RelationChartStyles>(() => parseInitialRelation().styles);
+  const [scatterData, setScatterData] = useState<ScatterPoint[]>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.SCATTER && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialScatter(dsl).data as ScatterPoint[];
+  });
+  const [scatterStyles, setScatterStyles] = useState<ScatterChartStyles>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.SCATTER && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialScatter(dsl).styles;
+  });
 
-  const [matrixDsl, setMatrixDsl] = useState<string>(INITIAL_MATRIX_DSL);
-  const [matrixData, setMatrixData] = useState<MatrixData | null>(() => parseMatrixDSL(INITIAL_MATRIX_DSL).data);
-  const [matrixStyles, setMatrixStyles] = useState<MatrixChartStyles>(() => parseMatrixDSL(INITIAL_MATRIX_DSL).styles);
+  const [affinityData, setAffinityData] = useState<AffinityItem[]>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.AFFINITY && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialAffinity(dsl).data;
+  });
+  const [affinityStyles, setAffinityStyles] = useState<AffinityChartStyles>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.AFFINITY && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialAffinity(dsl).styles;
+  });
 
-  const [matrixPlotDsl, setMatrixPlotDsl] = useState<string>(INITIAL_MATRIX_PLOT_DSL);
-  const [matrixPlotData, setMatrixPlotData] = useState<MatrixPlotData | null>(() => parseMatrixPlotDSL(INITIAL_MATRIX_PLOT_DSL).data);
-  const [matrixPlotStyles, setMatrixPlotStyles] = useState<MatrixPlotStyles>(() => parseMatrixPlotDSL(INITIAL_MATRIX_PLOT_DSL).styles);
+  const [relationNodes, setRelationNodes] = useState<RelationNode[]>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.RELATION && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialRelation(dsl).nodes;
+  });
+  const [relationLinks, setRelationLinks] = useState<RelationLink[]>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.RELATION && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialRelation(dsl).links;
+  });
+  const [relationStyles, setRelationStyles] = useState<RelationChartStyles>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.RELATION && headlessDsl) ? headlessDsl : undefined;
+    return parseInitialRelation(dsl).styles;
+  });
 
-  const [pdpcDsl, setPdpcDsl] = useState<string>(INITIAL_PDPC_DSL);
-  const [pdpcData, setPdpcData] = useState<PDPCData>(() => parseInitialPDPC().data);
-  const [pdpcStyles, setPdpcStyles] = useState<PDPCChartStyles>(() => parseInitialPDPC().styles);
+  const [matrixDsl, setMatrixDsl] = useState<string>(() => (isHeadless && headlessType === QCToolType.MATRIX && headlessDsl) ? headlessDsl : INITIAL_MATRIX_DSL);
+  const [matrixData, setMatrixData] = useState<MatrixData | null>(() => parseMatrixDSL((isHeadless && headlessType === QCToolType.MATRIX && headlessDsl) ? headlessDsl : INITIAL_MATRIX_DSL).data);
+  const [matrixStyles, setMatrixStyles] = useState<MatrixChartStyles>(() => parseMatrixDSL((isHeadless && headlessType === QCToolType.MATRIX && headlessDsl) ? headlessDsl : INITIAL_MATRIX_DSL).styles);
+
+  const [matrixPlotDsl, setMatrixPlotDsl] = useState<string>(() => (isHeadless && headlessType === QCToolType.MATRIX_PLOT && headlessDsl) ? headlessDsl : INITIAL_MATRIX_PLOT_DSL);
+  const [matrixPlotData, setMatrixPlotData] = useState<MatrixPlotData | null>(() => parseMatrixPlotDSL((isHeadless && headlessType === QCToolType.MATRIX_PLOT && headlessDsl) ? headlessDsl : INITIAL_MATRIX_PLOT_DSL).data);
+  const [matrixPlotStyles, setMatrixPlotStyles] = useState<MatrixPlotStyles>(() => parseMatrixPlotDSL((isHeadless && headlessType === QCToolType.MATRIX_PLOT && headlessDsl) ? headlessDsl : INITIAL_MATRIX_PLOT_DSL).styles);
+
+  const [pdpcDsl, setPdpcDsl] = useState<string>(() => (isHeadless && headlessType === QCToolType.PDPC && headlessDsl) ? headlessDsl : INITIAL_PDPC_DSL);
+  const [pdpcData, setPdpcData] = useState<PDPCData>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.PDPC && headlessDsl) ? headlessDsl : INITIAL_PDPC_DSL;
+    try { return parsePDPCDSL(dsl).data; } catch { return INITIAL_PDPC_DATA; }
+  });
+  const [pdpcStyles, setPdpcStyles] = useState<PDPCChartStyles>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.PDPC && headlessDsl) ? headlessDsl : INITIAL_PDPC_DSL;
+    try { return parsePDPCDSL(dsl).styles; } catch { return DEFAULT_PDPC_STYLES; }
+  });
 
   const [arrowData, setArrowData] = useState<ArrowData | null>(() => {
-    try {
-      return parseArrowDSL(INITIAL_ARROW_DSL).data;
-    } catch {
-      return null;
-    }
+    const dsl = (isHeadless && headlessType === QCToolType.ARROW && headlessDsl) ? headlessDsl : INITIAL_ARROW_DSL;
+    try { return parseArrowDSL(dsl).data; } catch { return null; }
   });
   const [arrowStyles, setArrowStyles] = useState<ArrowChartStyles>(() => {
-    try {
-      return parseArrowDSL(INITIAL_ARROW_DSL).styles;
-    } catch {
-      return DEFAULT_ARROW_STYLES;
-    }
+    const dsl = (isHeadless && headlessType === QCToolType.ARROW && headlessDsl) ? headlessDsl : INITIAL_ARROW_DSL;
+    try { return parseArrowDSL(dsl).styles; } catch { return DEFAULT_ARROW_STYLES; }
   });
 
-  const [basicData, setBasicData] = useState<BasicChartData>(() => parseInitialBasic().data);
+  const [basicData, setBasicData] = useState<BasicChartData>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.BASIC && headlessDsl) ? headlessDsl : INITIAL_BASIC_DSL;
+    try { return parseInitialBasic().data; } catch { return INITIAL_BASIC_DATA; }
+  });
   const [basicStyles, setBasicStyles] = useState<BasicChartStyles>(() => parseInitialBasic().styles);
 
-  const [radarData, setRadarData] = useState<RadarData>(() => parseInitialRadar().data);
-  const [radarStyles, setRadarStyles] = useState<RadarChartStyles>(() => parseInitialRadar().styles);
+  const [radarData, setRadarData] = useState<RadarData>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.RADAR && headlessDsl) ? headlessDsl : INITIAL_RADAR_DSL;
+    try { return parseRadarDSL(dsl).data; } catch { return INITIAL_RADAR_DATA; }
+  });
+  const [radarStyles, setRadarStyles] = useState<RadarChartStyles>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.RADAR && headlessDsl) ? headlessDsl : INITIAL_RADAR_DSL;
+    try { return parseRadarDSL(dsl).styles; } catch { return DEFAULT_RADAR_STYLES; }
+  });
 
-  const [mermaidData, setMermaidData] = useState<string>(INITIAL_MERMAID_DSL);
+  const [mermaidData, setMermaidData] = useState<string>(() => (isHeadless && headlessType === QCToolType.MERMAID && headlessDsl) ? headlessDsl : INITIAL_MERMAID_DSL);
   const [mermaidStyles, setMermaidStyles] = useState<MermaidChartStyles>(DEFAULT_MERMAID_STYLES);
 
   const [dashboardCols, setDashboardCols] = useState(6);
 
-
-  const [controlDsl, setControlDsl] = useState<string>(INITIAL_CONTROL_DSL);
+  const [controlDsl, setControlDsl] = useState<string>(() => (isHeadless && headlessType === QCToolType.CONTROL && headlessDsl) ? headlessDsl : INITIAL_CONTROL_DSL);
   const [showParetoLine, setShowParetoLine] = useState(true);
   const [matrixOrientation, setMatrixOrientation] = useState<'top-down' | 'bottom-up'>('top-down');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -478,6 +556,33 @@ const App: React.FC = () => {
       console.error("Auto-sync error", e);
     }
   };
+
+  // Headless View Rendering
+  if (isHeadless && headlessType) {
+    return (
+      <div className="w-full h-full min-h-screen bg-white">
+        {(() => {
+          switch (headlessType) {
+            case QCToolType.FISHBONE: return <FishboneDiagram ref={diagramRef} data={fishboneData} styles={fishboneStyles} />;
+            case QCToolType.PARETO: return <ParetoDiagram ref={diagramRef} data={paretoData} styles={paretoStyles} showLine={showParetoLine} />;
+            case QCToolType.CONTROL: return <ControlChart ref={diagramRef} series={controlSeries} styles={controlStyles} />;
+            case QCToolType.HISTOGRAM: return <HistogramDiagram ref={diagramRef} data={histogramData} styles={histogramStyles} />;
+            case QCToolType.SCATTER: return <ScatterDiagram ref={diagramRef} data={scatterData} styles={scatterStyles} />;
+            case QCToolType.AFFINITY: return <AffinityDiagram ref={diagramRef} data={affinityData} styles={affinityStyles} />;
+            case QCToolType.RELATION: return <RelationDiagram ref={diagramRef} nodes={relationNodes} links={relationLinks} styles={relationStyles} />;
+            case QCToolType.MATRIX: return matrixData ? <MatrixDiagram ref={diagramRef} data={matrixData} styles={matrixStyles} onCellClick={handleMatrixCellClick} orientation={matrixOrientation} /> : null;
+            case QCToolType.MATRIX_PLOT: return matrixPlotData ? <MatrixPlotDiagram ref={diagramRef} data={matrixPlotData} styles={matrixPlotStyles} /> : null;
+            case QCToolType.PDPC: return <PDPCDiagram ref={diagramRef} data={pdpcData} styles={pdpcStyles} onStylesChange={setPdpcStyles} />;
+            case QCToolType.ARROW: return arrowData ? <ArrowDiagram ref={diagramRef} data={arrowData} styles={arrowStyles} /> : null;
+            case QCToolType.BASIC: return <BasicDiagram ref={diagramRef} data={basicData} styles={basicStyles} />;
+            case QCToolType.RADAR: return <RadarDiagram ref={diagramRef} data={radarData} styles={radarStyles} />;
+            case QCToolType.MERMAID: return <MermaidDiagram ref={diagramRef} data={mermaidData} styles={mermaidStyles} />;
+            default: return <div className="p-20 text-slate-400 font-black uppercase tracking-widest">Unknown Chart Type</div>;
+          }
+        })()}
+      </div>
+    );
+  }
 
   if (selectedTool === QCToolType.DASHBOARD) {
     return <DashboardView onSelectTool={setSelectedTool} cols={dashboardCols} setCols={setDashboardCols} theme={theme} setTheme={setTheme} />;
