@@ -18,6 +18,37 @@ export enum QCToolType {
   VCHART = 'VCHART'
 }
 
+/**
+ * 核心图表组件引用接口 (用于无头渲染与批量导出)
+ */
+export interface BaseDiagramRef {
+  /**
+   * 获取图表的内容 DataURL (Base64)
+   * @param options 导出选项 (pixelRatio, backgroundColor)
+   */
+  getDataURL: (options?: { 
+    pixelRatio?: number; 
+    backgroundColor?: string;
+    width?: number;
+    height?: number;
+  }) => Promise<string>;
+  
+  /**
+   * 触发 PNG 下载 (交互模式使用)
+   */
+  exportPNG: (transparent?: boolean, scale?: number) => void;
+  
+  /**
+   * 触发 PDF 导出 (交互模式使用)
+   */
+  exportPDF: () => void;
+
+  /**
+   * 整理布局 (可选，主要用于 G6/SVG 系列)
+   */
+  tidyLayout?: () => void;
+}
+
 export interface RadarAxis {
   name: string;
   max: number;

@@ -1,13 +1,9 @@
 import React, { useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import 'echarts-gl';
-import { ScatterPoint, ScatterChartStyles, DEFAULT_SCATTER_STYLES } from '../types';
-import { Loader2 } from 'lucide-react';
+import { ScatterPoint, ScatterChartStyles, DEFAULT_SCATTER_STYLES, BaseDiagramRef } from '../types';
 
-export interface ScatterDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-}
+export interface ScatterDiagramRef extends BaseDiagramRef {}
 
 interface Props {
     data: ScatterPoint[];
@@ -21,12 +17,30 @@ export const ScatterDiagram = forwardRef<ScatterDiagramRef, Props>(({ data, styl
     }), [JSON.stringify(styles)]);
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!echartsRef.current) return '';
+            const echartsInstance = echartsRef.current.getEchartsInstance();
+
+            if (options?.width && options?.height) {
+                echartsInstance.resize({
+                    width: options.width,
+                    height: options.height,
+                    silent: true
+                });
+            }
+
+            return echartsInstance.getDataURL({
+                type: 'png',
+                pixelRatio: options?.pixelRatio || 3,
+                backgroundColor: options?.backgroundColor || '#fff'
+            });
+        },
         exportPNG: (transparent = false, scale = 3) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: transparent ? 'transparent' : '#fff'
             });
             const link = document.createElement('a');

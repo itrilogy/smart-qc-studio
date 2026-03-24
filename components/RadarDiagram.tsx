@@ -1,15 +1,12 @@
 import React, { useImperativeHandle, forwardRef, useRef, useState, useMemo } from 'react';
-import { RadarData, RadarChartStyles } from '../types';
+import { RadarData, RadarChartStyles, BaseDiagramRef } from '../types';
+import { svgToDataURL } from '../utils/exportUtils';
+
+export interface RadarDiagramRef extends BaseDiagramRef {}
 
 interface RadarDiagramProps {
     data: RadarData;
     styles: RadarChartStyles;
-}
-
-export interface RadarDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-    tidyLayout: () => void;
 }
 
 export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ data, styles }, ref) => {
@@ -141,7 +138,7 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         const angle = startAngle + i * angleStep * direction;
         return getCoordinates(angle, radius);
     });
-    // ... export methods (no changes needed)
+
     const exportPNG = (transparent = false, scale = 3) => {
         if (!svgRef.current) return;
 
@@ -258,6 +255,15 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
     };
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!svgRef.current) return '';
+            return await svgToDataURL(svgRef.current, {
+                pixelRatio: options?.pixelRatio || 3,
+                backgroundColor: options?.backgroundColor || '#ffffff',
+                width: options?.width,
+                height: options?.height
+            });
+        },
         exportPNG,
         exportPDF,
         tidyLayout
@@ -448,5 +454,7 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         </div>
     );
 });
+
+RadarDiagram.displayName = 'RadarDiagram';
 
 export default RadarDiagram;

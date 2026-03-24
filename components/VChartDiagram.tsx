@@ -1,12 +1,9 @@
 import React, { useImperativeHandle, forwardRef, useRef, useMemo } from 'react';
 import { VChart } from '@visactor/react-vchart';
-import { VChartData, VChartChartStyles, DEFAULT_VCHART_STYLES } from '../types';
+import { VChartData, VChartChartStyles, DEFAULT_VCHART_STYLES, BaseDiagramRef } from '../types';
 import { VCHART_COLOR_PALETTES } from '../constants';
 
-export interface VChartDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: (transparent?: boolean) => void;
-}
+export interface VChartDiagramRef extends BaseDiagramRef {}
 
 interface Props {
     data: VChartData;
@@ -16,26 +13,30 @@ interface Props {
 
 export const VChartDiagram = forwardRef<VChartDiagramRef, Props>(({ data, styles, theme }, ref) => {
     const vchartRef = useRef<any>(null);
-    
+
     const finalStyles = useMemo(() => ({
         ...DEFAULT_VCHART_STYLES,
         ...styles
     }), [styles]);
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!vchartRef.current) return '';
+            const vchartInstance = vchartRef.current.getVChart();
+
+            if (options?.width && options?.height) {
+                vchartInstance.updateSize(options.width, options.height);
+            }
+
+            return vchartInstance.getDataURL({
+                pixelRatio: options?.pixelRatio || 3,
+                transparent: options?.backgroundColor === 'transparent'
+            });
+        },
         exportPNG: (transparent = false, scale = 3) => {
             if (!vchartRef.current) return;
             const vchartInstance = vchartRef.current.getVChart();
-            
-            // 使用 VChart 内置的 exportImg 方法支持倍率和背景设置
-            // 或者通过 getDataURL 获取带参数的数据
-            const dataURL = vchartInstance.getDataURL(); 
-            
-            // 针对 VChart，我们优先尝试使用其导出 API
             const fileName = `${data.title || 'vchart分析图'}_${new Date().getTime()}`;
-            
-            // 实际上对于 VChart 的 @visactor/vchart，推荐使用其内部的 exportCanvas 逻辑或 getDataURL
-            // 这里我们优化代码以支持透明度和倍率
             vchartInstance.exportImg(fileName, {
                 type: 'png',
                 pixelRatio: scale,
@@ -46,7 +47,7 @@ export const VChartDiagram = forwardRef<VChartDiagramRef, Props>(({ data, styles
             if (!vchartRef.current) return;
             const vchartInstance = vchartRef.current.getVChart();
             const dataURL = vchartInstance.getDataURL();
-            
+
             const win = window.open('', '_blank');
             if (win) {
                 win.document.write(`
@@ -80,7 +81,7 @@ export const VChartDiagram = forwardRef<VChartDiagramRef, Props>(({ data, styles
         const palette = VCHART_COLOR_PALETTES.find(p => p.id === finalStyles.colorPalette);
         const currentTheme = theme || 'light';
         const isDark = currentTheme === 'dark';
-        
+
         return {
             ...baseSpec,
             color: palette && palette.colors.length > 0 ? palette.colors : baseSpec.color,
@@ -145,7 +146,7 @@ export const VChartDiagram = forwardRef<VChartDiagramRef, Props>(({ data, styles
     }, [data, finalStyles, theme]);
 
     return (
-        <div className={`w-full h-full flex flex-col items-center justify-center p-4 ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
+        <div className={`w-full h-full flex flex-col items-center justify-center p-4 ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`} id="vchart-container">
             <div className="w-full h-full relative">
                 <VChart
                     ref={vchartRef}
@@ -156,5 +157,7 @@ export const VChartDiagram = forwardRef<VChartDiagramRef, Props>(({ data, styles
         </div>
     );
 });
+
+VChartDiagram.displayName = 'VChartDiagram';
 
 export default VChartDiagram;

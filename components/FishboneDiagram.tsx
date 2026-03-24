@@ -1,12 +1,8 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Graph } from '@antv/g6';
-import { FishboneNode, FishboneChartStyles, DEFAULT_FISHBONE_STYLES } from '../types';
+import { FishboneNode, FishboneChartStyles, DEFAULT_FISHBONE_STYLES, BaseDiagramRef } from '../types';
 
-export interface FishboneDiagramRef {
-  exportPNG: (transparent?: boolean, scale?: number) => void;
-  exportPDF: () => void;
-  tidyLayout: () => void;
-}
+export interface FishboneDiagramRef extends BaseDiagramRef {}
 
 interface FishboneDiagramProps {
   data: FishboneNode;
@@ -21,6 +17,19 @@ const FishboneDiagram = forwardRef<FishboneDiagramRef, FishboneDiagramProps>(({ 
   const finalStyles = { ...DEFAULT_FISHBONE_STYLES, ...styles };
 
   useImperativeHandle(ref, () => ({
+    getDataURL: async (options) => {
+      if (!graphRef.current) return '';
+      
+      if (options?.width && options?.height) {
+        graphRef.current.setSize(options.width, options.height);
+        graphRef.current.fitView({ padding: 120 } as any);
+      }
+
+      return await graphRef.current.toDataURL({
+        backgroundColor: options?.backgroundColor || '#ffffff',
+        pixelRatio: options?.pixelRatio || 3
+      } as any);
+    },
     exportPNG: async (transparent = false, scale = 3) => {
       if (!graphRef.current) return;
       const rawDataURL = await graphRef.current.toDataURL();
@@ -308,13 +317,13 @@ const FishboneDiagram = forwardRef<FishboneDiagramRef, FishboneDiagramProps>(({ 
         background: '#ffffff',
       });
       graphRef.current.render().then(() => {
-        graphRef.current?.fitView({ duration: 500, padding: 80 } as any);
+        graphRef.current?.fitView({ duration: 500, padding: 120 } as any);
       });
     } else {
       graphRef.current.setOptions({ background: '#ffffff' });
       graphRef.current.setData({ nodes, edges });
       graphRef.current.render().then(() => {
-        graphRef.current?.fitView({ duration: 500, padding: 80 } as any);
+        graphRef.current?.fitView({ duration: 500, padding: 120 } as any);
       });
     }
 
@@ -323,7 +332,7 @@ const FishboneDiagram = forwardRef<FishboneDiagramRef, FishboneDiagramProps>(({ 
       const { width, height } = entries[0].contentRect;
       if (width > 0 && height > 0) {
         graphRef.current.setSize(width, height);
-        graphRef.current.fitView({ duration: 300, padding: 80 } as any);
+        graphRef.current.fitView({ duration: 300, padding: 120 } as any);
       }
     });
 

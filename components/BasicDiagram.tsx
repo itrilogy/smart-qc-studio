@@ -1,11 +1,8 @@
 import React, { useMemo, useRef, useImperativeHandle, forwardRef, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
-import { BasicChartData, BasicChartStyles, DEFAULT_BASIC_STYLES } from '../types';
+import { BasicChartData, BasicChartStyles, DEFAULT_BASIC_STYLES, BaseDiagramRef } from '../types';
 
-export interface BasicDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-}
+export interface BasicDiagramRef extends BaseDiagramRef {}
 
 interface Props {
     data: BasicChartData;
@@ -87,6 +84,24 @@ export const BasicDiagram = forwardRef<BasicDiagramRef, Props>(({ data, styles }
     };
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!echartsRef.current) return '';
+            const echartsInstance = echartsRef.current.getEchartsInstance();
+
+            if (options?.width && options?.height) {
+                echartsInstance.resize({
+                    width: options.width,
+                    height: options.height,
+                    silent: true
+                });
+            }
+
+            return echartsInstance.getDataURL({
+                type: 'png',
+                pixelRatio: options?.pixelRatio || 3,
+                backgroundColor: options?.backgroundColor || '#ffffff'
+            });
+        },
         exportPNG: (transparent = false, scale = 3) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();

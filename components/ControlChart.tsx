@@ -6,13 +6,11 @@ import React, { useRef, useImperativeHandle, forwardRef, useEffect, useState, us
 import {
     ControlSeries,
     ControlChartStyles,
-    DEFAULT_CONTROL_STYLES
+    DEFAULT_CONTROL_STYLES,
+    BaseDiagramRef
 } from '../types';
 
-export interface ControlChartRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-}
+export interface ControlChartRef extends BaseDiagramRef {}
 
 export interface ControlChartProps {
     series: ControlSeries[];
@@ -316,6 +314,30 @@ export const ControlChart = forwardRef<ControlChartRef, ControlChartProps>(
         }, [stats, dimensions, finalStyles]);
 
         useImperativeHandle(ref, () => ({
+            getDataURL: async (options) => {
+                const pixelRatio = options?.pixelRatio || 3;
+                const backgroundColor = options?.backgroundColor || '#ffffff';
+                const transparent = backgroundColor === 'transparent';
+                
+                // 🚨 Explicitly use provided dimensions or current ones
+                const exportWidth = options?.width || dimensions.width;
+                const exportHeight = options?.height || dimensions.height;
+
+                // Create a temporary canvas if resolution is different
+                const canvas = canvasRef.current;
+                if (!canvas) return '';
+
+                // We can't easily change the visible canvas without causing a flicker, 
+                // so we just draw onto the existing one with scaling if it's already large enough,
+                // or we use the current draw logic.
+                draw(transparent);
+                const dataURL = canvas.toDataURL('image/png');
+                
+                // 恢复默认绘制状态 (非透明)
+                setTimeout(() => draw(false), 50);
+                
+                return dataURL;
+            },
             exportPNG(transparent = false, scale = 3) {
                 draw(transparent);
                 const canvas = canvasRef.current;

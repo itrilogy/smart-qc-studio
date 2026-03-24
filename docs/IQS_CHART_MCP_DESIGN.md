@@ -9,11 +9,11 @@
 
 ```mermaid
 graph TD
-    User[用户/AI] -- "1. render_vchart_bar(dsl)" --> MCP[MCP Server (Node.js)]
+    User[用户/AI] -- "1. render_vchart_bar(dsl, w, h)" --> MCP[MCP Server (Node.js)]
     MCP -- "2. Launch Headless" --> Chrome[Puppeteer]
-    Chrome -- "3. Render" --> Vite[App.tsx]
-    Vite -- "4. Screenshot" --> Chrome
-    Chrome -- "5. Save Base64" --> MCP
+    Chrome -- "3. Render & Bridge" --> Vite[App.tsx]
+    Vite -- "4. captureIQSChart(w, h, ratio)" --> Chrome
+    Chrome -- "5. Return Base64 (Internal)" --> MCP
     
     subgraph SSE_Optimization [SSE 渲染优化]
         MCP -- "6a. Save File" --> Disk[(renders/ folder)]
@@ -23,11 +23,11 @@ graph TD
     MCP -- "7. Response: Mode-based (Stdio: Base64 / SSE: URL Link)" --> User
 ```
 
-### 2.1 渲染增强机制
-- **3X 高清采样**: 启用 `deviceScaleFactor: 3`，确保生成的图表在视网膜屏下极度清晰。
-- **单模返回 (URL Only)**: 在 SSE 模式下，系统**仅返回**封装了 Markdown 图片外链的 `text` 内容。这彻底避免了部分客户端解析 Base64 时的显示异常。
-- **命名规范**: 根据时间戳与随机 Hash 生成：`render_YYYYMMDD_HHMMSS_[hash].png`。
-- **静态托管**: SSE 模式下通过 Express 静态服务挂载 `renders/` 目录。
+### 2.1 渲染增强机制 (ILDR)
+- **内部逻辑驱动 (ILDR)**: 废弃了不可控的“视口截图”，通过无头浏览器桥接函数直接从 React 组件内部导出 DataURL。
+- **强制尺寸对齐**: 支持在导出瞬间强制执行引擎（ECharts / VChart / G6）的 `resize()`，确保导出画幅与逻辑请求尺寸 100% 对齐。
+- **3X 高清采样**: 启用 `deviceScaleFactor: 3` 并配合 `pixelRatio: 3` 导出协议，确保极致清晰度。
+- **单模返回 (URL Only)**: 在 SSE 模式下，系统**仅返回**外链文本，解决大体积 Base64 的兼容性痛点。
 
 ## 3. 工具规格 (Tool Specifications)
 

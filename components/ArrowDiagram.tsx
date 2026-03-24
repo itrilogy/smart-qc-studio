@@ -1,12 +1,10 @@
 
 import React, { useMemo, useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
-import { ArrowData, ArrowChartStyles, DEFAULT_ARROW_STYLES } from '../types';
+import { ArrowData, ArrowChartStyles, DEFAULT_ARROW_STYLES, BaseDiagramRef } from '../types';
+import { svgToDataURL } from '../utils/exportUtils';
 
-export interface ArrowDiagramRef {
+export interface ArrowDiagramRef extends BaseDiagramRef {
     resetView: () => void;
-    tidyLayout: () => void;
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
 }
 
 interface ArrowDiagramProps {
@@ -78,6 +76,36 @@ export const ArrowDiagram = forwardRef<ArrowDiagramRef, ArrowDiagramProps>(({ da
     };
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!svgRef.current) return '';
+            // ArrowDiagram 比较特殊，它的内容容器是 #diagram-content
+            // 我们需要临时克隆并调整 viewBox
+            const contentGroup = svgRef.current.querySelector('#diagram-content');
+            if (!contentGroup) return '';
+
+            // 创建一个临时的 SVG 容器来承载内容
+            const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            tempSvg.setAttribute('width', bounds.width.toString());
+            tempSvg.setAttribute('height', bounds.height.toString());
+            tempSvg.setAttribute('viewBox', `${bounds.minX} ${bounds.minY} ${bounds.width} ${bounds.height}`);
+            
+            // 复制 Defs (包含箭头等)
+            const defs = svgRef.current.querySelector('defs')?.cloneNode(true);
+            if (defs) tempSvg.appendChild(defs);
+
+            // 复制内容
+            const clone = contentGroup.cloneNode(true) as SVGGElement;
+            clone.removeAttribute('transform'); // 移除缩放平移
+            tempSvg.appendChild(clone);
+
+            return await svgToDataURL(tempSvg, {
+                pixelRatio: options?.pixelRatio || 3,
+                backgroundColor: options?.backgroundColor || '#ffffff',
+                width: options?.width,
+                height: options?.height,
+                padding: 0 // 已经有 bounds 逻辑了
+            });
+        },
         resetView: performAutoFit,
         tidyLayout: performAutoFit,
         exportPNG: async (transparent = false, scale = 3) => {

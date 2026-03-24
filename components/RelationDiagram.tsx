@@ -1,12 +1,8 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Graph } from '@antv/g6';
-import { RelationNode, RelationLink, RelationChartStyles, DEFAULT_RELATION_STYLES } from '../types';
+import { RelationNode, RelationLink, RelationChartStyles, DEFAULT_RELATION_STYLES, BaseDiagramRef } from '../types';
 
-export interface RelationDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-    tidyLayout: () => void;
-}
+export interface RelationDiagramRef extends BaseDiagramRef {}
 
 interface RelationDiagramProps {
     nodes: RelationNode[];
@@ -22,6 +18,17 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
     const finalStyles = { ...DEFAULT_RELATION_STYLES, ...styles };
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!graphRef.current) return '';
+            if (options?.width && options?.height) {
+                graphRef.current.setSize(options.width, options.height);
+                graphRef.current.fitView({ padding: 120 } as any);
+            }
+            return await graphRef.current.toDataURL({
+                pixelRatio: options?.pixelRatio || 3,
+                backgroundColor: options?.backgroundColor || '#ffffff'
+            } as any);
+        },
         exportPNG: async (transparent = false, scale = 3) => {
             if (!graphRef.current) return;
             const rawDataURL = await graphRef.current.toDataURL();

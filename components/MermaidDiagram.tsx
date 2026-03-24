@@ -2,15 +2,11 @@ import React, { useEffect, useRef, useImperativeHandle, forwardRef, useState } f
 import mermaid from 'mermaid';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
-import { MermaidChartStyles, DEFAULT_MERMAID_STYLES } from '../types';
+import { MermaidChartStyles, DEFAULT_MERMAID_STYLES, BaseDiagramRef } from '../types';
 import { ZoomIn, ZoomOut, RefreshCw, Move } from 'lucide-react';
 import { INITIAL_MERMAID_DSL } from '../constants';
 
-export interface MermaidDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: (transparent?: boolean) => void;
-    tidyLayout: () => void;
-}
+export interface MermaidDiagramRef extends BaseDiagramRef {}
 
 interface Props {
     data: string;
@@ -233,6 +229,38 @@ export const MermaidDiagram = forwardRef<MermaidDiagramRef, Props>(({ data, styl
     };
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            const svg = containerRef.current?.querySelector('svg');
+            if (!svg) return '';
+            try {
+                const bBox = (svg as any).getBBox?.() || { x: 0, y: 0, width: 800, height: 600 };
+                const padding = 16;
+                const horizontalPadding = 40;
+                const pixelRatio = options?.pixelRatio || 3;
+                const backgroundColor = options?.backgroundColor || '#ffffff';
+                const transparent = backgroundColor === 'transparent';
+
+                const exportWidth = options?.width || (bBox.width + horizontalPadding * 2);
+                const exportHeight = options?.height || (bBox.height + padding * 2);
+
+                return await toPng(svg, {
+                    backgroundColor: transparent ? 'transparent' : backgroundColor,
+                    pixelRatio: pixelRatio,
+                    width: exportWidth,
+                    height: exportHeight,
+                    style: {
+                        transform: 'none',
+                        margin: '0',
+                        padding: options?.width ? '0' : `${padding}px ${horizontalPadding}px`,
+                        background: transparent ? 'transparent' : backgroundColor,
+                        backgroundColor: transparent ? 'transparent' : backgroundColor,
+                    }
+                });
+            } catch (err) {
+                console.error('getDataURL error:', err);
+                return '';
+            }
+        },
         exportPNG: async (transparent = false, scale = 3) => {
             const svg = containerRef.current?.querySelector('svg');
             if (!svg) return;

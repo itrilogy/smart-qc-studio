@@ -53,13 +53,15 @@ AI 客户端将识别到以下工具分类：
 - **`render_mermaid_[type]`**: Mermaid 专用工具（如 `render_mermaid_flowchart`, `render_mermaid_gantt`）。
 - **`render_vchart_[type]`**: VChart 专用工具（如 `render_vchart_sankey`, `render_vchart_bar`）。
 
-## 4. 渲染特性与兼容性 (SSE 高清模式)
+## 4. 渲染特性与兼容性 (ILDR 架构)
 
-新版本针对渲染质量与兼容性进行了重大升级：
-1. **3X 高清渲染**: 默认启用 `deviceScaleFactor: 3`，渲染结果极其清晰，满足 Retina 屏及专业展示需求。
-2. **SSE 单模返回 (URL Only)**: 
-   - 行为变更：在 SSE 模式下，AI **仅返回**封装了远程图片外链的文本消息 (例如 `![Result](http://ip:3000/renders/xxx.png)`)。
-   - 优势：这彻底避免了部分 AI 客户端在 stdio 模式下无法渲染 Base64 或渲染异常的缺陷。
+新版本引入了 **ILDR (Internal Logic Driven Rendering)** 架构，针对渲染质量与布局精准度进行了重大升级：
+1. **3X 高清渲染**: 默认启用 `deviceScaleFactor: 3` 并配合组件内部的高清导出逻辑，渲染结果极其清晰。
+2. **解决布局塌陷**: 废弃了不可预测的“视口截图”模式，改为通过 `captureIQSChart` 协议触发组件内部渲染。这彻底解决了散点图、排列图等复杂组件在 Puppeteer 下内容缩在一起（100px 问题）的顽疾。
+3. **尺寸 100% 对齐**: 支持显式指定 `width` 和 `height`，组件会在导出瞬间自动 Resize 到目标画幅，确保图片比例与请求完全一致。
+4. **SSE 单模返回 (URL Only)**: 
+   - 行为变更：在 SSE 模式下，AI **仅返回**封装了远程图片外链的文本消息。
+   - 优势：彻底避免了部分 AI 客户端无法解析大体积 Base64 的缺陷。
 
 ## 5. 环境变量说明
 

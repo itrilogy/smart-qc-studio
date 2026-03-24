@@ -1,5 +1,6 @@
 import React, { useImperativeHandle, forwardRef, useRef } from 'react';
-import { MatrixData, MatrixChartStyles, MatrixSymbolType } from '../types';
+import { MatrixData, MatrixChartStyles, MatrixSymbolType, BaseDiagramRef } from '../types';
+import { svgToDataURL } from '../utils/exportUtils';
 
 interface MatrixDiagramProps {
     data: MatrixData;
@@ -8,11 +9,7 @@ interface MatrixDiagramProps {
     orientation?: 'top-down' | 'bottom-up';
 }
 
-export interface MatrixDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-    tidyLayout: () => void;
-}
+export interface MatrixDiagramRef extends BaseDiagramRef {}
 
 export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({ data, styles, onCellClick, orientation = 'top-down' }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -918,6 +915,15 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
 
     // Imperative Handle (Shared)
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!svgRef.current) return '';
+            return await svgToDataURL(svgRef.current, {
+                pixelRatio: options?.pixelRatio || 3,
+                backgroundColor: options?.backgroundColor || '#ffffff',
+                width: options?.width,
+                height: options?.height
+            });
+        },
         exportPNG: (transparent = false, scale = 3) => {
             if (!svgRef.current || !layout) return;
 

@@ -1,11 +1,8 @@
 import React, { useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
 import ReactECharts from 'echarts-for-react';
-import { ParetoItem, ParetoChartStyles, DEFAULT_PARETO_STYLES } from '../types';
+import { ParetoItem, ParetoChartStyles, DEFAULT_PARETO_STYLES, BaseDiagramRef } from '../types';
 
-export interface ParetoDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-}
+export interface ParetoDiagramRef extends BaseDiagramRef {}
 
 interface Props {
     data: ParetoItem[];
@@ -17,14 +14,33 @@ export const ParetoDiagram = forwardRef<ParetoDiagramRef, Props>(({ data, styles
     const echartsRef = useRef<any>(null);
     const finalStyles = useMemo(() => ({ ...DEFAULT_PARETO_STYLES, ...styles }), [styles]);
 
-    // 暴露导出方法给外部 (由 App.tsx 触发)
+    // 暴露方法给外部
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!echartsRef.current) return '';
+            const echartsInstance = echartsRef.current.getEchartsInstance();
+            
+            // 🚨 Mandatory Resize for ILDR to prevent squashing
+            if (options?.width && options?.height) {
+                echartsInstance.resize({
+                    width: options.width,
+                    height: options.height,
+                    silent: true
+                });
+            }
+
+            return echartsInstance.getDataURL({
+                type: 'png',
+                pixelRatio: options?.pixelRatio || 3,
+                backgroundColor: options?.backgroundColor || '#fff'
+            });
+        },
         exportPNG: (transparent = false, scale = 3) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: transparent ? 'transparent' : '#fff'
             });
             const link = document.createElement('a');

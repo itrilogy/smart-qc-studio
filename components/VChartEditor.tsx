@@ -351,6 +351,30 @@ const VChartEditor: React.FC<VChartEditorProps> = ({ data, styles, theme, onData
                                             </div>
                                         </section>
                                         <section className="border-t border-slate-800 pt-6">
+                                            <h4 className="text-emerald-500 font-bold uppercase tracking-wider text-[10px] mb-3">支持的图表类型 (Full Types)</h4>
+                                            <div className="grid grid-cols-3 gap-2 text-[9px] font-mono">
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">bar (柱状图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">line (折线图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">area (面积图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">pie/rose (饼图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">scatter (散点图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">radar (雷达图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">sankey (桑基图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">funnel (漏斗图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">treemap (树图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">waterfall (瀑布)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">heatmap (热力图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">boxplot (箱线图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">gauge (仪表盘)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">liquid (水波图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">sunburst (旭日)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">map (地图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">venn (韦恩图)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">wordcloud (词云)</div>
+                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">common (组合图)</div>
+                                            </div>
+                                        </section>
+                                        <section className="border-t border-slate-800 pt-6">
                                             <h4 className="text-amber-500 font-bold uppercase tracking-wider text-[10px] mb-3">标准 JSON Spec</h4>
                                             <div className="bg-[var(--card-bg)] p-4 rounded-lg border border-[var(--input-border)] text-[var(--sidebar-text)] text-[11px] font-mono leading-relaxed">
                                                 <p className="text-indigo-400 mb-2">// 语法: Spec: {"{ ... }"}</p>

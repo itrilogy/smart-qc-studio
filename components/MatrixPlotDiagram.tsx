@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState, useCallback, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { Grid3X3 } from 'lucide-react';
-import { MatrixPlotData, MatrixPlotStyles } from '../types';
+import { MatrixPlotData, MatrixPlotStyles, BaseDiagramRef } from '../types';
+import { svgToDataURL } from '../utils/exportUtils';
 
 /**
  * Single Subplot Component (Scatter or Histogram)
@@ -192,11 +193,7 @@ const Subplot: React.FC<{
     );
 };
 
-export interface MatrixPlotDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-    tidyLayout: () => void;
-}
+export interface MatrixPlotDiagramRef extends BaseDiagramRef {}
 
 export const MatrixPlotDiagram = forwardRef<MatrixPlotDiagramRef, { data: MatrixPlotData; styles: MatrixPlotStyles }>(({ data, styles }, ref) => {
     const { mode, xDimensions, yDimensions, data: rawData, groupVariable } = data;
@@ -284,6 +281,16 @@ export const MatrixPlotDiagram = forwardRef<MatrixPlotDiagramRef, { data: Matrix
     }, [dimensions.width, dimensions.height, calculateAutoFit]);
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!svgRef.current) return '';
+            return await svgToDataURL(svgRef.current, {
+                pixelRatio: options?.pixelRatio || 3,
+                backgroundColor: options?.backgroundColor || '#ffffff',
+                width: options?.width,
+                height: options?.height,
+                padding: 0 // SVG 已经包含了标题和边距
+            });
+        },
         tidyLayout: handleTidyLayout,
         exportPNG: (transparent = false, scale = 3) => {
             if (!svgRef.current) return;

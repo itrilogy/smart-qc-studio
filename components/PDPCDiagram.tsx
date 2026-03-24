@@ -1,13 +1,9 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Graph } from '@antv/g6';
 import { Workflow } from 'lucide-react';
-import { PDPCData, PDPCChartStyles, DEFAULT_PDPC_STYLES, PDPCNode, PDPCLink, PDPCGroup } from '../types';
+import { PDPCData, PDPCChartStyles, DEFAULT_PDPC_STYLES, PDPCNode, PDPCLink, PDPCGroup, BaseDiagramRef } from '../types';
 
-export interface PDPCDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
-    tidyLayout: () => void;
-}
+export interface PDPCDiagramRef extends BaseDiagramRef {}
 
 interface PDPCDiagramProps {
     data: PDPCData;
@@ -24,6 +20,54 @@ const PDPCDiagram = forwardRef<PDPCDiagramRef, PDPCDiagramProps>(({ data, styles
     const finalStyles = { ...DEFAULT_PDPC_STYLES, ...styles };
 
     useImperativeHandle(ref, () => ({
+        getDataURL: async (options) => {
+            if (!graphRef.current) return '';
+            const pixelRatio = options?.pixelRatio || 3;
+            const backgroundColor = options?.backgroundColor || '#ffffff';
+
+            if (options?.width && options?.height) {
+                graphRef.current.setSize(options.width, options.height);
+                graphRef.current.fitView({ padding: 40 } as any);
+            }
+            
+            const graphCanvasData = await graphRef.current.toDataURL({ 
+                backgroundColor: backgroundColor,
+                pixelRatio: pixelRatio
+            } as any);
+            if (!data.title) return graphCanvasData;
+
+            // 如果有标题，需要合成
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) { resolve(graphCanvasData); return; }
+
+                    const titleHeight = 80 * pixelRatio; // 预留标题高度
+                    canvas.width = img.width;
+                    canvas.height = img.height + titleHeight;
+
+                    // 背景
+                    if (backgroundColor !== 'transparent') {
+                        ctx.fillStyle = backgroundColor;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
+
+                    // 绘制标题
+                    ctx.fillStyle = '#1e293b';
+                    ctx.font = `bold ${finalStyles.titleFontSize * pixelRatio}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(data.title || '', canvas.width / 2, titleHeight / 2);
+
+                    // 绘制图形
+                    ctx.drawImage(img, 0, titleHeight);
+                    resolve(canvas.toDataURL('image/png'));
+                };
+                img.src = graphCanvasData;
+            });
+        },
         exportPNG: async (transparent = false, scale = 3) => {
             if (!graphRef.current || !containerRef.current) return;
 

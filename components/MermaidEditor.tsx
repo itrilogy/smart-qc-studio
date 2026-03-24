@@ -448,13 +448,23 @@ const MermaidEditor: React.FC<MermaidEditorProps> = ({
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-[var(--input-border)]">
-                                                        <tr><td className="p-3 text-blue-400">甘特图</td><td className="p-3 font-bold">gantt</td><td className="p-3 text-[var(--sidebar-text)]">项目进度管理</td></tr>
-                                                        <tr><td className="p-3 text-blue-400">状态图</td><td className="p-3 font-bold">stateDiagram-v2</td><td className="p-3 text-[var(--sidebar-text)]">系统/流程状态迁移</td></tr>
-                                                        <tr><td className="p-3 text-blue-400">类图</td><td className="p-3 font-bold">classDiagram</td><td className="p-3 text-[var(--sidebar-text)]">面向对象系统建模</td></tr>
-                                                        <tr><td className="p-3 text-blue-400">实体关系</td><td className="p-3 font-bold">erDiagram</td><td className="p-3 text-[var(--sidebar-text)]">数据库表结构设计</td></tr>
-                                                        <tr><td className="p-3 text-blue-400">饼图</td><td className="p-3 font-bold">pie</td><td className="p-3 text-[var(--sidebar-text)]">直接数据占比分布</td></tr>
-                                                        <tr><td className="p-3 text-blue-400">用户旅程</td><td className="p-3 font-bold">journey</td><td className="p-3 text-[var(--sidebar-text)]">体验与情绪量化映射</td></tr>
-                                                        <tr><td className="p-3 text-blue-400">时间线</td><td className="p-3 font-bold">timeline</td><td className="p-3 text-[var(--sidebar-text)]">历史与里程碑梳理</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">流程图</td><td className="p-3 font-bold">graph / flowchart</td><td className="p-3 text-[var(--sidebar-text)]">制程逻辑与决策分支</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">序列图</td><td className="p-3 font-bold">sequenceDiagram</td><td className="p-3 text-[var(--sidebar-text)]">对象交互与消息时序</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">甘特图</td><td className="p-3 font-bold">gantt</td><td className="p-3 text-[var(--sidebar-text)]">项目进度与任务排程</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">状态图</td><td className="p-3 font-bold">stateDiagram-v2</td><td className="p-3 text-[var(--sidebar-text)]">系统状态跃迁分析</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">类图</td><td className="p-3 font-bold">classDiagram</td><td className="p-3 text-[var(--sidebar-text)]">面向对象系统架构建模</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">实体关系</td><td className="p-3 font-bold">erDiagram</td><td className="p-3 text-[var(--sidebar-text)]">数据库/数据实体建模</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">思维导图</td><td className="p-3 font-bold">mindmap</td><td className="p-3 text-[var(--sidebar-text)]">发散性思维与知识梳理</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">看板图</td><td className="p-3 font-bold">kanban</td><td className="p-3 text-[var(--sidebar-text)]">任务状态可视化跟踪</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">时间线</td><td className="p-3 font-bold">timeline</td><td className="p-3 text-[var(--sidebar-text)]">历史事件与里程碑记录</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">Git 分支</td><td className="p-3 font-bold">gitGraph</td><td className="p-3 text-[var(--sidebar-text)]">版本演进与分支合并</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">四象限</td><td className="p-3 font-bold">quadrantChart</td><td className="p-3 text-[var(--sidebar-text)]">多维度评估与分类</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">桑基图</td><td className="p-3 font-bold">sankey-beta</td><td className="p-3 text-[var(--sidebar-text)]">资源/能量流向可视化</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">架构图</td><td className="p-3 font-bold">architecture</td><td className="p-3 text-[var(--sidebar-text)]">云架构与拓扑布局</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">XY 图表</td><td className="p-3 font-bold">xychart</td><td className="p-3 text-[var(--sidebar-text)]">通用数值坐标系绘图</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">报文图</td><td className="p-3 font-bold">packet</td><td className="p-3 text-[var(--sidebar-text)]">网络/通信协议报文结构</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">需求图</td><td className="p-3 font-bold">requirement</td><td className="p-3 text-[var(--sidebar-text)]">系统需求与派生关系分析</td></tr>
+                                                        <tr><td className="p-3 text-blue-400">块图</td><td className="p-3 font-bold">block</td><td className="p-3 text-[var(--sidebar-text)]">组件堆叠与层次逻辑描述</td></tr>
                                                     </tbody>
                                                 </table>
                                             </div>

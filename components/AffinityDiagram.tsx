@@ -2,12 +2,11 @@ import React, { useRef, useImperativeHandle, forwardRef, useEffect, useState, us
 import {
     AffinityItem,
     AffinityChartStyles,
-    DEFAULT_AFFINITY_STYLES
+    DEFAULT_AFFINITY_STYLES,
+    BaseDiagramRef
 } from '../types';
 
-export interface AffinityDiagramRef {
-    exportPNG: (transparent?: boolean, scale?: number) => void;
-    exportPDF: () => void;
+export interface AffinityDiagramRef extends BaseDiagramRef {
     resetView: () => void;
 }
 
@@ -50,6 +49,39 @@ export const AffinityDiagram = forwardRef<AffinityDiagramRef, AffinityDiagramPro
         }, []);
 
         useImperativeHandle(ref, () => ({
+            getDataURL: async (options) => {
+                const pixelRatio = options?.pixelRatio || 3;
+                const backgroundColor = options?.backgroundColor || '#ffffff';
+                const transparent = backgroundColor === 'transparent';
+                
+                const contentSize = calculateContentSize(data, finalStyles);
+                const exportWidth = options?.width || contentSize.width;
+                const exportHeight = options?.height || contentSize.height;
+                
+                const exportCanvas = document.createElement('canvas');
+                
+                // 考虑导出倍率
+                exportCanvas.width = exportWidth * pixelRatio;
+                exportCanvas.height = exportHeight * pixelRatio;
+                
+                const ctx = exportCanvas.getContext('2d')!;
+                ctx.scale(pixelRatio, pixelRatio);
+
+                ctx.clearRect(0, 0, exportWidth, exportHeight);
+
+                if (!transparent) {
+                    ctx.fillStyle = backgroundColor;
+                    ctx.fillRect(0, 0, exportWidth, exportHeight);
+                }
+                
+                if (finalStyles.type === 'Label') {
+                    renderLabelStyle(ctx, data, finalStyles, { width: exportWidth, height: exportHeight });
+                } else {
+                    renderPlateStyle(ctx, data, finalStyles, { width: exportWidth, height: exportHeight });
+                }
+                
+                return exportCanvas.toDataURL('image/png');
+            },
             tidyLayout: handleResetView,
             resetView: handleResetView,
             exportPNG(transparent = false, scale = 3) {

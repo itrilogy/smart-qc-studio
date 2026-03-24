@@ -536,8 +536,12 @@ const App: React.FC = () => {
   const [controlDsl, setControlDsl] = useState<string>(() => (isHeadless && headlessType === QCToolType.CONTROL && headlessDsl) ? headlessDsl : INITIAL_CONTROL_DSL);
   const [showParetoLine, setShowParetoLine] = useState(true);
   const [matrixOrientation, setMatrixOrientation] = useState<'top-down' | 'bottom-up'>('top-down');
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get('theme');
+    if (t === 'light' || t === 'dark') return t;
+    return 'light';
+  });
   // Apply theme to document
   React.useEffect(() => {
     if (theme === 'dark') {
@@ -585,7 +589,43 @@ const App: React.FC = () => {
     }
   };
 
-  // Headless View Rendering
+  // --- ILDR Headless Bridge ---
+  React.useEffect(() => {
+    if (isHeadless) {
+      // 1. Expose the capture function
+      (window as any).captureIQSChart = async (options?: { pixelRatio?: number; backgroundColor?: string; width?: number; height?: number }) => {
+        if (!diagramRef.current) {
+          console.error('[IQS Bridge] No diagramRef found');
+          return '';
+        }
+        try {
+          console.log('[IQS Bridge] Calling getDataURL with options:', options);
+          return await diagramRef.current.getDataURL({
+            pixelRatio: options?.pixelRatio || 3,
+            backgroundColor: options?.backgroundColor || '#ffffff',
+            width: options?.width,
+            height: options?.height
+          });
+        } catch (err) {
+          console.error('[IQS Bridge] getDataURL failed:', err);
+          return '';
+        }
+      };
+
+      // 2. Signal readiness after a safe settling time
+      const timer = setTimeout(() => {
+        console.log('[IQS Bridge] Setting IQS_READY = true');
+        (window as any).IQS_READY = true;
+      }, 500); // Give charts (ECharts/G6) some time to finish initial animations
+
+      return () => {
+        clearTimeout(timer);
+        delete (window as any).captureIQSChart;
+        delete (window as any).IQS_READY;
+      };
+    }
+  }, [isHeadless, selectedTool, diagramRef]);
+
   if (isHeadless && headlessType) {
     return (
       <div className="w-full h-full min-h-screen bg-white">
@@ -916,19 +956,19 @@ const App: React.FC = () => {
                 <X size={16} />
               </button>
             </div>
-            
+
             <div className="p-6 space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-[var(--text-main)]">渲染倍率 (Resolution Scale)</label>
                   <span className="text-xs font-black text-blue-600">{exportScale} 倍画幅</span>
                 </div>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="10" 
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
                   step="1"
-                  value={exportScale} 
+                  value={exportScale}
                   onChange={(e) => setExportScale(parseInt(e.target.value))}
                   className="w-full h-2 bg-[var(--border-light)] rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
@@ -938,8 +978,8 @@ const App: React.FC = () => {
               <div className="p-4 bg-[var(--bg-main)] rounded-xl border border-[var(--border-light)]">
                 <label className="flex items-center justify-between cursor-pointer group">
                   <span className="text-xs font-bold text-[var(--text-main)] group-hover:text-blue-600 transition-colors">透明背景 (Transparent Background)</span>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={exportTransparent}
                     onChange={(e) => setExportTransparent(e.target.checked)}
                     className="w-4 h-4 rounded border-[var(--border-light)] text-blue-600 focus:ring-blue-500 bg-[var(--card-bg)] cursor-pointer"
@@ -949,13 +989,13 @@ const App: React.FC = () => {
             </div>
 
             <div className="p-5 border-t border-[var(--border-light)] bg-[var(--bg-main)] flex justify-end gap-3">
-              <button 
+              <button
                 onClick={() => setShowExportModal(false)}
                 className="px-5 py-2.5 rounded-xl text-xs font-bold text-[var(--text-muted)] hover:bg-[var(--border-light)] transition-all"
               >
                 取消
               </button>
-              <button 
+              <button
                 onClick={() => {
                   diagramRef.current?.exportPNG?.(exportTransparent, exportScale);
                   setShowExportModal(false);
