@@ -24,7 +24,7 @@ export const ParetoDiagram = forwardRef<ParetoDiagramRef, Props>(({ data, styles
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: scale,
+                pixelRatio: 2,
                 backgroundColor: transparent ? 'transparent' : '#fff'
             });
             const link = document.createElement('a');
@@ -37,7 +37,7 @@ export const ParetoDiagram = forwardRef<ParetoDiagramRef, Props>(({ data, styles
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: scale,
+                pixelRatio: 2,
                 backgroundColor: '#fff'
             });
             const win = window.open('', '_blank');

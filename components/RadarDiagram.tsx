@@ -166,10 +166,10 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         const url = URL.createObjectURL(svgBlob);
 
         img.onload = () => {
-            canvas.width = exportWidth * scale;
-            canvas.height = exportHeight * scale;
+            canvas.width = exportWidth * 2;
+            canvas.height = exportHeight * 2;
             if (ctx) {
-                ctx.scale(scale, scale);
+                ctx.scale(2, 2);
                 if (!transparent) {
                     ctx.fillStyle = '#ffffff';
                     ctx.fillRect(0, 0, exportWidth, exportHeight);
@@ -213,10 +213,10 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         const url = URL.createObjectURL(svgBlob);
 
         img.onload = () => {
-            canvas.width = exportWidth * scale;
-            canvas.height = exportHeight * scale;
+            canvas.width = exportWidth * 2;
+            canvas.height = exportHeight * 2;
             if (ctx) {
-                ctx.scale(scale, scale);
+                ctx.scale(2, 2);
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, exportWidth, exportHeight);
                 ctx.drawImage(img, 0, 0);
