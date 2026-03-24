@@ -23,7 +23,8 @@ import {
   INITIAL_BASIC_DATA,
   INITIAL_RADAR_DATA,
   INITIAL_RADAR_DSL,
-  INITIAL_MERMAID_DSL
+  INITIAL_MERMAID_DSL,
+  INITIAL_VCHART_DSL
 } from './constants';
 import {
   DEFAULT_PARETO_STYLES,
@@ -60,7 +61,10 @@ import {
   RadarChartStyles,
   DEFAULT_RADAR_STYLES,
   MermaidChartStyles,
-  DEFAULT_MERMAID_STYLES
+  DEFAULT_MERMAID_STYLES,
+  VChartData,
+  VChartChartStyles,
+  DEFAULT_VCHART_STYLES
 } from './types';
 import { Workspace } from './components/layout/Workspace';
 import { DashboardView } from './components/DashboardView';
@@ -93,6 +97,8 @@ import RadarEditor, { parseRadarDSL } from './components/RadarEditor';
 import RadarDiagram from './components/RadarDiagram';
 import { MermaidDiagram, MermaidDiagramRef } from './components/MermaidDiagram';
 import MermaidEditor from './components/MermaidEditor';
+import VChartEditor, { parseVChartDSL } from './components/VChartEditor';
+import VChartDiagram from './components/VChartDiagram';
 import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loader2, LineChart, BarChart3, X, Sliders } from 'lucide-react';
 
 // --- DSL Parsing Functions (Move outside to support Lazy Initialization) ---
@@ -365,6 +371,14 @@ const parseInitialRadar = () => {
   }
 };
 
+const parseInitialVChart = (customDsl?: string) => {
+  try {
+    return parseVChartDSL(customDsl || INITIAL_VCHART_DSL);
+  } catch {
+    return { data: { title: 'VChart', spec: {} }, styles: DEFAULT_VCHART_STYLES };
+  }
+};
+
 const App: React.FC = () => {
   // --- Headless Mode Logic ---
   const { isHeadless, headlessType, headlessDsl } = React.useMemo(() => {
@@ -385,7 +399,8 @@ const App: React.FC = () => {
       arrow: QCToolType.ARROW,
       basic: QCToolType.BASIC,
       radar: QCToolType.RADAR,
-      mermaid: QCToolType.MERMAID
+      mermaid: QCToolType.MERMAID,
+      vchart: QCToolType.VCHART
     };
 
     return {
@@ -507,6 +522,15 @@ const App: React.FC = () => {
   const [mermaidData, setMermaidData] = useState<string>(() => (isHeadless && headlessType === QCToolType.MERMAID && headlessDsl) ? headlessDsl : INITIAL_MERMAID_DSL);
   const [mermaidStyles, setMermaidStyles] = useState<MermaidChartStyles>(DEFAULT_MERMAID_STYLES);
 
+  const [vchartData, setVchartData] = useState<VChartData>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.VCHART && headlessDsl) ? headlessDsl : INITIAL_VCHART_DSL;
+    return parseInitialVChart(dsl).data;
+  });
+  const [vchartStyles, setVchartStyles] = useState<VChartChartStyles>(() => {
+    const dsl = (isHeadless && headlessType === QCToolType.VCHART && headlessDsl) ? headlessDsl : INITIAL_VCHART_DSL;
+    return parseInitialVChart(dsl).styles;
+  });
+
   const [dashboardCols, setDashboardCols] = useState(6);
 
   const [controlDsl, setControlDsl] = useState<string>(() => (isHeadless && headlessType === QCToolType.CONTROL && headlessDsl) ? headlessDsl : INITIAL_CONTROL_DSL);
@@ -581,6 +605,7 @@ const App: React.FC = () => {
             case QCToolType.BASIC: return <BasicDiagram ref={diagramRef} data={basicData} styles={basicStyles} />;
             case QCToolType.RADAR: return <RadarDiagram ref={diagramRef} data={radarData} styles={radarStyles} />;
             case QCToolType.MERMAID: return <MermaidDiagram ref={diagramRef} data={mermaidData} styles={mermaidStyles} />;
+            case QCToolType.VCHART: return <VChartDiagram ref={diagramRef} data={vchartData} styles={vchartStyles} theme={theme} />;
             default: return <div className="p-20 text-slate-400 font-black uppercase tracking-widest">Unknown Chart Type</div>;
           }
         })()}
@@ -723,6 +748,14 @@ const App: React.FC = () => {
                   onDataChange={setMermaidData}
                   onStylesChange={setMermaidStyles}
                 />
+              ) : selectedTool === QCToolType.VCHART ? (
+                <VChartEditor
+                  data={vchartData}
+                  styles={vchartStyles}
+                  theme={theme}
+                  onDataChange={setVchartData}
+                  onStylesChange={setVchartStyles}
+                />
               ) : (
                 <EditorPanel
                   toolType={selectedTool}
@@ -832,6 +865,8 @@ const App: React.FC = () => {
                     return <RadarDiagram ref={diagramRef} data={radarData} styles={radarStyles} />;
                   case QCToolType.MERMAID:
                     return <MermaidDiagram ref={diagramRef} data={mermaidData} styles={mermaidStyles} />;
+                  case QCToolType.VCHART:
+                    return <VChartDiagram ref={diagramRef} data={vchartData} styles={vchartStyles} />;
                   default: return (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--bg-page)]">
                       <Cpu className="w-32 h-32 text-[var(--border-light)] mb-8" />

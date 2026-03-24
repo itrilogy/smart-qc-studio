@@ -477,7 +477,7 @@
                 "few_shot_examples": [
                     {
                         "scenario": "竞品多维性能分析",
-                        "input": "对比旗舰手机 A 与 B 的平衡性。维度：影像(100)、续航(100)、屏幕(100)、手感(50, 10)、芯片强度(100)。A各维度为88, 92, 85, 45, 95；B各维度为95, 80, 90, 38, 98。开启标准化和面积评分。",
+                        "input": "对比旗舰手机 A 与 B 的平衡性. 维度：影像(100)、续航(100)、屏幕(100)、手感(50, 10)、芯片强度(100)。A各维度为88, 92, 85, 45, 95；B各维度为95, 80, 90, 38, 98。开启标准化和面积评分。",
                         "output": "Title: 旗舰机型多维竞争力雷达图\nStandardize: true\nShowAreaScore: true\nShowSimilarity: true\n\nAxis: 影像, 100\nAxis: 续航, 100\nAxis: 屏幕, 100\nAxis: 手感, 50, 10\nAxis: 芯片强度, 100\n\nSeries: 产品 A, [88, 92, 85, 45, 95], #3b82f6, 0.4\nSeries: 产品 B, [95, 80, 90, 38, 98], #ef4444, 0.3"
                     }
                 ]
@@ -567,6 +567,31 @@
                         "scenario": "甘特图 - 项目计划",
                         "input": "制定一个为期两周的开发计划。第一周：需求分析(3天)，环境搭建(2天)；第二周：核心功能开发(5天)。",
                         "output": "gantt\n    title [项目开发计划]\n    dateFormat  YYYY-MM-DD\n    section [第一周进度]\n    需求分析           :a1, 2024-01-01, 3d\n    环境搭建           :after a1, 2d\n    section [第二周进度]\n    核心功能开发        :2024-01-08, 5d"
+                    }
+                ]
+            }
+        },
+        "vchart": {
+            "type": "statistical",
+            "intent_trigger": [
+                "全能图表",
+                "复杂图表",
+                "vchart spec"
+            ],
+            "dsl_specification": {
+                "rules": [
+                    "Title: [文字] - 图表标题",
+                    "ColorPalette: [ID] - 配色方案 ID (如: tech, industrial)",
+                    "Font[Title/Base/Legend/Axis]: [Size] - 各部分字体大小",
+                    "Spec: { ... } - VChart 标准 JSON Spec 配置块",
+                    "注: Spec 内部必须是合法的 JSON 对象，包含 type, data, xField, yField 等核心字段。",
+                    "专家建议: 适用于无法通过基础图表表达的复杂组合图、桑基图、漏斗图、南丁格尔玫瑰图、地理地图等。"
+                ],
+                "few_shot_examples": [
+                    {
+                        "scenario": "复杂组合图表 (柱状 + 折线)",
+                        "input": "使用 vchart 渲染一个组合图，展示 2021-2023 年手机和平台的销量堆叠柱状图。使用科技蓝配色，标题 24px，正文 14px。",
+                        "output": "Title: 智能终端市场趋势\nColorPalette: tech\nFont[Title]: 24\nFont[Base]: 14\n\nSpec: {\n  \"type\": \"common\",\n  \"series\": [\n    {\n      \"type\": \"bar\",\n      \"data\": { \"values\": [\n        { \"year\": \"2021\", \"value\": 35, \"type\": \"Smartphone\" },\n        { \"year\": \"2022\", \"value\": 42, \"type\": \"Smartphone\" },\n        { \"year\": \"2023\", \"value\": 48, \"type\": \"Smartphone\" },\n        { \"year\": \"2021\", \"value\": 20, \"type\": \"Tablet\" },\n        { \"year\": \"2022\", \"value\": 25, \"type\": \"Tablet\" },\n        { \"year\": \"2023\", \"value\": 22, \"type\": \"Tablet\" }\n      ] },\n      \"xField\": \"year\",\n      \"yField\": \"value\",\n      \"seriesField\": \"type\",\n      \"stack\": true\n    },\n    {\n      \"type\": \"line\",\n      \"data\": { \"values\": [\n        { \"year\": \"2021\", \"value\": 55 },\n        { \"year\": \"2022\", \"value\": 67 },\n        { \"year\": \"2023\", \"value\": 70 }\n      ] },\n      \"xField\": \"year\",\n      \"yField\": \"value\"\n    }\n  ],\n  \"axes\": [\n    { \"orient\": \"left\", \"title\": { \"visible\": true, \"text\": \"销量 (M units)\" } },\n    { \"orient\": \"bottom\" }\n  ]\n}"
                     }
                 ]
             }

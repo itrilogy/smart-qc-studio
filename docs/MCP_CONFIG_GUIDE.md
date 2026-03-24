@@ -1,36 +1,24 @@
 # IQS Chart Rendering MCP Server 配置指南 🛠️
 
-本指南将指导您如何在支持 Model Context Protocol (MCP) 的 AI 客户端（如 Claude Desktop）中集成 Smart QC Studio 的图表渲染服务。
+本指南将指导您如何在支持 Model Context Protocol (MCP) 的 AI 客户端中集成 Smart QC Studio 的图表渲染服务。新版本支持 **40+ 个专项工具**，并提供 SSE 渲染增强方案。
 
 ## 1. 准备环境
 
-确保您的系统中已安装以下软件：
-- **Node.js**: v18.0.0 或更高版本。
-- **Google Chrome**: 渲染引擎将自动寻找 `/Applications/Google Chrome.app` (macOS) 或系统默认路径。
-- **运行中的 Web 服务**: MCP 服务器作为一个本地脚本运行，但它会通过 Puppeteer 访问正在运行的 Smart QC Studio Web 应用（默认内网地址 `http://localhost:5173`）来抓取图表。
+- **Node.js**: v18.0.0+
+- **Google Chrome**: 需安装在默认路径。
+- **运行中的 Web 服务**: 默认 `http://localhost:5173`。
 
-> [!TIP]
-> 请确保在项目根目录下运行 `npm run dev` 以启动 Web 服务。
+## 2. 客户端配置 (Claude Desktop)
 
-## 2. 客户端配置 (以 Claude Desktop 为例)
-
-### 配置文件位置
-- **macOS**: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-
-在 `mcpServers` 部分添加以下内容（请根据您的实际路径修改 `args` 中的路径）：
-
-> [!NOTE]
-> 这里的配置使用的是 **Stdio (标准输入输出)** 通信模式。在这种模式下，客户端通过执行本地 Node.js 脚本来启动 MCP 服务，因此 `args` 必须是本地文件的绝对路径，而不是 `http` 地址。
+### 2.1 Stdio 模式 (本地)
+编辑 `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "iqs-chart-server": {
       "command": "node",
-      "args": [
-        "/Users/kwangwah/Code/qctools/smart-qc-studio/mcp-server/index.js"
-      ],
+      "args": ["/绝对路径/mcp-server/index.js"],
       "env": {
         "IQS_BASE_URL": "http://localhost:5173"
       }
@@ -39,53 +27,48 @@
 }
 ```
 
-## 3. 核心工具说明
+### 2.2 SSE 模式 (推荐，远程/兼容性更佳)
+SSE 模式能够解决部分软件（如某些 IDE 插件或客户端）无法渲染 Base64 图片的问题。
 
-配置完成后，AI 客户端将识别到以下工具：
-
-- **`render_chart`**: 通用绘图工具，需提供 `type`（如 `fishbone`, `pareto`）和 `dsl`。
-- **`render_[type]`**: 快捷工具（如 `render_fishbone`），只需提供 `dsl` 字符串。
-
-## 4. 常见问题排查
-
-1. **找不到浏览器**: 如果报错提示无法启动浏览器，请检查 `mcp-server/index.js` 中的 `getExecutablePath` 函数是否覆盖了您的 Chrome 安装路径。
-2. **连接被拒绝**: 请确认 `IQS_BASE_URL` 指代的 Web 服务已正常运行。
-3. **渲染超时**: 首次启动或复杂图表可能需要较长时间，默认超时时间为 30 秒。
-
----
-
-## 5. 远程调用与灵活性扩展 (Remote Access & SSE)
-
-如果您希望将 Smart QC Studio 部署在服务器上，供多台主机远程调用，请使用 **SSE (Server-Sent Events)** 模式。
-
-### 5.1 服务端启动 (Server Side)
-1. 在服务器上克隆并构建项目。
-2. 在 `mcp-server` 目录下运行：
+1. **服务端启动**:
    ```bash
    PORT=3000 npm run start:sse
    ```
-   服务器将监听 3000 端口，并提供 `/sse` 节点。
+2. **客户端配置**:
+   ```json
+   {
+     "mcpServers": {
+       "iqs-remote": {
+         "url": "http://服务器IP:3000/sse"
+       }
+     }
+   }
+   ```
 
-### 5.2 客户端配置 (Client Side)
-在客户端（如另一台电脑上的 Claude Desktop）中，配置文件应指向服务器 URL：
+## 3. 工具矩阵
 
-```json
-{
-  "mcpServers": {
-    "iqs-remote-server": {
-      "url": "http://your-server-ip:3000/sse"
-    }
-  }
-}
-```
+AI 客户端将识别到以下工具分类：
 
-> [!IMPORTANT]
-> - **灵活性**: SSE 模式下，客户端无需在本地安装脚本或依赖环境。
-> - **安全性**: 如果在公网部署，请务必设置防火墙或反向代理（如 Nginx）来保护 `/sse` 和 `/messages` 接口。
+- **`render_[core_type]`**: 14 种 QC 核心组件（如 `render_fishbone`, `render_spc`）。
+- **`render_mermaid_[type]`**: Mermaid 专用工具（如 `render_mermaid_flowchart`, `render_mermaid_gantt`）。
+- **`render_vchart_[type]`**: VChart 专用工具（如 `render_vchart_sankey`, `render_vchart_bar`）。
+
+## 4. 渲染特性与兼容性 (SSE 高清模式)
+
+新版本针对渲染质量与兼容性进行了重大升级：
+1. **3X 高清渲染**: 默认启用 `deviceScaleFactor: 3`，渲染结果极其清晰，满足 Retina 屏及专业展示需求。
+2. **SSE 单模返回 (URL Only)**: 
+   - 行为变更：在 SSE 模式下，AI **仅返回**封装了远程图片外链的文本消息 (例如 `![Result](http://ip:3000/renders/xxx.png)`)。
+   - 优势：这彻底避免了部分 AI 客户端在 stdio 模式下无法渲染 Base64 或渲染异常的缺陷。
+
+## 5. 环境变量说明
+
+- `IQS_BASE_URL`: 指定 Smart QC Studio 的网页访问地址（默认 localhost:5173）。
+- `IQS_SERVER_PUBLIC_URL`: (可选) 手动指定 SSE 服务器的对外访问根地址，用于生成 Markdown 外链。如果不指定，系统将尝试自动探测本机 IP。
 
 ---
-
-## 6. Docker 容器化部署 (Docker Deployment)
+*Smart QC Studio - 运维文档*
+t)
 
 为了简化生产环境的部署，推荐将 Web 应用与 MCP Server 打包在同一个 Docker 容器中。
 

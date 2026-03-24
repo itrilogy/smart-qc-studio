@@ -217,6 +217,30 @@
 
 ---
 
+## 15. VChart 全能图表引擎 (VChart 引擎允许用户直接通过标准的 VChart (VisActor) Spec JSON 来定义极其复杂的图表。
+
+#### 语法规则
+* `Title: [文字]` - 图表标题。
+* `ColorPalette: [ID]` - 配色方案 ID（如：`tech_blue`, `soft_pastel` 等）。
+* `Font[Title/Base/Legend/Axis]: [Size]` - 精确控制各部分的字体大小（单位：px）。
+* `Spec: { ... }` - VChart 官方标准的 JSON 配置。
+* **注意**: `Spec:` 之后必须紧跟合法的 JSON 字符串。
+
+#### 示例
+```text
+Title: 复杂多维组合图
+ColorPalette: tech_blue
+Font[Title]: 24
+Font[Base]: 14
+Spec: {
+  "type": "common",
+  "series": [
+    { "type": "bar", "data": { "values": [...] }, "xField": "x", "yField": "y" },
+    { "type": "line", "data": { "values": [...] }, "xField": "x", "yField": "y" }
+  ]
+}
+```
+
 ## 附录：AI 推理与 Vibe Coding 规范
 
 - **自然语言驱动**：AI 会根据 `chart_spec.json` 协议将口语描述语义化。
@@ -225,4 +249,4 @@
 
 ---
 *Smart QC Studio - DSL 语言标准委员会 归档*
-*Version: 2026.03.16*
+*Version: 2026.03.24*

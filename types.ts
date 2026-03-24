@@ -14,7 +14,8 @@ export enum QCToolType {
   ARROW = 'ARROW',
   BASIC = 'BASIC',
   RADAR = 'RADAR',
-  MERMAID = 'MERMAID'
+  MERMAID = 'MERMAID',
+  VCHART = 'VCHART'
 }
 
 export interface RadarAxis {
@@ -761,4 +762,31 @@ export const DEFAULT_MERMAID_STYLES: Required<MermaidChartStyles> = {
   useElk: false,
   elkMergeEdges: false,
   elkNodePlacementStrategy: 'BRANDES_KOEPF'
+};
+
+// --- VChart Diagram Types ---
+
+export interface VChartData {
+  title: string;
+  spec: any;
+}
+
+export interface VChartChartStyles {
+  title: string;
+  theme: 'light' | 'dark';
+  colorPalette: string;
+  titleFontSize: number;
+  baseFontSize: number;
+  legendFontSize: number;
+  axisFontSize: number;
+}
+
+export const DEFAULT_VCHART_STYLES: Required<VChartChartStyles> = {
+  title: 'VChart 全能图表',
+  theme: 'light',
+  colorPalette: 'default',
+  titleFontSize: 20,
+  baseFontSize: 12,
+  legendFontSize: 10,
+  axisFontSize: 10
 };

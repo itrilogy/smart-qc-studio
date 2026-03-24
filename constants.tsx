@@ -142,6 +142,16 @@ export const TOOL_CONFIGS = [
     color: 'text-blue-500',
     bg: 'bg-blue-50/50',
     accent: '#3b82f6'
+  },
+  {
+    type: QCToolType.VCHART,
+    name: 'VChart',
+    enName: 'VChart Diagram',
+    desc: '基于 VisActor VChart 的全能图表引擎，支持 JSON Spec 定义高度自定义的图表。',
+    icon: <BarChart3 size={32} />,
+    color: 'text-indigo-600',
+    bg: 'bg-indigo-50/50',
+    accent: '#4f46e5'
   }
 ];
 
@@ -798,16 +808,77 @@ export const INITIAL_RADAR_DATA: RadarData = {
   axes: [
     { name: '年化回报(%)', max: 25, min: 0 },
     { name: '波动率(%)', max: 30, min: 0 },
-    { name: '流动性评分', max: 100, min: 0 },
-    { name: '夏普比率', max: 3.0, min: 0 },
-    { name: '最大回撤(%)', max: 40, min: 0 }
+    { name: '夏普比率', max: 3, min: 0 },
+    { name: '最大回撤(%)', max: 50, min: 0 },
+    { name: '资产规模(亿)', max: 100, min: 0 }
   ],
   series: [
-    { name: '平衡型组合', values: [12, 15, 80, 1.8, 12], color: '#3b82f6', fillOpacity: 0.4 },
-    { name: '激进型组合', values: [20, 25, 60, 2.2, 28], color: '#ef4444', fillOpacity: 0.3 },
-    { name: '保守型组合', values: [6, 8, 95, 1.2, 5], color: '#10b981', fillOpacity: 0.2 }
+    { name: '策略 A (稳健型)', values: [12, 15, 1.8, 12, 85], color: '#3b82f6', fillOpacity: 0.4 },
+    { name: '策略 B (高收益型)', values: [22, 28, 1.2, 35, 40], color: '#ef4444', fillOpacity: 0.3 }
   ]
 };
+
+// --- VChart Initial Data ---
+
+export const INITIAL_VCHART_DSL = `Title: VChart 示例多维组合图
+ColorPalette: tech
+Font[Title]: 24
+Font[Base]: 14
+Font[Legend]: 12
+Font[Axis]: 12
+
+Spec: {
+  "type": "common",
+  "series": [
+    {
+      "type": "bar",
+      "data": {
+        "id": "barData",
+        "values": [
+          { "year": "2021", "value": 35, "type": "Smartphone" },
+          { "year": "2022", "value": 42, "type": "Smartphone" },
+          { "year": "2023", "value": 48, "type": "Smartphone" },
+          { "year": "2021", "value": 20, "type": "Tablet" },
+          { "year": "2022", "value": 25, "type": "Tablet" },
+          { "year": "2023", "value": 22, "type": "Tablet" }
+        ]
+      },
+      "xField": "year",
+      "yField": "value",
+      "seriesField": "type",
+      "stack": true,
+      "label": { "visible": true }
+    },
+    {
+      "type": "line",
+      "data": {
+        "id": "lineData",
+        "values": [
+          { "year": "2021", "value": 55 },
+          { "year": "2022", "value": 67 },
+          { "year": "2023", "value": 70 }
+        ]
+      },
+      "xField": "year",
+      "yField": "value",
+      "line": { "style": { "lineWidth": 3, "stroke": "#f97316" } },
+      "point": { "visible": true }
+    }
+  ],
+  "axes": [
+    { "orient": "left", "title": { "visible": true, "text": "销量 (M units)" } },
+    { "orient": "bottom", "label": { "visible": true } }
+  ],
+  "legends": [{ "visible": true, "orient": "bottom" }]
+}`;
+
+export const VCHART_COLOR_PALETTES = [
+    { id: 'default', name: '默认配色 (Default)', colors: [] },
+    { id: 'tech', name: '科技蓝 (Tech Blue)', colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de'] },
+    { id: 'industrial', name: '工业灰 (Industrial)', colors: ['#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#f3f4f6'] },
+    { id: 'vibrant', name: '活力橙 (Vibrant)', colors: ['#f97316', '#fbbf24', '#10b981', '#3b82f6', '#8b5cf6'] },
+    { id: 'deep', name: '深邃黑 (Deep Dark)', colors: ['#1e293b', '#334155', '#475569', '#64748b', '#94a3b8'] }
+];
 
 export const INITIAL_MERMAID_DSL = `graph TD
     A[开始] --> B{是否在线?}
