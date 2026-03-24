@@ -3,7 +3,7 @@ import ReactECharts from 'echarts-for-react';
 import { BasicChartData, BasicChartStyles, DEFAULT_BASIC_STYLES } from '../types';
 
 export interface BasicDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
 }
 
@@ -87,12 +87,12 @@ export const BasicDiagram = forwardRef<BasicDiagramRef, Props>(({ data, styles }
     };
 
     useImperativeHandle(ref, () => ({
-        exportPNG: (transparent = false) => {
+        exportPNG: (transparent = false, scale = 3) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: transparent ? 'transparent' : '#fff'
             });
             const link = document.createElement('a');
@@ -105,7 +105,7 @@ export const BasicDiagram = forwardRef<BasicDiagramRef, Props>(({ data, styles }
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: '#fff'
             });
             const win = window.open('', '_blank');

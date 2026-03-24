@@ -3,7 +3,7 @@ import { Graph } from '@antv/g6';
 import { FishboneNode, FishboneChartStyles, DEFAULT_FISHBONE_STYLES } from '../types';
 
 export interface FishboneDiagramRef {
-  exportPNG: (transparent?: boolean) => void;
+  exportPNG: (transparent?: boolean, scale?: number) => void;
   exportPDF: () => void;
   tidyLayout: () => void;
 }
@@ -21,7 +21,7 @@ const FishboneDiagram = forwardRef<FishboneDiagramRef, FishboneDiagramProps>(({ 
   const finalStyles = { ...DEFAULT_FISHBONE_STYLES, ...styles };
 
   useImperativeHandle(ref, () => ({
-    exportPNG: async (transparent = false) => {
+    exportPNG: async (transparent = false, scale = 3) => {
       if (!graphRef.current) return;
       const rawDataURL = await graphRef.current.toDataURL();
 

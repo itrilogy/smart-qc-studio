@@ -7,7 +7,7 @@ import { ZoomIn, ZoomOut, RefreshCw, Move } from 'lucide-react';
 import { INITIAL_MERMAID_DSL } from '../constants';
 
 export interface MermaidDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: (transparent?: boolean) => void;
     tidyLayout: () => void;
 }
@@ -233,7 +233,7 @@ export const MermaidDiagram = forwardRef<MermaidDiagramRef, Props>(({ data, styl
     };
 
     useImperativeHandle(ref, () => ({
-        exportPNG: async (transparent = false) => {
+        exportPNG: async (transparent = false, scale = 3) => {
             const svg = containerRef.current?.querySelector('svg');
             if (!svg) return;
             try {
@@ -278,7 +278,7 @@ export const MermaidDiagram = forwardRef<MermaidDiagramRef, Props>(({ data, styl
 
                 const dataUrl = await toPng(svg, {
                     backgroundColor: transparent ? 'transparent' : (finalStyles.backgroundColor || '#ffffff'),
-                    pixelRatio: 4,
+                    pixelRatio: scale,
                     width: bBox.width + horizontalPadding * 2,
                     height: bBox.height + padding * 2,
                     style: {
@@ -335,7 +335,7 @@ export const MermaidDiagram = forwardRef<MermaidDiagramRef, Props>(({ data, styl
 
                 const dataUrl = await toPng(svg, {
                     backgroundColor: transparent ? 'transparent' : (finalStyles.backgroundColor || '#ffffff'),
-                    pixelRatio: 4,
+                    pixelRatio: scale,
                     width: bBox.width + horizontalPadding * 2,
                     height: bBox.height + padding * 2,
                     style: {

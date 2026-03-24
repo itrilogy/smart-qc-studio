@@ -10,7 +10,7 @@ import {
 } from '../types';
 
 export interface ControlChartRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
 }
 
@@ -316,7 +316,7 @@ export const ControlChart = forwardRef<ControlChartRef, ControlChartProps>(
         }, [stats, dimensions, finalStyles]);
 
         useImperativeHandle(ref, () => ({
-            exportPNG(transparent = false) {
+            exportPNG(transparent = false, scale = 3) {
                 draw(transparent);
                 const canvas = canvasRef.current;
                 if (!canvas) return;

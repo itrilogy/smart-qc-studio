@@ -3,7 +3,7 @@ import ReactECharts from 'echarts-for-react';
 import { HistogramChartStyles, DEFAULT_HISTOGRAM_STYLES } from '../types';
 
 export interface HistogramDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
 }
 
@@ -42,12 +42,12 @@ export const HistogramDiagram = forwardRef<HistogramDiagramRef, Props>(({ data, 
     }), [JSON.stringify(styles)]);
 
     useImperativeHandle(ref, () => ({
-        exportPNG: (transparent = false) => {
+        exportPNG: (transparent = false, scale = 3) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: transparent ? 'transparent' : '#fff'
             });
             const link = document.createElement('a');
@@ -60,7 +60,7 @@ export const HistogramDiagram = forwardRef<HistogramDiagramRef, Props>(({ data, 
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: '#fff'
             });
             const win = window.open('', '_blank');

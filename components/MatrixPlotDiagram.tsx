@@ -193,7 +193,7 @@ const Subplot: React.FC<{
 };
 
 export interface MatrixPlotDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
     tidyLayout: () => void;
 }
@@ -285,20 +285,20 @@ export const MatrixPlotDiagram = forwardRef<MatrixPlotDiagramRef, { data: Matrix
 
     useImperativeHandle(ref, () => ({
         tidyLayout: handleTidyLayout,
-        exportPNG: (transparent = false) => {
+        exportPNG: (transparent = false, scale = 3) => {
             if (!svgRef.current) return;
             const svgData = new XMLSerializer().serializeToString(svgRef.current);
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d')!;
             const img = new Image();
             img.onload = () => {
-                canvas.width = totalW * 2;
-                canvas.height = totalH * 2;
+                canvas.width = totalW * scale;
+                canvas.height = totalH * scale;
                 if (!transparent) {
                     ctx.fillStyle = '#ffffff';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
-                ctx.scale(2, 2);
+                ctx.scale(scale, scale);
                 ctx.drawImage(img, 0, 0);
                 const link = document.createElement('a');
                 link.download = `矩阵图_${Date.now()}.png`;

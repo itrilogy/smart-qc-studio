@@ -5,7 +5,7 @@ import { ArrowData, ArrowChartStyles, DEFAULT_ARROW_STYLES } from '../types';
 export interface ArrowDiagramRef {
     resetView: () => void;
     tidyLayout: () => void;
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
 }
 
@@ -80,7 +80,7 @@ export const ArrowDiagram = forwardRef<ArrowDiagramRef, ArrowDiagramProps>(({ da
     useImperativeHandle(ref, () => ({
         resetView: performAutoFit,
         tidyLayout: performAutoFit,
-        exportPNG: async (transparent = false) => {
+        exportPNG: async (transparent = false, scale = 3) => {
             if (!svgRef.current) return;
 
             const serializer = new XMLSerializer();
@@ -138,8 +138,8 @@ export const ArrowDiagram = forwardRef<ArrowDiagramRef, ArrowDiagramProps>(({ da
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 // Export at 2x resolution
-                canvas.width = exportWidth * 2;
-                canvas.height = exportHeight * 2;
+                canvas.width = exportWidth * scale;
+                canvas.height = exportHeight * scale;
                 const ctx = canvas.getContext('2d');
                 if (!ctx) return;
 

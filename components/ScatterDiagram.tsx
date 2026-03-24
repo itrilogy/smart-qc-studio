@@ -5,7 +5,7 @@ import { ScatterPoint, ScatterChartStyles, DEFAULT_SCATTER_STYLES } from '../typ
 import { Loader2 } from 'lucide-react';
 
 export interface ScatterDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
 }
 
@@ -21,12 +21,12 @@ export const ScatterDiagram = forwardRef<ScatterDiagramRef, Props>(({ data, styl
     }), [JSON.stringify(styles)]);
 
     useImperativeHandle(ref, () => ({
-        exportPNG: (transparent = false) => {
+        exportPNG: (transparent = false, scale = 3) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: transparent ? 'transparent' : '#fff'
             });
             const link = document.createElement('a');
@@ -39,7 +39,7 @@ export const ScatterDiagram = forwardRef<ScatterDiagramRef, Props>(({ data, styl
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: '#fff'
             });
             const win = window.open('', '_blank');

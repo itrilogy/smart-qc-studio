@@ -3,7 +3,7 @@ import ReactECharts from 'echarts-for-react';
 import { ParetoItem, ParetoChartStyles, DEFAULT_PARETO_STYLES } from '../types';
 
 export interface ParetoDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
 }
 
@@ -19,12 +19,12 @@ export const ParetoDiagram = forwardRef<ParetoDiagramRef, Props>(({ data, styles
 
     // 暴露导出方法给外部 (由 App.tsx 触发)
     useImperativeHandle(ref, () => ({
-        exportPNG: (transparent = false) => {
+        exportPNG: (transparent = false, scale = 3) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: transparent ? 'transparent' : '#fff'
             });
             const link = document.createElement('a');
@@ -37,7 +37,7 @@ export const ParetoDiagram = forwardRef<ParetoDiagramRef, Props>(({ data, styles
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({
                 type: 'png',
-                pixelRatio: 2,
+                pixelRatio: scale,
                 backgroundColor: '#fff'
             });
             const win = window.open('', '_blank');

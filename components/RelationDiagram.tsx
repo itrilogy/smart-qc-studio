@@ -3,7 +3,7 @@ import { Graph } from '@antv/g6';
 import { RelationNode, RelationLink, RelationChartStyles, DEFAULT_RELATION_STYLES } from '../types';
 
 export interface RelationDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
     tidyLayout: () => void;
 }
@@ -22,7 +22,7 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
     const finalStyles = { ...DEFAULT_RELATION_STYLES, ...styles };
 
     useImperativeHandle(ref, () => ({
-        exportPNG: async (transparent = false) => {
+        exportPNG: async (transparent = false, scale = 3) => {
             if (!graphRef.current) return;
             const rawDataURL = await graphRef.current.toDataURL();
 

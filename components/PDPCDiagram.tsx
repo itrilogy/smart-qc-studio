@@ -4,7 +4,7 @@ import { Workflow } from 'lucide-react';
 import { PDPCData, PDPCChartStyles, DEFAULT_PDPC_STYLES, PDPCNode, PDPCLink, PDPCGroup } from '../types';
 
 export interface PDPCDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
     tidyLayout: () => void;
 }
@@ -24,7 +24,7 @@ const PDPCDiagram = forwardRef<PDPCDiagramRef, PDPCDiagramProps>(({ data, styles
     const finalStyles = { ...DEFAULT_PDPC_STYLES, ...styles };
 
     useImperativeHandle(ref, () => ({
-        exportPNG: async (transparent = false) => {
+        exportPNG: async (transparent = false, scale = 3) => {
             if (!graphRef.current || !containerRef.current) return;
 
             const graphCanvas = await graphRef.current.toDataURL({ backgroundColor: transparent ? 'transparent' : '#ffffff' });

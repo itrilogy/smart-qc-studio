@@ -7,7 +7,7 @@ interface RadarDiagramProps {
 }
 
 export interface RadarDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
     tidyLayout: () => void;
 }
@@ -142,7 +142,7 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         return getCoordinates(angle, radius);
     });
     // ... export methods (no changes needed)
-    const exportPNG = (transparent = false) => {
+    const exportPNG = (transparent = false, scale = 3) => {
         if (!svgRef.current) return;
 
         const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;
@@ -166,20 +166,23 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         const url = URL.createObjectURL(svgBlob);
 
         img.onload = () => {
-            canvas.width = width * 2;
-            canvas.height = height * 2;
+            canvas.width = exportWidth * scale;
+            canvas.height = exportHeight * scale;
             if (ctx) {
-                ctx.scale(2, 2);
+                ctx.scale(scale, scale);
                 if (!transparent) {
                     ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, width, height);
+                    ctx.fillRect(0, 0, exportWidth, exportHeight);
                 }
                 ctx.drawImage(img, 0, 0);
                 const dataURL = canvas.toDataURL('image/png');
                 const link = document.createElement('a');
                 link.download = `${title || 'radar-chart'}.png`;
                 link.href = dataURL;
+                link.style.display = 'none';
+                document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             }
         };
@@ -210,12 +213,12 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         const url = URL.createObjectURL(svgBlob);
 
         img.onload = () => {
-            canvas.width = width * 2;
-            canvas.height = height * 2;
+            canvas.width = exportWidth * scale;
+            canvas.height = exportHeight * scale;
             if (ctx) {
-                ctx.scale(2, 2);
+                ctx.scale(scale, scale);
                 ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, width, height);
+                ctx.fillRect(0, 0, exportWidth, exportHeight);
                 ctx.drawImage(img, 0, 0);
                 const imgData = canvas.toDataURL('image/png');
 
@@ -227,7 +230,7 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
               <body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f8fafc; font-family: -apple-system, sans-serif;">
                 <div style="padding: 40px; background: #fff; box-shadow: 0 40px 100px rgba(0,0,0,0.05); border-radius: 20px; text-align: center;">
                   <img src="${imgData}" style="max-width:100%; height:auto;" />
-                  <div style="margin-top: 20px; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; tracking-widest: 0.1em;">
+                  <div style="margin-top: 20px; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">
                     Radar Chart Report | Smart QC Studio
                   </div>
                 </div>

@@ -9,7 +9,7 @@ interface MatrixDiagramProps {
 }
 
 export interface MatrixDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
     tidyLayout: () => void;
 }
@@ -918,7 +918,7 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
 
     // Imperative Handle (Shared)
     useImperativeHandle(ref, () => ({
-        exportPNG: (transparent = false) => {
+        exportPNG: (transparent = false, scale = 3) => {
             if (!svgRef.current || !layout) return;
 
             const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;
@@ -934,11 +934,11 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             img.onload = () => {
                 const canvas = document.createElement("canvas");
                 // 2x scale for high resolution
-                canvas.width = width * 2;
-                canvas.height = height * 2;
+                canvas.width = width * scale;
+                canvas.height = height * scale;
                 const ctx = canvas.getContext("2d");
                 if (ctx) {
-                    ctx.scale(2, 2);
+                    ctx.scale(scale, scale);
                     if (!transparent) {
                         ctx.fillStyle = "#ffffff";
                         ctx.fillRect(0, 0, width, height);
@@ -965,8 +965,8 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             const svgData = new XMLSerializer().serializeToString(svgClone);
             const canvas = document.createElement("canvas");
             // 2x scale for high resolution
-            canvas.width = width * 2;
-            canvas.height = height * 2;
+            canvas.width = width * scale;
+            canvas.height = height * scale;
             const ctx = canvas.getContext("2d");
             const img = new Image();
             const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
@@ -974,7 +974,7 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
 
             img.onload = () => {
                 if (ctx) {
-                    ctx.scale(2, 2);
+                    ctx.scale(scale, scale);
                     ctx.fillStyle = "#ffffff";
                     ctx.fillRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0);

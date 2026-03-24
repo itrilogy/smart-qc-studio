@@ -93,7 +93,7 @@ import RadarEditor, { parseRadarDSL } from './components/RadarEditor';
 import RadarDiagram from './components/RadarDiagram';
 import { MermaidDiagram, MermaidDiagramRef } from './components/MermaidDiagram';
 import MermaidEditor from './components/MermaidEditor';
-import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loader2, LineChart, BarChart3 } from 'lucide-react';
+import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loader2, LineChart, BarChart3, X, Sliders } from 'lucide-react';
 
 // --- DSL Parsing Functions (Move outside to support Lazy Initialization) ---
 
@@ -399,6 +399,10 @@ const App: React.FC = () => {
     if (isHeadless && headlessType) return headlessType;
     return QCToolType.DASHBOARD;
   });
+
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportTransparent, setExportTransparent] = useState(false);
+  const [exportScale, setExportScale] = useState(3);
 
   const [fishboneData, setFishboneData] = useState<FishboneNode>(() => {
     const dsl = (isHeadless && headlessType === QCToolType.FISHBONE && headlessDsl) ? headlessDsl : undefined;
@@ -754,18 +758,11 @@ const App: React.FC = () => {
                   <div className="w-px h-6 bg-[var(--border-light)] mx-1" />
                   <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-1 mr-1">导出</span>
                   <button
-                    onClick={() => diagramRef.current?.exportPNG?.(false)}
+                    onClick={() => setShowExportModal(true)}
                     className="p-3 bg-[var(--card-bg)] shadow-sm rounded-xl text-[var(--text-main)] hover:text-blue-600 hover:shadow-md transition-all flex items-center gap-2 group border border-[var(--border-light)]"
                   >
                     <Image size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">有底 PNG</span>
-                  </button>
-                  <button
-                    onClick={() => diagramRef.current?.exportPNG?.(true)}
-                    className="p-3 bg-[var(--card-bg)] shadow-sm rounded-xl text-[var(--text-main)] hover:text-emerald-600 hover:shadow-md transition-all flex items-center gap-2 group border border-[var(--border-light)]"
-                  >
-                    <Download size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">透明 PNG</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">导出 PNG</span>
                   </button>
                   <button
                     onClick={() => diagramRef.current?.exportPDF?.(false)}
@@ -858,7 +855,7 @@ const App: React.FC = () => {
               <div className="flex gap-6">
                 <button className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest hover:text-[var(--text-main)] transition-all">导出原始数据 (CSV)</button>
                 <button
-                  onClick={() => diagramRef.current?.exportPNG?.()}
+                  onClick={() => setShowExportModal(true)}
                   className="text-[12px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest hover:text-blue-700 transition-all"
                 >
                   导出分析报告
@@ -868,6 +865,75 @@ const App: React.FC = () => {
           </div>
         }
       />
+
+      {/* Export Settings Modal */}
+      {showExportModal && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-300">
+          <div className="bg-[var(--card-bg)] border border-[var(--border-light)] rounded-2xl shadow-2xl w-[400px] overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-5 border-b border-[var(--border-light)] bg-[var(--bg-main)]">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-500/10 rounded-lg">
+                  <Sliders size={18} className="text-blue-600" />
+                </div>
+                <h3 className="text-sm font-black text-[var(--text-main)] tracking-widest uppercase">配置导出参数</h3>
+              </div>
+              <button onClick={() => setShowExportModal(false)} className="p-2 hover:bg-[var(--border-light)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-[var(--text-main)]">渲染倍率 (Resolution Scale)</label>
+                  <span className="text-xs font-black text-blue-600">{exportScale} 倍画幅</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="10" 
+                  step="1"
+                  value={exportScale} 
+                  onChange={(e) => setExportScale(parseInt(e.target.value))}
+                  className="w-full h-2 bg-[var(--border-light)] rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <p className="text-[10px] text-[var(--text-muted)] font-medium">较高的倍率可以生成更清晰的图片用于印刷或大屏展示，但文件体积也会相应增加。建议日常使用维持在默认 3 倍。</p>
+              </div>
+
+              <div className="p-4 bg-[var(--bg-main)] rounded-xl border border-[var(--border-light)]">
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-xs font-bold text-[var(--text-main)] group-hover:text-blue-600 transition-colors">透明背景 (Transparent Background)</span>
+                  <input 
+                    type="checkbox" 
+                    checked={exportTransparent}
+                    onChange={(e) => setExportTransparent(e.target.checked)}
+                    className="w-4 h-4 rounded border-[var(--border-light)] text-blue-600 focus:ring-blue-500 bg-[var(--card-bg)] cursor-pointer"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="p-5 border-t border-[var(--border-light)] bg-[var(--bg-main)] flex justify-end gap-3">
+              <button 
+                onClick={() => setShowExportModal(false)}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-[var(--text-muted)] hover:bg-[var(--border-light)] transition-all"
+              >
+                取消
+              </button>
+              <button 
+                onClick={() => {
+                  diagramRef.current?.exportPNG?.(exportTransparent, exportScale);
+                  setShowExportModal(false);
+                }}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black tracking-widest uppercase shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2"
+              >
+                <Download size={14} />
+                确认生成
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

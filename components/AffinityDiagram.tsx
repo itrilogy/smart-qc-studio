@@ -6,7 +6,7 @@ import {
 } from '../types';
 
 export interface AffinityDiagramRef {
-    exportPNG: (transparent?: boolean) => void;
+    exportPNG: (transparent?: boolean, scale?: number) => void;
     exportPDF: () => void;
     resetView: () => void;
 }
@@ -52,7 +52,7 @@ export const AffinityDiagram = forwardRef<AffinityDiagramRef, AffinityDiagramPro
         useImperativeHandle(ref, () => ({
             tidyLayout: handleResetView,
             resetView: handleResetView,
-            exportPNG(transparent = false) {
+            exportPNG(transparent = false, scale = 3) {
                 const canvas = canvasRef.current;
                 if (!canvas) return;
                 const contentSize = calculateContentSize(data, finalStyles);
