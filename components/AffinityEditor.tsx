@@ -138,19 +138,10 @@ const AffinityEditor: React.FC<AffinityEditorProps> = ({
     // AI State
     const [aiPrompt, setAiPrompt] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
-    const [aiConfig, setAiConfig] = useState<any>(null);
     const [engineName, setEngineName] = useState('DeepSeek');
 
     useEffect(() => {
         getAIStatus().then(setEngineName);
-    }, []);
-
-    // AI Config Loader
-    useEffect(() => {
-        fetch('/chart_spec.json')
-            .then(res => res.json())
-            .then(config => setAiConfig(config))
-            .catch(err => console.error('Failed to load AI config:', err));
     }, []);
 
     const handleParseDSL = (content: string) => {

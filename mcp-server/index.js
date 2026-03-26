@@ -54,14 +54,20 @@ const SERVER_IP = getLocalIP();
 let PUBLIC_URL = "";
 
 // --- Path Configuration ---
-const CHART_SPEC_PATH = path.join(__dirname, "../public/chart_spec.json");
+const CHART_SPEC_PATH = path.join(__dirname, "../public/config.json");
 
-function getChartSpec() {
+const tools = JSON.parse(fs.readFileSync(path.join(__dirname, "./mcp_tools.json"), "utf8"));
+
+function checkChartSpec() {
   try {
-    return JSON.parse(fs.readFileSync(CHART_SPEC_PATH, "utf-8"));
+    if (!fs.existsSync(CHART_SPEC_PATH)) {
+      console.warn(`Warning: config.json not found at ${CHART_SPEC_PATH}`);
+      return;
+    }
+    const spec = JSON.parse(fs.readFileSync(CHART_SPEC_PATH, "utf8"));
+    console.log(`[MCP Server] Linked to IQS Project: ${spec.project} v${spec.version}`);
   } catch (e) {
-    console.error(`Error reading chart_spec.json:`, e);
-    return null;
+    console.error(`Error reading config.json:`, e);
   }
 }
 
@@ -190,9 +196,9 @@ function createServer() {
         },
         {
           uri: "protocol://segments",
-          name: "IQS Component Knowledge segments (分布式图表切片库)",
+          name: "IQS Component Knowledge Index (图表切片库索引)",
           mimeType: "text/markdown",
-          description: "包含 14 个核心组件的独立专家逻辑与语法规范。"
+          description: "包含所有核心组件的独立专家逻辑与语法说明。"
         }
       ]
     };
@@ -200,142 +206,144 @@ function createServer() {
 
   newServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     const { uri } = request.params;
+    const governance = getProtocolFile("governance.md");
+
     if (uri === "protocol://governance") {
-      return { contents: [{ uri, text: getProtocolFile("governance.md") }] };
+      return { contents: [{ uri, text: governance }] };
     }
+
     if (uri === "protocol://segments") {
       const files = fs.readdirSync(SEGMENTS_DIR);
-      let allContent = "# IQS Protocol Segments Knowledge Base\n\n";
+      let allContent = "# IQS Protocol Segments Index\n\n";
       files.forEach(file => {
         if (file.endsWith(".md")) {
-          allContent += `\n---\n\n${fs.readFileSync(path.join(SEGMENTS_DIR, file), "utf-8")}\n`;
+          allContent += `- [${file.replace('.md', '')}](protocol://segments/${file.replace('.md', '')})\n`;
         }
       });
       return { contents: [{ uri, text: allContent }] };
     }
+
+    if (uri.startsWith("protocol://segments/")) {
+      const key = uri.replace("protocol://segments/", "");
+      const segment = getProtocolFile(`segments/${key}.md`);
+      if (!segment) throw new Error(`Segment [${key}] not found`);
+      
+      const combined = [
+        `# IQS Segment Knowledge: ${key}`,
+        `\n> [!IMPORTANT]\n> 此文档由全局治理协议与专项切片逻辑动态组装而成。`,
+        `\n## 1. 全局治理规则 (Governance)\n${governance}`,
+        `\n## 2. 专项说明与语法 (Segment Logic)\n${segment}`
+      ].join('\n\n');
+      
+      return { contents: [{ uri, text: combined }] };
+    }
+
     throw new Error(`Resource not found: ${uri}`);
   });
 
+const MCP_TOOLS_PATH = path.join(__dirname, "mcp_tools.json");
+
+function getMCPTools() {
+  try {
+    return JSON.parse(fs.readFileSync(MCP_TOOLS_PATH, "utf-8"));
+  } catch (e) {
+    console.error(`Error reading mcp_tools.json:`, e);
+    return [];
+  }
+}
+
+// Helper: 构建瘦身版工具描述 (ILDR 2.0: 资源引导型描述)
+function buildThinDescription(tool) {
+  const parts = [
+    `### ${tool.display_name}`,
+    `【适用领域】：${tool.expertise || '通用图表'}`,
+    `【捕获意图】：${(tool.intent_trigger || []).join(', ')}`,
+    `【功能描述】：${tool.description}`,
+    `\n🔴 物理约束：生成前【必须】阅读资源 [protocol://segments/${tool.parent_type}/${tool.sub_type}]。`,
+    `🔴 核心禁令：该工具【不接受】JSON 对象作为输入。必须传导纯文本 DSL。`
+  ];
+  return parts.join('\n');
+}
+
+  newServer.setRequestHandler(ListResourcesRequestSchema, async () => {
+    const allTools = getMCPTools();
+    const resources = [];
+
+    // 为每个非 master 的工具发布一个对应的聚合资源 URL
+    allTools.filter(t => t.sub_type !== 'master').forEach(tool => {
+      resources.push({
+        uri: `protocol://segments/${tool.parent_type}/${tool.sub_type}`,
+        name: `${tool.display_name} 完整规范 (Master + Subtype)`,
+        mimeType: "text/markdown",
+        description: `包含 ${tool.display_name} 的专家逻辑、语法规则及标准 DSL 范式示例。`
+      });
+    });
+
+    return { resources };
+  });
+
+  newServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    const uri = request.params.uri;
+    const match = uri.match(/^protocol:\/\/segments\/([^/]+)\/([^/]+)$/);
+    
+    if (match) {
+      const [, parent, sub] = match;
+      const allTools = getMCPTools();
+      const master = allTools.find(t => t.parent_type === parent && t.sub_type === 'master');
+      const tool = allTools.find(t => t.parent_type === parent && t.sub_type === sub);
+
+      if (!tool) {
+        throw new Error(`Resource not found: ${uri}`);
+      }
+
+      // 动态拼接：Master 总告 + 子类专家逻辑 + 子类语法规则 + 范式示例
+      const content = [
+        `# ${tool.display_name} 权威协议规范 (Spliced Protocol)`,
+        master ? `\n## 1. 全局治理准则 (Master Protocol)\n${master.expert_logic}\n${master.syntax_rules}` : '',
+        `\n## 2. 专项专家逻辑 (Expert Logic)\n${tool.expert_logic}`,
+        `\n## 3. 语法约束 (Syntax Rules)\n${tool.syntax_rules}`,
+        `\n## 4. 标准 DSL 范式示例 (Official Example)\n\`\`\`dsl\n${tool.official_example}\n\`\`\``,
+        `\n## 5. 输出控制与自检 (Output Controls & Check)\n1. **自问自答 (CoT)**: 在生成最终输出前，请先核对上述红线约束，确保 nodeKey 与层级结构完全符合示例。\n2. **格式红线**: 仅返回纯文本内容，严禁包裹 Markdown 代码块 (\`\`\`) 或输出任何解释性描述。`
+      ].join('\n');
+
+      return {
+        contents: [{
+          uri,
+          mimeType: "text/markdown",
+          text: content
+        }]
+      };
+    }
+    throw new Error(`Unknown resource: ${uri}`);
+  });
+
   newServer.setRequestHandler(ListToolsRequestSchema, async () => {
-    const spec = getChartSpec();
-    const governance = getProtocolFile("governance.md");
-    const tools = [];
-    if (!spec) return { tools };
+    const allTools = getMCPTools();
+    const publishedTools = [];
 
-    Object.entries(spec.chart_grammars).forEach(([key, config]) => {
-      const segment = getProtocolFile(`segments/${key}.md`);
-      const rules = config.dsl_specification?.rules?.join('\n') || '';
-      const examples = config.dsl_specification?.few_shot_examples?.map(ex =>
-        `### 场景: ${ex.scenario}\n输入意图: ${ex.input}\n标准输出:\n${ex.output}`
-      ).join('\n\n') || '';
-      const triggers = config.intent_trigger?.join(', ') || '';
+    allTools.forEach(tool => {
+      // 瘦身方案：不发布 master 工具作为功能项
+      if (tool.sub_type === 'master') return;
 
-      const fullDescription = [
-        `渲染 ${key}。依据 IQS 分布式协议规范。`,
-        `\n【触发关键词】\n${triggers}`,
-        `\n【治理规则】\n${governance}`,
-        `\n【专家逻辑与说明】\n${segment || '暂无深度说明'}`,
-        `\n【语法规则】\n${rules}`,
-        `\n【实战示例】\n${examples}`,
-        `\n🔴 注意：必须返回纯文本 DSL，严禁在 dsl 字段传 JSON。`
-      ].join('\n\n');
-
-      tools.push({
-        name: `render_${key}`,
-        description: fullDescription,
+      publishedTools.push({
+        name: tool.name,
+        description: buildThinDescription(tool),
         inputSchema: {
           type: "object",
           properties: {
-            dsl: { type: "string", description: "输入标准 IQS DSL 指令文本" },
+            dsl: { 
+              type: "string", 
+              description: `针对 ${tool.display_name} 的标准 DSL 文本。🔴 核心禁令：该字段【非 JSON】。必须是纯文本（如 Title: xxx\\nSpec: { ... }）。严禁传任何 JSON 对象。` 
+            },
             width: { type: "number", default: 1200 },
             height: { type: "number", default: 800 }
           },
           required: ["dsl"]
         }
       });
-
-      if (key === 'mermaid') {
-        const MERMAID_SUBTYPES = {
-          "flowchart": "流程图。专注于制程逻辑、决策分支与循环。使用 A[文字] 表示节点，--> 表示指向。",
-          "sequence": "序列图。专注于对象间的交互时序与消息传递。使用 'participant' 定义角色。",
-          "gantt": "甘特图。项目进度与依赖管理。支持 section 分组、after 依赖与关键日期展示。",
-          "class": "类图。描述系统架构、对象属性与方法。支持访问控制符（+ 为公有，- 为私有）。",
-          "state": "状态图。记录对象状态跃迁。使用 [*] 表示起止，--> 表示跃迁动作。",
-          "er": "关系图 (ERD)。用于数据库建模。描述实体间映射关系，支持 { } 包裹列名。",
-          "pie": "饼图。表现定性数据占比。语法简单，直接声明名称与数值。",
-          "journey": "用户旅程图。描述用户完成任务的环节。支持评分 (Score) 与角色 (Actors) 标注。",
-          "mindmap": "思维导图。用于知识发散。采用缩进语法自动生成放射状层级布局。",
-          "timeline": "时间轴。顺序记录里程碑。支持分段（section）展示年度或阶段事件。",
-          "git": "Git 演进图。可视化分支合并。支持 commit, branch, checkout, merge 指令。",
-          "quadrant": "四象限图。用于分析评估。支持配置 axes, x-axis, y-axis 标签及象限描述。",
-          "xychart": "通用 XY 图。支持在同一坐标系混排柱状图、折线图等连续数据。",
-          "sankey": "桑基图。表现能量/价值流动。使用 'source, target, value' 模式录入流动数据。",
-          "block": "块图（Block）。描述组件堆叠与层次结构。适用于硬件或系统模块定义。",
-          "architecture": "架构图。展示云服务资源与网络拓扑。支持内建组件图标映射。",
-          "kanban": "看板图。表现任务流转状态。支持多列（Columns）定义任务项。",
-          "packet": "报文图（Packet）。展示网络协议报文结构。支持 Bit 段定义与位移标记。",
-          "requirement": "需求图。描述系统需求及其派生关系。支持 requirement, element 等类定义。"
-        };
-
-        Object.entries(MERMAID_SUBTYPES).forEach(([subType, descriptor]) => {
-          tools.push({
-            name: `render_mermaid_${subType}`,
-            description: `【子类型专属指令】\n${descriptor}\n\n【全局协议继承】\n${fullDescription}`,
-            inputSchema: {
-              type: "object",
-              properties: {
-                dsl: { type: "string", description: `输入标准 Mermaid ${subType} 语法文本` },
-                width: { type: "number", default: 1200 },
-                height: { type: "number", default: 800 }
-              },
-              required: ["dsl"]
-            }
-          });
-        });
-      }
-
-      if (key === 'vchart') {
-        const VCHART_SUBTYPES = {
-          "bar": "柱状图。分类数据对比。支持 stack (堆叠)、group (分组) 及方向切换。",
-          "line": "折线图。趋势分析。支持 smooth (平滑)、step (阶梯) 及多指标混排。",
-          "area": "面积图。累计趋势分析。强调数值随时间的填充空间感。",
-          "pie": "饼图/玫瑰图。占比分析。支持 innerRadius (空心环形) 模式。",
-          "scatter": "散点/气泡图。多维关联。支持 sizeField 映射气泡大小，支持趋势线。",
-          "radar": "雷达图。多维性能评估。适用于供应商打分、设备综合效率分析。",
-          "sankey": "桑基图。流动可视化。强调用 'source', 'target', 'value' 描述资源去向。",
-          "funnel": "漏斗图。转化/留存分析。常用于制程直通率 (FPY) 梯级盘点。",
-          "treemap": "矩形树图。层级占比。通过面积展示权重，适用于 BOM 成本分解。",
-          "waterfall": "瀑布图。展示财务或损耗增减项。支持 auto 汇总计算。",
-          "heatmap": "热力图。数值强度分布。常用于模芯温度、故障点击频次热区分析。",
-          "boxplot": "箱线图。统计分布。清晰展示最大/最小、中位数及四分位异常点。",
-          "wordcloud": "词云图。关键词聚合特性。词语大小代表重要度或频次。",
-          "gauge": "仪表盘。关键指标 (KPI) 完成进度实时监控展示。",
-          "liquid": "水波图。表现百分比水位或容积充满量，具动态视觉效果。",
-          "sunburst": "旭日图。多层级比例分析。比树图更利于展示层级间的穿透关系。",
-          "common": "多维组合图。高度灵活。支持在同一 spec 内混合定义多类 series 项。",
-          "map": "地图分析。区域数据分布展示。支持地理信息与数值关联。",
-          "venn": "韦恩图。表现集合间的交集、并集与逻辑重合关系。"
-        };
-
-        Object.entries(VCHART_SUBTYPES).forEach(([subType, descriptor]) => {
-          tools.push({
-            name: `render_vchart_${subType}`,
-            description: `【子类型专属指令】\n${descriptor}\n\n【全局协议继承】\n${fullDescription}`,
-            inputSchema: {
-              type: "object",
-              properties: {
-                dsl: { type: "string", description: `基于 VChart JSON Spec 的 ${subType} 定义文本` },
-                width: { type: "number", default: 1200 },
-                height: { type: "number", default: 800 }
-              },
-              required: ["dsl"]
-            }
-          });
-        });
-      }
     });
 
-    return { tools };
+    return { tools: publishedTools };
   });
 
   newServer.setRequestHandler(CallToolRequestSchema, async (request) => {
@@ -353,18 +361,29 @@ function createServer() {
       type = name.replace("render_", "");
     }
 
-    if (typeof dsl === 'string' && dsl.trim().startsWith('{') && type !== 'vchart') {
-      const spec = getChartSpec();
-      const example = spec?.chart_grammars?.[type]?.dsl_specification?.few_shot_examples?.[0]?.output || "Title: 标题\n- 项目: 数值";
+    // ILDR 2.0: 增强型 JSON 检测。
+    const isJsonLike = (typeof dsl === 'object' && dsl !== null) || 
+                       (typeof dsl === 'string' && dsl.trim().startsWith('{'));
+
+    if (isJsonLike) {
+      const allTools = getMCPTools();
+      const tool = allTools.find(t => t.parent_type === type && (t.sub_type === args.sub_type || name.includes(t.sub_type)));
+      const example = tool?.official_example || "Title: 标题\nSpec: { ... }";
+      
       return {
         content: [{
           type: "text",
-          text: `【范式错误】检测到您传导了 JSON。IQS 核心组件要求纯文本 DSL。请遵循以下范式重试：\n\n${example}`
+          text: [
+            `🔴【格式错误】严禁在 dsl 字段传导 JSON！该字段必须为【纯文本字符串】。`,
+            `请立即按照以下范式重写（注意没有外层括号）：`,
+            `\n${example}\n`,
+            `🔴 严禁输出任何 Markdown 代码块，严禁输出任何解释性描述。`
+          ].join('\n')
         }],
         isError: true
       };
     }
-
+    
     try {
       const result = await renderChart(type, dsl, args.width, args.height, isSse);
       if (isSse && result.url) {
@@ -372,7 +391,7 @@ function createServer() {
           content: [
             {
               type: "text",
-              text: `渲染成功 (3X 高清采样)！\n\n![Render Result](${result.url})\n\n(提示：如果预览未直接显示，请点击链接访问: [查看图表](${result.url}))`
+              text: `【系统强制指令：必须显示图片】图表已生成。请务必在最终回复中包含以下内容：\n\n![IQS Chart](${result.url})\n\n(查看链接: ${result.url})`
             }
           ]
         };

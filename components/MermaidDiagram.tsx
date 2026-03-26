@@ -59,16 +59,26 @@ export const MermaidDiagram = forwardRef<MermaidDiagramRef, Props>(({ data, styl
 
                 // Calculate scale with a forced 5% safety margin for arrowheads/shadows
                 // Reducing marginFactor slightly to 0.92 for more comfortable padding
+                // Calculate scale with a forced 5% safety margin
                 const marginFactor = 0.92;
                 const scaleW = (containerWidth * marginFactor) / bBox.width;
                 const scaleH = (containerHeight * marginFactor) / bBox.height;
-                const newScale = Math.min(scaleW, scaleH, 10);
+                
+                // ASPECT RATIO OPTIMIZATION:
+                // For extremely wide diagrams (like Gantt), prioritize height but allow some horizontal clipping 
+                // or use a more generous scale if it's too tiny.
+                let newScale = Math.min(scaleW, scaleH, 10);
+                
+                const isVeryWide = bBox.width / bBox.height > 4;
+                if (isVeryWide && newScale < 0.2) {
+                    // Boost the scale for tiny wide charts to ensure they are at least somewhat readable,
+                    // even if it means some horizontal overflow (user can pan).
+                    newScale = Math.max(newScale, Math.min(scaleH, 0.4));
+                }
 
                 setScale(newScale);
 
-                // Absolute Precision Centering:
-                // Since we normalized the viewBox, the content is effectively at 0,0 relative to its own scale.
-                // Translation is simply the gap divided by 2.
+                // Absolute Precision Centering
                 const targetX = (containerWidth - bBox.width * newScale) / 2;
                 const targetY = (containerHeight - bBox.height * newScale) / 2;
 
@@ -103,19 +113,27 @@ export const MermaidDiagram = forwardRef<MermaidDiagramRef, Props>(({ data, styl
             if (containerRef.current && data) {
                 try {
                     // Initialize mermaid with current styles
-                    mermaid.initialize({
+                    const config: any = {
                         startOnLoad: false,
                         theme: finalStyles.theme,
                         securityLevel: 'loose',
                         fontFamily: 'Inter, system-ui, sans-serif',
                         fontSize: finalStyles.fontSize,
-                        look: finalStyles.look === 'handDrawn' ? 'handDrawn' : undefined,
-                        layout: finalStyles.useElk ? 'elk' : undefined,
-                        elk: finalStyles.useElk ? {
+                    };
+
+                    if (finalStyles.look === 'handDrawn') {
+                        config.look = 'handDrawn';
+                    }
+
+                    if (finalStyles.useElk) {
+                        config.layout = 'elk';
+                        config.elk = {
                             mergeEdges: finalStyles.elkMergeEdges,
                             nodePlacementStrategy: finalStyles.elkNodePlacementStrategy,
-                        } : undefined,
-                    });
+                        };
+                    }
+
+                    mermaid.initialize(config);
 
                     containerRef.current.innerHTML = '';
                     const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;

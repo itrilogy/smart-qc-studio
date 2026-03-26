@@ -823,9 +823,9 @@ export const INITIAL_RADAR_DATA: RadarData = {
 export const INITIAL_VCHART_DSL = `Title: VChart 示例多维组合图
 ColorPalette: tech
 Font[Title]: 24
-Font[Base]: 14
-Font[Legend]: 12
-Font[Axis]: 12
+ShowTitle: true
+ShowLabel: true
+Animation: false
 
 Spec: {
   "type": "common",
@@ -861,23 +861,30 @@ Spec: {
       },
       "xField": "year",
       "yField": "value",
-      "line": { "style": { "lineWidth": 3, "stroke": "#f97316" } },
+      "label": { "visible": true },
       "point": { "visible": true }
     }
   ],
   "axes": [
-    { "orient": "left", "title": { "visible": true, "text": "销量 (M units)" } },
+    { "orient": "left", "seriesIndex": [0], "title": { "visible": true, "text": "销量 (M units)" } },
+    { "orient": "right", "seriesIndex": [1], "title": { "visible": true, "text": "总量趋势" } },
     { "orient": "bottom", "label": { "visible": true } }
   ],
   "legends": [{ "visible": true, "orient": "bottom" }]
 }`;
 
 export const VCHART_COLOR_PALETTES = [
-    { id: 'default', name: '默认配色 (Default)', colors: [] },
-    { id: 'tech', name: '科技蓝 (Tech Blue)', colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de'] },
-    { id: 'industrial', name: '工业灰 (Industrial)', colors: ['#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#f3f4f6'] },
-    { id: 'vibrant', name: '活力橙 (Vibrant)', colors: ['#f97316', '#fbbf24', '#10b981', '#3b82f6', '#8b5cf6'] },
-    { id: 'deep', name: '深邃黑 (Deep Dark)', colors: ['#1e293b', '#334155', '#475569', '#64748b', '#94a3b8'] }
+    // VChart 2.x 原生内置主题 (无需注册，直接使用 id 传入 spec.theme)
+    { id: 'light',      name: '系统亮色 (Light)',        colors: [] },
+    { id: 'dark',       name: '系统暗色 (Dark)',          colors: [] },
+    // 自定义注册主题 (通过 VChart.registerTheme 注入)
+    { id: 'tech',       name: '科技蓝 (Tech Blue)',       colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de'] },
+    { id: 'vibrant',    name: '活力橙 (Vibrant)',         colors: ['#f97316', '#fbbf24', '#10b981', '#3b82f6', '#8b5cf6'] },
+    { id: 'industrial', name: '工业灰 (Industrial)',      colors: ['#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#f3f4f6'] },
+    { id: 'deep',       name: '深邃暗 (Deep Dark)',       colors: ['#1e293b', '#334155', '#475569', '#64748b', '#94a3b8'] },
+    { id: 'ocean',      name: '海洋蓝 (Ocean)',           colors: ['#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd', '#0369a1'] },
+    { id: 'forest',     name: '森林绿 (Forest)',          colors: ['#16a34a', '#22c55e', '#4ade80', '#86efac', '#052e16'] },
+    { id: 'sunset',     name: '夕阳橙 (Sunset)',          colors: ['#ea580c', '#fb923c', '#fed7aa', '#fca5a5', '#7f1d1d'] },
 ];
 
 export const INITIAL_MERMAID_DSL = `graph TD

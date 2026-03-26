@@ -1,0 +1,20 @@
+{
+  "project": "IQS (Intelligent QC Studio)",
+  "version": "3.2.0",
+  "description": "IQS Config for AI services.",
+  "ai_config": {
+    "active_profile": "deepseek_public",
+    "profiles": {
+      "deepseek_public": {
+        "name": "DeepSeek",
+        "endpoint": "https://api.deepseek.com/v1/chat/completions",
+        "model": "deepseek-chat"
+      },
+      "local_qwen": {
+        "name": "内网 Qwen3-VL-8B 服务",
+        "endpoint": "http://10.37.87.15:4000/v1/chat/completions",
+        "model": "qwen3-vl-8b"
+      }
+    }
+  }
+}

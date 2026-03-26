@@ -44,23 +44,30 @@
 
 ### 场景：某两款智能手机硬件参数对比
 ```dsl
-Title: 某旗舰手机竞品多维评价
+Title: 投资组合多维风险分析
+
+// 统计分析控制
 Standardize: true
 ShowAreaScore: true
 ShowSimilarity: true
-Closed: true
+ShowValues: true
+
+// 极坐标控制
 StartAngle: -90
+Clockwise: true
+Closed: true
 
-# 维度指标 (最大值定义)
-Axis: 续航能力, 100
-Axis: 拍照画质, 100
-Axis: 游戏性能, 100
-Axis: 屏幕显示, 100
-Axis: 性价比, 100
+// 轴定义
+Axis: 年化回报(%), 25, 0
+Axis: 波动率(%), 30, 0
+Axis: 流动性评分, 100, 0
+Axis: 夏普比率, 3, 0
+Axis: 最大回撤(%), 40, 0
 
-# 数据系列 [值列表], [颜色], [透明度]
-Series: 本机, [85, 92, 95, 88, 70], #3b82f6, 0.4
-Series: 竞品 X, [90, 80, 85, 92, 85], #10b981, 0.3
+// 数据系列
+Series: 平衡型组合, [12, 15, 80, 1.8, 12], #3b82f6, 0.4
+Series: 激进型组合, [20, 25, 60, 2.2, 28], #ef4444, 0.3
+Series: 保守型组合, [6, 8, 95, 1.2, 5], #10b981, 0.2
 ```
 
 ---

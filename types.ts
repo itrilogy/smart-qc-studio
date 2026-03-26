@@ -800,24 +800,31 @@ export const DEFAULT_MERMAID_STYLES: Required<MermaidChartStyles> = {
 export interface VChartData {
   title: string;
   spec: any;
+  error?: string;
 }
+
+export type VChartAnimationMode = 'scale' | 'fadeIn' | 'appear' | 'move';
 
 export interface VChartChartStyles {
   title: string;
   theme: 'light' | 'dark';
   colorPalette: string;
   titleFontSize: number;
-  baseFontSize: number;
-  legendFontSize: number;
-  axisFontSize: number;
+  // 全局显示控制
+  showTitle: boolean;
+  showLabel: boolean;
+  // 动画控制
+  animation: boolean;
+  animationMode: VChartAnimationMode;
 }
 
 export const DEFAULT_VCHART_STYLES: Required<VChartChartStyles> = {
   title: 'VChart 全能图表',
   theme: 'light',
-  colorPalette: 'default',
+  colorPalette: 'light',
   titleFontSize: 20,
-  baseFontSize: 12,
-  legendFontSize: 10,
-  axisFontSize: 10
+  showTitle: true,
+  showLabel: true,
+  animation: false,
+  animationMode: 'scale',
 };

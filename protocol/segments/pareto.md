@@ -57,8 +57,12 @@ Color[Title]: #1e293b
 Color[Bar]: #3b82f6
 Color[Line]: #f59e0b
 Color[MarkLine]: #ef4444
-Font[Title]: 20
 Decimals: 1
+ShowValues: true
+Font[Title]: 20
+Font[Base]: 12
+Font[Bar]: 12
+Font[Line]: 12
 
 - 物流破损: 420
 - 零件缺失: 215

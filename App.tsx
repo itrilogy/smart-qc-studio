@@ -99,6 +99,7 @@ import { MermaidDiagram, MermaidDiagramRef } from './components/MermaidDiagram';
 import MermaidEditor from './components/MermaidEditor';
 import VChartEditor, { parseVChartDSL } from './components/VChartEditor';
 import VChartDiagram from './components/VChartDiagram';
+
 import { Zap, Settings, Globe, LayoutGrid, Download, FileText, Image, Cpu, Loader2, LineChart, BarChart3, X, Sliders } from 'lucide-react';
 
 // --- DSL Parsing Functions (Move outside to support Lazy Initialization) ---
@@ -906,7 +907,8 @@ const App: React.FC = () => {
                   case QCToolType.MERMAID:
                     return <MermaidDiagram ref={diagramRef} data={mermaidData} styles={mermaidStyles} />;
                   case QCToolType.VCHART:
-                    return <VChartDiagram ref={diagramRef} data={vchartData} styles={vchartStyles} />;
+                    return <VChartDiagram ref={diagramRef} data={vchartData} styles={vchartStyles} theme={theme} />;
+
                   default: return (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-[var(--bg-page)]">
                       <Cpu className="w-32 h-32 text-[var(--border-light)] mb-8" />

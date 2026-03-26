@@ -41,30 +41,36 @@
 
 ### 场景：项目进度延期根因关联分析
 ```dsl
-Title: 项目开发进度延期分析
+Title: 注塑件尺寸不稳定
+
 Layout: Directional
+Color[Root]: #2563eb
+Color[RootText]: #ffffff
+Color[Middle]: #8b5cf6
+Color[MiddleText]: #ffffff
+Color[End]: #ddd6fe
+Color[EndText]: #4c1d95
+Color[Line]: #a78bfa
 
-Color[Root]: #fef2f2
-Color[RootText]: #991b1b
-Color[Middle]: #f0f9ff
-Color[End]: #ecfdf5
+Node: m1, 模温异常
+Node: m2, 压力波动
+Node: m3, 阀芯卡滞
+Node: m4, 油质污染
+Node: e1, 水路堵塞
+Node: e2, 油温过高
+Node: e3, 泵体磨损
+Node: e4, 滤芯破损
 
-# 因素定义
-Node: n1, 人员流动率高
-Node: n2, 关键技术储备不足
-Node: n3, 需求文档不清晰
-Node: n4, 开发环境配置缓慢
-Node: n5, 技术债务堆积
-Node: n6, 沟通响应超时
-
-# 关系链条
-Rel: n1 -> n2
-Rel: n2 -> n5
-Rel: n3 -> n5
-Rel: n3 -> n6
-Rel: n5 -> root
-Rel: n6 -> root
-Rel: n4 -> root
+Rel: m1 -> root
+Rel: m2 -> root
+Rel: e1 -> m1
+Rel: e2 -> m1
+Rel: e2 -> m2
+Rel: m3 -> m2
+Rel: e3 -> m2
+Rel: m4 -> m3
+Rel: m4 -> e3
+Rel: e4 -> m4
 ```
 
 ---

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { VChartData, VChartChartStyles, DEFAULT_VCHART_STYLES, QCToolType } from '../types';
+import { VChartData, VChartChartStyles, DEFAULT_VCHART_STYLES, VChartAnimationMode, QCToolType } from '../types';
 import { INITIAL_VCHART_DSL, VCHART_COLOR_PALETTES } from '../constants';
 import { 
     Cpu, Sparkles, RotateCcw, Database, Code, 
-    ChevronRight, Trash2, Loader2, HelpCircle, X, BarChart3, Zap
+    ChevronRight, Loader2, HelpCircle, X, BarChart3, Zap
 } from 'lucide-react';
 import { generateLogicDSL, getAIStatus } from '../services/aiService';
 
@@ -21,58 +21,91 @@ export const parseVChartDSL = (content: string, baseStyles: VChartChartStyles = 
     let title = baseStyles.title;
     let colorPalette = baseStyles.colorPalette;
     let titleFontSize = baseStyles.titleFontSize;
-    let baseFontSize = baseStyles.baseFontSize;
-    let legendFontSize = baseStyles.legendFontSize;
-    let axisFontSize = baseStyles.axisFontSize;
+    let showTitle = baseStyles.showTitle;
+    let showLabel = baseStyles.showLabel;
+    let animation = baseStyles.animation;
+    let animationMode = baseStyles.animationMode;
     let specStr = '';
     let inSpec = false;
 
     lines.forEach(line => {
-        const trimmed = line.trim();
+        let trimmed = line.trim();
         if (!trimmed || trimmed.startsWith('//')) return;
 
-        if (trimmed.startsWith('Title:')) {
-            title = trimmed.split(':')[1].trim();
-        } else if (trimmed.startsWith('ColorPalette:')) {
-            colorPalette = trimmed.split(':')[1].trim();
-        } else if (trimmed.startsWith('Font[Title]:')) {
+        // 自动剔除 Markdown 代码块标记，防止解析崩溃
+        if (trimmed.startsWith('```')) {
+            trimmed = trimmed.replace(/`{3,}(dsl|json|vchart)?/i, '').trim();
+            if (!trimmed) return;
+        }
+
+        const upperTrimmed = trimmed.toUpperCase();
+        
+        // 检查是否遇到新标签，如果是，则结束当前 Spec 解析状态
+        const isNewTag = ['TITLE:', 'COLORPALETTE:', 'FONT[TITLE]:', 'SHOWTITLE:', 'SHOWLABEL:', 'ANIMATION:', 'ANIMATIONMODE:', 'SPEC:'].some(tag => upperTrimmed.startsWith(tag));
+        if (isNewTag && upperTrimmed.indexOf('SPEC:') === -1) {
+            inSpec = false;
+        }
+
+        if (upperTrimmed.startsWith('TITLE:')) {
+            title = trimmed.substring(6).trim();
+        } else if (upperTrimmed.startsWith('COLORPALETTE:')) {
+            colorPalette = trimmed.substring(13).trim();
+        } else if (upperTrimmed.startsWith('FONT[TITLE]:')) {
             titleFontSize = parseInt(trimmed.split(':')[1]) || titleFontSize;
-        } else if (trimmed.startsWith('Font[Base]:')) {
-            baseFontSize = parseInt(trimmed.split(':')[1]) || baseFontSize;
-        } else if (trimmed.startsWith('Font[Legend]:')) {
-            legendFontSize = parseInt(trimmed.split(':')[1]) || legendFontSize;
-        } else if (trimmed.startsWith('Font[Axis]:')) {
-            axisFontSize = parseInt(trimmed.split(':')[1]) || axisFontSize;
-        } else if (trimmed.startsWith('Spec:')) {
+        } else if (upperTrimmed.startsWith('SHOWTITLE:')) {
+            showTitle = trimmed.substring(10).trim().toLowerCase() !== 'false';
+        } else if (upperTrimmed.startsWith('SHOWLABEL:')) {
+            showLabel = trimmed.substring(10).trim().toLowerCase() !== 'false';
+        } else if (upperTrimmed.startsWith('ANIMATION:')) {
+            animation = trimmed.substring(10).trim().toLowerCase() === 'true';
+        } else if (upperTrimmed.startsWith('ANIMATIONMODE:')) {
+            animationMode = trimmed.substring(14).trim() as VChartAnimationMode;
+        } else if (upperTrimmed.startsWith('SPEC:')) {
             inSpec = true;
-            specStr = trimmed.substring(5).trim();
+            const colonIndex = trimmed.indexOf(':');
+            specStr = trimmed.substring(colonIndex + 1).trim();
         } else if (inSpec) {
             specStr += ' ' + trimmed;
         }
     });
 
+    // 清理 specStr 尾部的 Markdown 结束符
+    specStr = specStr.replace(/`{3,}.*$/g, '').trim();
+
     let spec = {};
+    let parseError = '';
     try {
         if (specStr) {
-            spec = JSON.parse(specStr);
+            spec = JSON.parse(specStr.trim());
         }
-    } catch (e) {
-        console.warn('Failed to parse VChart Spec JSON', e);
+    } catch (e: any) {
+        console.warn('VChart Spec JSON Parse Error:', e);
+        parseError = e.message;
     }
 
     return {
-        data: { title, spec },
+        data: { title, spec, error: parseError },
         styles: { 
             ...baseStyles, 
             title, 
             colorPalette, 
             titleFontSize, 
-            baseFontSize, 
-            legendFontSize, 
-            axisFontSize 
+            showTitle,
+            showLabel,
+            animation,
+            animationMode
         }
     };
 };
+
+
+
+const ANIMATION_MODES: { id: VChartAnimationMode; label: string }[] = [
+    { id: 'scale',   label: '缩放 (Scale)' },
+    { id: 'fadeIn',  label: '淡入 (Fade In)' },
+    { id: 'appear',  label: '出现 (Appear)' },
+    { id: 'move',    label: '移动 (Move)' },
+];
 
 const VChartEditor: React.FC<VChartEditorProps> = ({ data, styles, theme, onDataChange, onStylesChange }) => {
     const [dsl, setDsl] = useState(INITIAL_VCHART_DSL);
@@ -103,9 +136,10 @@ const VChartEditor: React.FC<VChartEditorProps> = ({ data, styles, theme, onData
         let dslLines = [`Title: ${currData.title}`];
         if (currStyles.colorPalette) dslLines.push(`ColorPalette: ${currStyles.colorPalette}`);
         if (currStyles.titleFontSize) dslLines.push(`Font[Title]: ${currStyles.titleFontSize}`);
-        if (currStyles.baseFontSize) dslLines.push(`Font[Base]: ${currStyles.baseFontSize}`);
-        if (currStyles.legendFontSize) dslLines.push(`Font[Legend]: ${currStyles.legendFontSize}`);
-        if (currStyles.axisFontSize) dslLines.push(`Font[Axis]: ${currStyles.axisFontSize}`);
+        dslLines.push(`ShowTitle: ${currStyles.showTitle}`);
+        dslLines.push(`ShowLabel: ${currStyles.showLabel}`);
+        dslLines.push(`Animation: ${currStyles.animation}`);
+        if (currStyles.animation) dslLines.push(`AnimationMode: ${currStyles.animationMode}`);
         
         dslLines.push('');
         dslLines.push(`Spec: ${JSON.stringify(currData.spec, null, 2)}`);
@@ -195,72 +229,107 @@ const VChartEditor: React.FC<VChartEditorProps> = ({ data, styles, theme, onData
                     </div>
                 ) : activeTab === 'manual' ? (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                        {/* === 标题控制 === */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-3 pl-2">
                                 <ChevronRight size={14} className="text-indigo-500" />
-                                <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">基础样式与字号</span>
+                                <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">标题</span>
                             </div>
-                            <div className="space-y-4 bg-[var(--input-bg)] p-4 rounded-lg border border-[var(--input-border)]">
+                            <div className="space-y-3 bg-[var(--input-bg)] p-4 rounded-lg border border-[var(--input-border)]">
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase pl-1">图表标题</label>
+                                    <label className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase pl-1">图表标题文字</label>
                                     <input
                                         value={data.title}
                                         onChange={e => onDataChange({ ...data, title: e.target.value })}
                                         className="w-full h-10 px-4 bg-[var(--card-bg)] border border-[var(--input-border)] rounded-lg text-xs font-bold focus:outline-none focus:border-indigo-500 text-[var(--sidebar-text)]"
                                     />
                                 </div>
-                                
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase pl-1">标题字号: {styles.titleFontSize}px</label>
-                                        <input type="range" min="12" max="48" value={styles.titleFontSize} onChange={e => onStylesChange({ ...styles, titleFontSize: parseInt(e.target.value) })} className="w-full h-1 bg-[var(--input-border)] rounded-lg appearance-none cursor-pointer accent-indigo-500" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase pl-1">正文字号: {styles.baseFontSize}px</label>
-                                        <input type="range" min="8" max="24" value={styles.baseFontSize} onChange={e => onStylesChange({ ...styles, baseFontSize: parseInt(e.target.value) })} className="w-full h-1 bg-[var(--input-border)] rounded-lg appearance-none cursor-pointer accent-indigo-500" />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase pl-1">图例字号: {styles.legendFontSize}px</label>
-                                        <input type="range" min="8" max="20" value={styles.legendFontSize} onChange={e => onStylesChange({ ...styles, legendFontSize: parseInt(e.target.value) })} className="w-full h-1 bg-[var(--input-border)] rounded-lg appearance-none cursor-pointer accent-indigo-500" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase pl-1">坐标轴字号: {styles.axisFontSize}px</label>
-                                        <input type="range" min="8" max="20" value={styles.axisFontSize} onChange={e => onStylesChange({ ...styles, axisFontSize: parseInt(e.target.value) })} className="w-full h-1 bg-[var(--input-border)] rounded-lg appearance-none cursor-pointer accent-indigo-500" />
-                                    </div>
+                            <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase pl-1">标题字号: {styles.titleFontSize}px</label>
+                                    <input type="range" min="12" max="48" value={styles.titleFontSize}
+                                        onChange={e => onStylesChange({ ...styles, titleFontSize: parseInt(e.target.value) })}
+                                        className="w-full h-1 bg-[var(--input-border)] rounded-lg appearance-none cursor-pointer accent-indigo-500" />
                                 </div>
                             </div>
                         </div>
 
+                        {/* === 主题与配色 === */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-3 pl-2">
                                 <ChevronRight size={14} className="text-indigo-500" />
                                 <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">主题与配色</span>
                             </div>
-                            <div className="space-y-4 bg-[var(--input-bg)] p-4 rounded-lg border border-[var(--input-border)]">
-                                <div className="space-y-2">
-                                    <label className="text-[9px] font-black text-[var(--sidebar-muted)] uppercase pl-1">配色方案</label>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {VCHART_COLOR_PALETTES.map(p => (
-                                            <button 
-                                                key={p.id}
-                                                onClick={() => onStylesChange({ ...styles, colorPalette: p.id })}
-                                                className={`flex items-center justify-between p-3 rounded-lg border transition-all ${styles.colorPalette === p.id ? 'bg-indigo-600/10 border-indigo-500/50 text-indigo-400' : 'bg-[var(--card-bg)] border-[var(--input-border)] text-[var(--sidebar-text)] hover:border-indigo-500/30'}`}
-                                            >
-                                                <span className="text-[10px] font-bold">{p.name}</span>
-                                                <div className="flex gap-1">
-                                                    {p.colors.map((c, idx) => (
-                                                        <div key={idx} className="w-3 h-3 rounded-full" style={{ backgroundColor: c }} />
-                                                    ))}
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
+                            <div className="bg-[var(--input-bg)] p-4 rounded-lg border border-[var(--input-border)]">
+                                <div className="grid grid-cols-1 gap-1.5">
+                                    {VCHART_COLOR_PALETTES.map(p => (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => onStylesChange({ ...styles, colorPalette: p.id })}
+                                            className={`flex items-center justify-between p-2.5 rounded-lg border transition-all ${styles.colorPalette === p.id ? 'bg-indigo-600/10 border-indigo-500/50 text-indigo-400' : 'bg-[var(--card-bg)] border-[var(--input-border)] text-[var(--sidebar-text)] hover:border-indigo-500/30'}`}
+                                        >
+                                            <span className="text-[10px] font-bold">{p.name}</span>
+                                            <div className="flex gap-1">
+                                                {p.colors.length > 0
+                                                    ? p.colors.slice(0, 5).map((c, idx) => (
+                                                        <div key={idx} className="w-3 h-3 rounded-full border border-white/10" style={{ backgroundColor: c }} />
+                                                    ))
+                                                    : <span className="text-[8px] text-[var(--sidebar-muted)] italic">VChart 原生</span>
+                                                }
+                                            </div>
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
                         </div>
+
+                        {/* === 显示控制 + 动画控制 (合并到同一块) === */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 pl-2">
+                                <ChevronRight size={14} className="text-indigo-500" />
+                                <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">显示与动画</span>
+                            </div>
+                            <div className="bg-[var(--input-bg)] p-4 rounded-lg border border-[var(--input-border)] grid grid-cols-2 gap-4">
+                                <label className="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" checked={styles.showTitle} onChange={e => onStylesChange({ ...styles, showTitle: e.target.checked })} className="w-4 h-4 rounded border-[var(--input-border)] bg-[var(--sidebar-bg)] text-indigo-600 focus:ring-indigo-500" />
+                                    <span className="text-[10px] font-bold text-[var(--sidebar-text)] group-hover:text-indigo-500 uppercase tracking-wider">显示标题</span>
+                                </label>
+                                <label className="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" checked={styles.showLabel} onChange={e => onStylesChange({ ...styles, showLabel: e.target.checked })} className="w-4 h-4 rounded border-[var(--input-border)] bg-[var(--sidebar-bg)] text-indigo-600 focus:ring-indigo-500" />
+                                    <span className="text-[10px] font-bold text-[var(--sidebar-text)] group-hover:text-indigo-500 uppercase tracking-wider">显示数值</span>
+                                </label>
+                                <label className="flex items-center gap-3 cursor-pointer group col-span-2">
+                                    <input type="checkbox" checked={styles.animation} onChange={e => onStylesChange({ ...styles, animation: e.target.checked })} className="w-4 h-4 rounded border-[var(--input-border)] bg-[var(--sidebar-bg)] text-indigo-600 focus:ring-indigo-500" />
+                                    <span className="text-[10px] font-bold text-[var(--sidebar-text)] group-hover:text-indigo-500 uppercase tracking-wider">开启动画（默认关闭，适合大数据）</span>
+                                </label>
+                            </div>
+                        </div>
+
+
+                        {styles.animation && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="flex items-center gap-3 pl-2">
+                                    <ChevronRight size={14} className="text-indigo-500" />
+                                    <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">动画类型</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-1.5">
+                                    {ANIMATION_MODES.map(m => (
+                                        <button
+                                            key={m.id}
+                                            onClick={() => onStylesChange({ ...styles, animationMode: m.id })}
+                                            className={`py-2 px-3 rounded-lg border text-[9px] font-black uppercase tracking-wide transition-all ${
+                                                styles.animationMode === m.id
+                                                    ? 'bg-indigo-600 border-indigo-500 text-white'
+                                                    : 'bg-[var(--card-bg)] border-[var(--input-border)] text-[var(--sidebar-muted)] hover:border-indigo-500/30'
+                                            }`}
+                                        >
+                                            {m.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                     </div>
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
@@ -340,50 +409,24 @@ const VChartEditor: React.FC<VChartEditorProps> = ({ data, styles, theme, onData
                                 <div className="space-y-12">
                                     <div className="font-mono text-xs space-y-6">
                                         <section>
-                                            <h4 className="text-indigo-500 font-bold uppercase tracking-wider text-[10px] mb-3">关键配置</h4>
-                                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-[11px]">
-                                                <p><span className="text-indigo-400 font-bold">Title:</span> [文字] - 图表标题</p>
-                                                <p><span className="text-indigo-400 font-bold">ColorPalette:</span> tech | industrial | vibrant | deep</p>
-                                                <p><span className="text-indigo-400 font-bold">Font[Title]:</span> [Size] - 标题字号</p>
-                                                <p><span className="text-indigo-400 font-bold">Font[Base]:</span> [Size] - 正文/Tooltip 字号</p>
-                                                <p><span className="text-indigo-400 font-bold">Font[Legend]:</span> [Size] - 图例字号</p>
-                                                <p><span className="text-indigo-400 font-bold">Font[Axis]:</span> [Size] - 坐标轴字号</p>
+                                            <h4 className="text-indigo-500 font-bold uppercase tracking-wider text-[10px] mb-3">DSL 关键配置（全量）</h4>
+                                            <div className="grid grid-cols-1 gap-2 text-[11px]">
+                                                <p><span className="text-indigo-400 font-bold">Title:</span> [文字] — 图表标题</p>
+                                                <p><span className="text-indigo-400 font-bold">ColorPalette:</span> light | dark | tech | vibrant | industrial | deep | ocean | forest | sunset</p>
+                                                <p><span className="text-indigo-400 font-bold">Font[Title]:</span> [Size] — 标题字号 (px)</p>
+                                                <p><span className="text-indigo-400 font-bold">ShowTitle:</span> true | false — 是否显示标题 (默认 true)</p>
+                                                <p><span className="text-indigo-400 font-bold">ShowLabel:</span> true | false — 是否显示数值标签 (默认 true)</p>
+                                                <p><span className="text-indigo-400 font-bold">Animation:</span> true | false — 是否开启渲染动画 (默认 false)</p>
+                                                <p><span className="text-indigo-400 font-bold">AnimationMode:</span> scale | fadeIn | appear | move — 动画类型</p>
+                                                <p><span className="text-indigo-400 font-bold">Spec:</span> {'{ ... }'} — 标准 VisActor JSON 配置</p>
                                             </div>
                                         </section>
                                         <section className="border-t border-slate-800 pt-6">
                                             <h4 className="text-emerald-500 font-bold uppercase tracking-wider text-[10px] mb-3">支持的图表类型 (Full Types)</h4>
                                             <div className="grid grid-cols-3 gap-2 text-[9px] font-mono">
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">bar (柱状图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">line (折线图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">area (面积图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">pie/rose (饼图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">scatter (散点图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">radar (雷达图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">sankey (桑基图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">funnel (漏斗图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">treemap (树图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">waterfall (瀑布)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">heatmap (热力图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">boxplot (箱线图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">gauge (仪表盘)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">liquid (水波图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">sunburst (旭日)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">map (地图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">venn (韦恩图)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">wordcloud (词云)</div>
-                                                <div className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">common (组合图)</div>
-                                            </div>
-                                        </section>
-                                        <section className="border-t border-slate-800 pt-6">
-                                            <h4 className="text-amber-500 font-bold uppercase tracking-wider text-[10px] mb-3">标准 JSON Spec</h4>
-                                            <div className="bg-[var(--card-bg)] p-4 rounded-lg border border-[var(--input-border)] text-[var(--sidebar-text)] text-[11px] font-mono leading-relaxed">
-                                                <p className="text-indigo-400 mb-2">// 语法: Spec: {"{ ... }"}</p>
-                                                <p>{"{"}</p>
-                                                <p>  "type": "common",</p>
-                                                <p>  "series": [ ... ],</p>
-                                                <p>  "axes": [ ... ],</p>
-                                                <p>  "legends": [ ... ]</p>
-                                                <p>{"}"}</p>
+                                                {['bar (柱状图)', 'line (折线图)', 'area (面积图)', 'pie/rose (饼图)', 'scatter (散点图)', 'radar (雷达图)', 'sankey (桑基图)', 'funnel (漏斗图)', 'treemap (树图)', 'waterfall (瀑布)', 'heatmap (热力图)', 'boxPlot (箱线图)', 'gauge (仪表盘)', 'sunburst (旭日)', 'wordCloud (词云)', 'venn (韦恩图)', 'common (组合图)'].map(t => (
+                                                    <div key={t} className="p-2 bg-emerald-500/5 border border-emerald-500/20 rounded">{t}</div>
+                                                ))}
                                             </div>
                                         </section>
                                     </div>
@@ -401,7 +444,6 @@ const VChartEditor: React.FC<VChartEditorProps> = ({ data, styles, theme, onData
                                             </ul>
                                         </div>
                                     </section>
-
                                     <div className="p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Zap size={14} className="text-indigo-500" />

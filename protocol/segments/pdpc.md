@@ -47,45 +47,55 @@ PDPC 法是在制定计划阶段，对预期可能出现的问题，预先设计
 
 ### 场景：实验室火灾应急响应程序
 ```dsl
-Title: 实验室火灾应急 PDPC 演练
+Title: 关键系统迁移 PDPC 风险分析
 Layout: Directional
 
-Color[Start]: #4f46e5
-Color[Step]: #f0f9ff
-Color[Countermeasure]: #fef2f2
-Color[End]: #ecfdf5
+Color[Start]: #2563eb
+Color[StartText]: #ffffff
+Color[Step]: #3b82f6
+Color[StepText]: #ffffff
+Color[Countermeasure]: #10b981
+Color[CountermeasureText]: #ffffff
+Color[End]: #ef4444
+Color[EndText]: #ffffff
 Color[Line]: #64748b
 Line[Width]: 2
 
-# 阶段 1: 发现
-Group: g1, 异常发现
-  Item: n1, 烟雾报警器触发, [start]
-  Item: n2, 确认火情真实性
+Group: p1, 前期准备
+  Item: start, Start, [start]
+  Item: a1, 环境检查
+  Item: a2, 数据备份
 EndGroup
 
-# 阶段 2: 处置
-Group: g2, 应急处置
-  Item: n3, 拨打 119 报警
-  Item: n4, 启动自动灭火系统
-  Item: n5, 灭火系统失效, [countermeasure]
-  Item: n6, 使用手持灭火器补救, [countermeasure]
+Group: p2, 执行迁移
+  Item: b1, 触发脚本
+  Item: b2, 校验完整性
 EndGroup
 
-# 阶段 3: 疏散
-Group: g3, 人员疏散
-  Item: n7, 全员依序撤离
-  Item: n8, 清点人数, [end]
+Group: p3, 异常应对
+  Item: c1, 空间不足?
+  Item: c2, 清理日志, [countermeasure]
+  Item: c3, 扩容磁盘, [countermeasure]
+  Item: c4, 权限拒绝?
+  Item: c5, 提权重试, [countermeasure]
 EndGroup
 
-# 逻辑链条
-n1--n2
-n2--n3 [OK]
-n2--n4 [OK]
-n4--n7 [OK]
-n4--n5 [NG]
-n5--n6
-n6--n7 [OK]
-n7--n8
+Item: end, Migration Success, [end]
+
+start--a1
+a1--a2
+a2--b1
+b1--b2 [OK]
+b2--end [OK]
+b1--c1 [NG]
+c1--c2 [OK]
+c2--b1 [OK]
+c1--c3 [NG]
+c3--b1 [OK]
+b1--c4 [NG]
+c4--c5 [OK]
+c5--b1 [OK]
+
 ```
 
 ---

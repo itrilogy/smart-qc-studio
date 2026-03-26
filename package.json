@@ -1,14 +1,15 @@
 {
   "name": "smart-qc-studio",
   "private": true,
-  "version": "3.2.0",
+  "version": "3.5.0-ildr",
   "description": "Smart QC Studio - 工业级智能质量控制工作站 (Industrial Grade AI-Powered QC Charts)",
   "author": "Smart QC Team",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "sync-tools": "cp mcp-server/mcp_tools.json public/mcp_tools.json",
+    "dev": "npm run sync-tools && vite",
+    "build": "npm run sync-tools && vite build",
     "preview": "vite preview",
     "mcp:stdio": "node mcp-server/index.js",
     "mcp:sse": "node mcp-server/index.js --transport=sse"
