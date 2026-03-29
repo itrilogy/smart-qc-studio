@@ -59,7 +59,7 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
             };
             img.src = rawDataURL;
         },
-        exportPDF: async () => {
+        exportPDF: async (transparent = false) => {
             if (!graphRef.current) return;
             const dataURL = await graphRef.current.toDataURL({
                 backgroundColor: '#ffffff'

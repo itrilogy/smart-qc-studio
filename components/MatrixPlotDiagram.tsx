@@ -314,7 +314,7 @@ export const MatrixPlotDiagram = forwardRef<MatrixPlotDiagramRef, { data: Matrix
             };
             img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
         },
-        exportPDF: () => {
+        exportPDF: (transparent = false) => {
             window.print();
         }
     }));

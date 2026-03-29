@@ -959,7 +959,7 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             };
             img.src = url;
         },
-        exportPDF: () => {
+        exportPDF: (transparent = false) => {
             if (!svgRef.current || !layout) return;
 
             const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;

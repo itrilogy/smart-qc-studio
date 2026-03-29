@@ -186,7 +186,7 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         img.src = url;
     };
 
-    const exportPDF = () => {
+    const exportPDF = (transparent = false) => {
         if (!svgRef.current) return;
 
         const svgClone = svgRef.current.cloneNode(true) as SVGSVGElement;

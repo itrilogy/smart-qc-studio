@@ -348,7 +348,7 @@ export const ControlChart = forwardRef<ControlChartRef, ControlChartProps>(
                 link.click();
                 setTimeout(() => draw(false), 50); // 恢复
             },
-            exportPDF() {
+            exportPDF(transparent = false) {
                 draw(false); // 确保包含背景
                 const canvas = canvasRef.current;
                 if (!canvas) return;

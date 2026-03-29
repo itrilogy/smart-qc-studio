@@ -48,7 +48,7 @@ export const ParetoDiagram = forwardRef<ParetoDiagramRef, Props>(({ data, styles
             link.href = dataURL;
             link.click();
         },
-        exportPDF: () => {
+        exportPDF: (transparent = false) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({

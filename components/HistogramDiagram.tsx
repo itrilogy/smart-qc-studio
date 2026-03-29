@@ -70,7 +70,7 @@ export const HistogramDiagram = forwardRef<HistogramDiagramRef, Props>(({ data, 
             link.href = dataURL;
             link.click();
         },
-        exportPDF: () => {
+        exportPDF: (transparent = false) => {
             if (!echartsRef.current) return;
             const echartsInstance = echartsRef.current.getEchartsInstance();
             const dataURL = echartsInstance.getDataURL({

@@ -116,7 +116,7 @@ const PDPCDiagram = forwardRef<PDPCDiagramRef, PDPCDiagramProps>(({ data, styles
             };
             img.src = graphCanvas;
         },
-        exportPDF: async () => {
+        exportPDF: async (transparent = false) => {
             if (!graphRef.current) return;
             const dataURL = await graphRef.current.toDataURL({ backgroundColor: '#ffffff' });
             const win = window.open('', '_blank');

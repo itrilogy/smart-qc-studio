@@ -186,7 +186,7 @@ export const ArrowDiagram = forwardRef<ArrowDiagramRef, ArrowDiagramProps>(({ da
             };
             img.src = url;
         },
-        exportPDF: () => {
+        exportPDF: (transparent = false) => {
             if (!svgRef.current) return;
             const contentGroup = svgRef.current.querySelector('#diagram-content');
             if (!contentGroup) return;

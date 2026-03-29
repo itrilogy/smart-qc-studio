@@ -41,7 +41,7 @@ export interface BaseDiagramRef {
   /**
    * 触发 PDF 导出 (交互模式使用)
    */
-  exportPDF: () => void;
+  exportPDF: (transparent?: boolean) => void;
 
   /**
    * 整理布局 (可选，主要用于 G6/SVG 系列)

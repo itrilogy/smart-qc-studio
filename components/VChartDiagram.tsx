@@ -56,16 +56,48 @@ const VChartDiagram = forwardRef<VChartDiagramRef, Props>(({ data, styles = DEFA
                 bgColor: options?.transparent ? 'transparent' : (theme === 'dark' ? '#1a1a1a' : '#fff')
             });
         },
+        exportPNG: async (transparent = false, scale = 3) => {
+            if (!vchartInstanceRef.current) return;
+            const dataUrl = await vchartInstanceRef.current.getDataURL({
+                pixelRatio: scale,
+                bgColor: transparent ? 'transparent' : (theme === 'dark' ? '#1a1a1a' : '#fff')
+            });
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = `VChart_Export_${Date.now()}.png`;
+            link.click();
+        },
         exportPDF: async (isTransparent) => {
             if (!vchartInstanceRef.current) return;
             const dataUrl = await vchartInstanceRef.current.getDataURL({
                 pixelRatio: 3,
                 bgColor: isTransparent ? 'transparent' : (theme === 'dark' ? '#1a1a1a' : '#fff')
             });
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = `VChart_Export_${Date.now()}.png`;
-            link.click();
+            const win = window.open('', '_blank');
+            if (win) {
+                win.document.write(`
+          <html>
+            <head><title>导出 PDF - Smart QC Studio</title></head>
+            <body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f8fafc; font-family: -apple-system, sans-serif;">
+              <div style="padding: 40px; background: #fff; box-shadow: 0 40px 100px rgba(0,0,0,0.05); border-radius: 20px; text-align: center;">
+                <img src="${dataUrl}" style="max-width:100%; height:auto;" />
+                <div style="margin-top: 20px; color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; tracking-widest: 0.1em;">
+                  Industrial Logic Report | Smart QC Studio
+                </div>
+              </div>
+              <script>
+                window.onload = () => {
+                  setTimeout(() => {
+                    window.print();
+                    window.close();
+                  }, 800);
+                }
+              </script>
+            </body>
+          </html>
+        `);
+                win.document.close();
+            }
         }
     }));
 

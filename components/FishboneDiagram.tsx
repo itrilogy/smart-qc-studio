@@ -60,7 +60,7 @@ const FishboneDiagram = forwardRef<FishboneDiagramRef, FishboneDiagramProps>(({ 
       };
       img.src = rawDataURL;
     },
-    exportPDF: async () => {
+    exportPDF: async (transparent = false) => {
       if (!graphRef.current) return;
       const dataURL = await graphRef.current.toDataURL({
         backgroundColor: finalStyles.background || '#ffffff'
