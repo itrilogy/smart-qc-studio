@@ -110,6 +110,13 @@ export const parseRelationDSL = (content: string, currentStyles: RelationChartSt
             }
         });
 
+        // Self-Reference Detection
+        newLinks.forEach(l => {
+            if (l.source === l.target) {
+                throw new Error(`检测到自引用连线: ${l.source} -> ${l.target}。因果关系不能指向自身。`);
+            }
+        });
+
         // Cycle Detection (DFS)
         const hasCycle = () => {
             const visited = new Set<string>();
@@ -138,7 +145,7 @@ export const parseRelationDSL = (content: string, currentStyles: RelationChartSt
         };
 
         if (hasCycle()) {
-            throw new Error('检测到循环回路！关联图不允许因果循环，请检查逻辑路径。');
+            throw new Error('检测到逻辑循环回路！请检查因果路径。');
         }
 
         const inDegree = new Map<string, number>();
@@ -151,7 +158,17 @@ export const parseRelationDSL = (content: string, currentStyles: RelationChartSt
 
         newNodes.forEach(n => {
             const ind = inDegree.get(n.id) || 0;
-            n.type = ind === 0 ? 'end' : 'middle';
+            const outd = outDegree.get(n.id) || 0;
+            // Logical mapping:
+            // Out-degree 0 = Symptom (Root/Sink)
+            // In-degree 0 = Root Cause (End/Source)
+            if (outd === 0) {
+                n.type = 'root';
+            } else if (ind === 0) {
+                n.type = 'end';
+            } else {
+                n.type = 'middle';
+            }
         });
 
         return { nodes: newNodes, links: newLinks, styles: newStyles };
@@ -357,13 +374,13 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-3 pl-2">
                                         <ChevronRight size={14} className="text-purple-500" />
-                                        <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">主要症结</span>
+                                        <span className="text-[10px] font-black text-[var(--sidebar-text)] uppercase tracking-widest">图形标题</span>
                                     </div>
                                     <input
                                         value={styles.title || ''}
                                         onChange={e => onStylesChange({ ...styles, title: e.target.value })}
                                         className="w-full h-12 px-4 logic-terminal-input text-xs font-bold bg-[var(--input-bg)] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded-lg focus:border-purple-500 outline-none shadow-inner"
-                                        placeholder="例如：客户满意度下降分析"
+                                        placeholder="图名称（用于导出文件命名）"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -462,7 +479,6 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                             onChange={e => updateLink(idx, 'target', e.target.value)}
                                             className="flex-1 bg-[var(--input-bg)] text-[10px] text-[var(--sidebar-text)] border border-[var(--input-border)] rounded p-1 outline-none"
                                         >
-                                            <option value="root">root (主要症结)</option>
                                             {nodes.map(n => <option key={n.id} value={n.id}>{n.label}</option>)}
                                         </select>
                                         <button onClick={() => deleteLink(idx)} className="p-1.5 hover:bg-red-500/20 text-[var(--sidebar-muted)] hover:text-red-400 rounded transition-colors shadow-sm">
@@ -650,7 +666,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-[var(--sidebar-border)]">
-                                                    <tr><td className="p-3 text-purple-400">Title</td><td className="p-3 text-[var(--sidebar-text)]">定义主要症结 (Root)</td><td className="p-3 text-[var(--sidebar-text)]">Title: 客户满意度下降</td></tr>
+                                                    <tr><td className="p-3 text-purple-400">Title</td><td className="p-3 text-[var(--sidebar-text)]">定义图形主标题 (Metadata)</td><td className="p-3 text-[var(--sidebar-text)]">Title: 客户满意度分析</td></tr>
                                                     <tr><td className="p-3 text-emerald-400">Node</td><td className="p-3 text-[var(--sidebar-text)]">定义因素节点</td><td className="p-3 text-[var(--sidebar-text)]">Node: m1, 服务态度</td></tr>
                                                     <tr><td className="p-3 text-amber-400">Rel</td><td className="p-3 text-[var(--sidebar-text)]">定义因果箭头 (Source -{'>'} Target)</td><td className="p-3 text-[var(--sidebar-text)]">Rel: e1 -{'>'} m1</td></tr>
                                                     <tr><td className="p-3 text-blue-400">Color</td><td className="p-3 text-[var(--sidebar-text)]">节点与连线色彩配置</td><td className="p-3 text-[var(--sidebar-text)]">Color[Root]: #ff0000</td></tr>

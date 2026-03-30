@@ -97,32 +97,45 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
         const height = containerRef.current.clientHeight || 600;
 
         // Transform data for G6
-        // --- VIRTUAL ROOT LOGIC ---
-        // 1. Identify User Graph Sinks (Nodes with Out-Degree = 0)
-        const userOutDegree = new Map<string, number>();
-        nodes.forEach(n => userOutDegree.set(n.id, 0));
+        // --- MULTI-ROOT LOGIC ---
+        // 1. Calculate Out-Degree to identify Symptoms (Sinks: Out-Degree = 0)
+        const outDegree = new Map<string, number>();
+        nodes.forEach(n => outDegree.set(n.id, 0));
         links.forEach(l => {
-            userOutDegree.set(l.source, (userOutDegree.get(l.source) || 0) + 1);
+            outDegree.set(l.source, (outDegree.get(l.source) || 0) + 1);
         });
-        const userSinks = nodes.filter(n => (userOutDegree.get(n.id) || 0) === 0);
 
-        // 2. Create Augmented Data
-        const sysRootId = 'root';
-
-        // Transform User Nodes
+        // 2. Create G6 Nodes
         const g6Nodes = nodes.map(node => {
+            const isSymptom = (outDegree.get(node.id) || 0) === 0;
+            
             let fill = finalStyles.middleColor;
             let stroke = finalStyles.middleColor;
             let labelFill = finalStyles.middleTextColor;
+            let fontWeight = 'normal' as any;
             let shape = 'rect';
-            let size: number | [number, number] = [Math.max(100, node.label.length * 14 + 20), 40];
+            let fontSize = finalStyles.nodeFontSize;
 
             if (node.type === 'end') {
                 fill = finalStyles.endColor;
                 stroke = finalStyles.endColor;
                 labelFill = finalStyles.endTextColor;
+                shape = 'ellipse';
+            } else if (isSymptom) {
+                // Style as Root/Symptom (Rectangle)
+                fill = finalStyles.rootColor;
+                stroke = finalStyles.rootColor;
+                labelFill = finalStyles.rootTextColor;
+                fontWeight = 'bold';
+                shape = 'rect';
+            } else {
+                // Middle nodes (Ellipse)
+                shape = 'ellipse';
             }
-            // Note: 'root' type is effectively deprecated for user nodes, but we keep fallback just in case
+
+            const size: number | [number, number] = shape === 'rect' 
+                ? [Math.max(120, node.label.length * (fontSize - 2) + 40), 50]
+                : [Math.max(100, node.label.length * fontSize + 20), 40];
 
             return {
                 id: node.id,
@@ -135,7 +148,8 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
                     radius: 8,
                     labelText: node.label,
                     labelFill,
-                    labelFontSize: finalStyles.nodeFontSize,
+                    labelFontSize: fontSize,
+                    labelFontWeight: fontWeight,
                     labelPlacement: 'center',
                     size,
                     cursor: 'pointer'
@@ -143,58 +157,18 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
             };
         });
 
-        // Add Virtual Root Node
-        // Add Virtual Root Node
-        const rootLabel = finalStyles.title || '核心问题';
-        const rootFontSize = finalStyles.titleFontSize || 20; // Default to 20px as requested for better visibility
-        // Ellipse sizing: Width needs to be wider than text. 
-        // Estimate char width ~ fontSize * 1.0 (compact) * text length
-        const rootWidth = Math.max(140, rootLabel.length * rootFontSize + 40);
-        const rootHeight = Math.max(50, rootFontSize * 2 + 20);
-
-        g6Nodes.push({
-            id: sysRootId,
-            type: 'ellipse',
-            data: { id: sysRootId, label: 'ROOT' } as any, // Dummy data
-            style: {
-                fill: finalStyles.rootColor,
-                stroke: finalStyles.rootColor,
-                lineWidth: 0,
-                radius: 8,
-                labelText: rootLabel,
-                labelFill: finalStyles.rootTextColor,
-                labelFontSize: rootFontSize,
-                labelFontWeight: 'bold',
-                labelPlacement: 'center',
-                size: [rootWidth, rootHeight],
-                cursor: 'default'
-            }
-        });
-
-        // Transform User Links
-        const g6Edges = links.map(link => ({
-            source: link.source,
-            target: link.target,
-            style: {
-                stroke: finalStyles.lineColor,
-                lineWidth: 2,
-                endArrow: true
-            }
-        }));
-
-        // Add Edges from User Sinks -> Virtual Root
-        userSinks.forEach(sink => {
-            g6Edges.push({
-                source: sink.id,
-                target: sysRootId,
+        // 3. Transform User Links (Filter out self-references)
+        const g6Edges = links
+            .filter(link => link.source !== link.target && link.target !== 'root') // Remove 'root' fallback and self-refs
+            .map(link => ({
+                source: link.source,
+                target: link.target,
                 style: {
                     stroke: finalStyles.lineColor,
                     lineWidth: 2,
-                    endArrow: true,
-                    lineDash: [4, 4] // Optional: dashed lines for implicit connections? Or solid? User implied default connection. Solid is fine.
+                    endArrow: true
                 }
-            });
-        });
+            }));
 
         if (!graphRef.current) {
             const graph = new Graph({
@@ -205,6 +179,7 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
                 layout: getLayoutConfig(finalStyles.layout || 'Directional'),
                 behaviors: ['drag-canvas', 'zoom-canvas', 'drag-element'],
                 autoFit: 'view',
+                padding: [40, 40, 40, 40],
                 animation: true,
             });
 
@@ -215,8 +190,13 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
             // Update Layout dynamically
             graphRef.current.setLayout(getLayoutConfig(finalStyles.layout || 'Directional'));
             graphRef.current.render();
-            // Force re-layout on data change
-            setTimeout(() => graphRef.current?.layout(), 50);
+            // Force re-layout on data change and ensure it fits
+            setTimeout(() => {
+                if (graphRef.current) {
+                    graphRef.current.layout();
+                    graphRef.current.fitView();
+                }
+            }, 100);
         }
 
         function getLayoutConfig(type: string): any {
@@ -230,24 +210,26 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
                         controlPoints: true,
                     };
                 case 'Centralized':
-                    // Radial Layout: Root at center
+                    // Radial Layout
                     return {
                         type: 'radial',
                         center: [width / 2, height / 2],
-                        unitRadius: 180, // Distance between rings
+                        unitRadius: 180,
                         linkDistance: 150,
                         preventOverlap: true,
-                        nodeSize: 60,
-                        strict: true, // Place strictly on rings
+                        nodeSize: 80,
+                        strict: true,
                     };
                 case 'Free':
                     return {
                         type: 'fruchterman',
-                        gravity: 1, // Reduced gravity to prevent tight clustering
-                        speed: 5,
+                        gravity: 0.5,
+                        speed: 10,
+                        linkDistance: 200,
+                        nodeSpacing: 30,
                         preventOverlap: true,
-                        nodeSize: 120, // Increased to account for larger labels
-                        gpuEnabled: true, // Performance optimized
+                        nodeSize: 120,
+                        gpuEnabled: true,
                         workerEnabled: true,
                     };
                 default:
@@ -275,11 +257,12 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
     }, [nodes, links, styles]);
 
     return (
-        <div
-            ref={containerRef}
-            className={className}
-            style={{ width: '100%', height: '100%', backgroundColor: 'var(--card-bg)', transition: 'background-color 0.5s ease' }}
-        />
+        <div className={`w-full h-full bg-[var(--card-bg)] transition-background-color 0.5s ease ${className}`}>
+            {/* Drawing Area */}
+            <div className="w-full h-full relative overflow-hidden">
+                <div ref={containerRef} className="w-full h-full" />
+            </div>
+        </div>
     );
 });
 

@@ -411,56 +411,90 @@ export const INITIAL_AFFINITY_DATA: any[] = [
   }
 ];
 
-export const INITIAL_RELATION_DSL = `Title: 注塑件尺寸不稳定
-Layout: Directional
-Color[Middle]: #8b5cf6
+export const INITIAL_RELATION_DSL = `Title: 多症结系统问题关联分析
+Layout: Free
+Color[Root]: #dc2626
+Color[RootText]: #ffffff
+Color[Middle]: #f97316
 Color[MiddleText]: #ffffff
-Color[End]: #ddd6fe
-Color[EndText]: #4c1d95
-Color[Line]: #a78bfa
+Color[End]: #fbbf24
+Color[EndText]: #92400e
+Color[Line]: #a1a1aa
 
-Node: m1, 模温异常
-Node: m2, 压力波动
-Node: m3, 阀芯卡滞
-Node: m4, 油质污染
-Node: e1, 水路堵塞
-Node: e2, 油温过高
-Node: e3, 泵体磨损
-Node: e4, 滤芯破损
+Node: root1, 症结A：项目交付延期
+Node: root2, 症结B：团队士气低落
+Node: root3, 症结C：客户投诉增加
+Node: m1, 需求频繁变更
+Node: m2, 跨部门沟通不畅
+Node: m3, 核心人员流失
+Node: m4, 技术债务累积
+Node: m5, 质量监控缺失
+Node: e1, 客户决策链过长
+Node: e2, 缺乏统一协作平台
+Node: e3, 薪酬竞争力不足
+Node: e4, 代码评审流程形同虚设
+Node: e5, 自动化测试覆盖率低
+Node: e6, 市场竞品压力传导
+Node: e7, 历史遗留系统架构
+Node: e8, 培训体系不完善
 
-Rel: m1 -> root
-Rel: m2 -> root
+Rel: m1 -> root1
+Rel: m2 -> root1
+Rel: m4 -> root1
+Rel: m3 -> root2
+Rel: m2 -> root2
+Rel: m5 -> root3
+Rel: m1 -> root3
+Rel: root1 -> root2
+Rel: root1 -> root3
 Rel: e1 -> m1
-Rel: e2 -> m1
+Rel: e6 -> m1
 Rel: e2 -> m2
-Rel: m3 -> m2
-Rel: e3 -> m2
-Rel: m4 -> m3
-Rel: m4 -> e3
-Rel: e4 -> m4`;
+Rel: e8 -> m2
+Rel: e3 -> m3
+Rel: e7 -> m4
+Rel: e4 -> m5
+Rel: e5 -> m5
+Rel: e8 -> m3`;
 
 export const INITIAL_RELATION_DATA = {
   nodes: [
-    { id: 'm1', label: '模温异常', type: 'middle' },
-    { id: 'm2', label: '压力波动', type: 'middle' },
-    { id: 'm3', label: '阀芯卡滞', type: 'middle' },
-    { id: 'm4', label: '油质污染', type: 'middle' },
-    { id: 'e1', label: '水路堵塞', type: 'end' },
-    { id: 'e2', label: '油温过高', type: 'end' }, // Logical End/Middle hybrid (Source of m1, m2)
-    { id: 'e3', label: '泵体磨损', type: 'end' },
-    { id: 'e4', label: '滤芯破损', type: 'end' }
+    { id: 'root1', label: '症结A：项目交付延期', type: 'root' },
+    { id: 'root2', label: '症结B：团队士气低落', type: 'root' },
+    { id: 'root3', label: '症结C：客户投诉增加', type: 'root' },
+    { id: 'm1', label: '需求频繁变更', type: 'middle' },
+    { id: 'm2', label: '跨部门沟通不畅', type: 'middle' },
+    { id: 'm3', label: '核心人员流失', type: 'middle' },
+    { id: 'm4', label: '技术债务累积', type: 'middle' },
+    { id: 'm5', label: '质量监控缺失', type: 'middle' },
+    { id: 'e1', label: '客户决策链过长', type: 'end' },
+    { id: 'e2', label: '缺乏统一协作平台', type: 'end' },
+    { id: 'e3', label: '薪酬竞争力不足', type: 'end' },
+    { id: 'e4', label: '代码评审流程形同虚设', type: 'end' },
+    { id: 'e5', label: '自动化测试覆盖率低', type: 'end' },
+    { id: 'e6', label: '市场竞品压力传导', type: 'end' },
+    { id: 'e7', label: '历史遗留系统架构', type: 'end' },
+    { id: 'e8', label: '培训体系不完善', type: 'end' }
   ],
   links: [
-    { source: 'm1', target: 'root' }, // Implicit in DSL but explicit in Object for initial render if needed
-    { source: 'm2', target: 'root' },
+    { source: 'm1', target: 'root1' },
+    { source: 'm2', target: 'root1' },
+    { source: 'm4', target: 'root1' },
+    { source: 'm3', target: 'root2' },
+    { source: 'm2', target: 'root2' },
+    { source: 'm5', target: 'root3' },
+    { source: 'm1', target: 'root3' },
+    { source: 'root1', target: 'root2' },
+    { source: 'root1', target: 'root3' },
     { source: 'e1', target: 'm1' },
-    { source: 'e2', target: 'm1' },
+    { source: 'e6', target: 'm1' },
     { source: 'e2', target: 'm2' },
-    { source: 'm3', target: 'm2' },
-    { source: 'e3', target: 'm2' },
-    { source: 'm4', target: 'm3' },
-    { source: 'm4', target: 'e3' },
-    { source: 'e4', target: 'm4' }
+    { source: 'e8', target: 'm2' },
+    { source: 'e3', target: 'm3' },
+    { source: 'e7', target: 'm4' },
+    { source: 'e4', target: 'm5' },
+    { source: 'e5', target: 'm5' },
+    { source: 'e8', target: 'm3' }
   ]
 };
 

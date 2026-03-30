@@ -9,7 +9,7 @@ interface MatrixDiagramProps {
     orientation?: 'top-down' | 'bottom-up';
 }
 
-export interface MatrixDiagramRef extends BaseDiagramRef {}
+export interface MatrixDiagramRef extends BaseDiagramRef { }
 
 export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({ data, styles, onCellClick, orientation = 'top-down' }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -18,7 +18,7 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
     const [isDragging, setIsDragging] = React.useState(false);
     const lastPos = useRef({ x: 0, y: 0 });
 
-    const cellSize = styles.cellSize || 40;
+    const cellSize = styles.cellSize || 50;
     const headerSize = 120;
     const SYMBOL_VALUES: Record<string, number> = { 'Strong': 9, 'Medium': 3, 'Weak': 1, 'None': 0 };
 
@@ -74,8 +74,8 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
 
         const startX = headerSize + 10;
         const startY = headerSize + 10;
-        const width = startX + colItems.length * cellSize + 40;
-        const height = startY + rowItems.length * cellSize + (hasScores ? cellSize : 0) + 40;
+        const width = startX + colItems.length * cellSize + 10;
+        const height = startY + rowItems.length * cellSize + (hasScores ? cellSize : 0) + 10;
 
         return {
             width, height,
@@ -238,11 +238,11 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
         const hasAnyWeights = (styles.showScores ?? true) && (hasCenterWeights || leftItems.some(i => i.weight !== undefined) || rightItems.some(i => i.weight !== undefined));
 
         const scoreAreaSize = 40;
-        const startX = leftWidth + 40;
-        const startY = headerHeight + 20;
+        const startX = leftWidth + 20;
+        const startY = headerHeight + 10;
 
-        const width = leftWidth + centerWidth + rightWidth + 120;
-        const height = startY + mainHeight + scoreAreaSize + 60;
+        const width = leftWidth + centerWidth + rightWidth + 20;
+        const height = startY + mainHeight + scoreAreaSize + 20;
 
         return {
             width, height,
@@ -400,28 +400,27 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
 
         // Vector Definitions based on Orientation
         // Top-Down (Standard): A(UR), B(UL), C(Down) -> A(x,-y), B(-x,-y), C(0, s)
-        // Bottom-Up (Inverted): A(DR), B(DL), C(Up) -> A(x, y), B(-x, y), C(0, -s)
-        const isBottomUp = orientation === 'bottom-up';
+        const isBottomUp = false;
 
         const vecA = {
             x: isoWidth,
-            y: isBottomUp ? isoHeight : -isoHeight
+            y: -isoHeight
         };
 
         const vecB = {
             x: -isoWidth,
-            y: isBottomUp ? isoHeight : -isoHeight
+            y: -isoHeight
         };
 
         const vecC = {
             x: 0,
-            y: isBottomUp ? -isoSize : isoSize
+            y: isoSize
         };
 
         // Rotation angles for labels
-        const rotA = isBottomUp ? 30 : -30;
-        const rotB = isBottomUp ? -30 : 30;
-        const rotC = isBottomUp ? -90 : 90;
+        const rotA = -30;
+        const rotB = 30;
+        const rotC = 90;
 
         // Helpers to Draw Cells
         // Top/Bottom Face: p = center + a*vecA + b*vecB
@@ -518,8 +517,15 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
         };
 
         // Render Bounds Calculation
-        // Factor in labels for bounds calculation (especially left-side Axis C and right-side titles)
-        const labelSafeReach = styles.fontSize * 15; // Increased heuristic
+        const maxLenA = Math.max(...itemsA.map(a => a.label.length), 0);
+        const maxLenB = Math.max(...itemsB.map(b => b.label.length), 0);
+        const titleOffsetA = (maxLenA * styles.fontSize * 0.4) + 20;
+        const titleOffsetB = (maxLenB * styles.fontSize * 0.4) + 20;
+        const labelReachAX = (maxLenA * styles.fontSize * 0.9) + 40;
+        const labelReachAY = (maxLenA * styles.fontSize * 0.5) + 30;
+        const labelReachBX = (maxLenB * styles.fontSize * 0.9) + 40;
+        const labelReachBY = (maxLenB * styles.fontSize * 0.5) + 30;
+
         const allX = [
             0,
             itemsA.length * vecA.x,
@@ -528,10 +534,17 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             itemsA.length * vecA.x + itemsB.length * vecB.x,
             itemsB.length * vecB.x + itemsC.length * vecC.x,
             itemsA.length * vecA.x + itemsC.length * vecC.x,
-            // Include label reach points:
-            itemsB.length * vecB.x - labelSafeReach, // Far Left (Axis C)
-            itemsA.length * vecA.x + labelSafeReach, // Far Right (Axis A)
-            (itemsA.length + 2) * vecA.x + (itemsB.length + 2) * vecB.x // far corner
+            // Absolute Bottom Corner (A + B + C)
+            itemsA.length * vecA.x + itemsB.length * vecB.x + itemsC.length * vecC.x,
+            // Adjust reach points for labels (Left/Right extremities)
+            itemsB.length * vecB.x - labelReachAX,
+            itemsA.length * vecA.x + labelReachBX,
+            // Title positions
+            (itemsA.length / 2) * vecA.x + (itemsB.length + 2.0) * vecB.x,
+            (itemsA.length + 2.0) * vecA.x + (itemsB.length / 2) * vecB.x,
+            // Title reach
+            (itemsA.length / 2) * vecA.x + (itemsB.length + 2.0) * vecB.x - titleOffsetA,
+            (itemsA.length + 2.0) * vecA.x + (itemsB.length / 2) * vecB.x + titleOffsetB
         ];
 
         const allY = [
@@ -542,9 +555,11 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             itemsA.length * vecA.y + itemsB.length * vecB.y,
             itemsB.length * vecB.y + itemsC.length * vecC.y,
             itemsA.length * vecA.y + itemsC.length * vecC.y,
-            // Include label reach points:
-            itemsC.length * vecC.y + 60, // Bottom reach
-            itemsA.length * vecA.y + itemsB.length * vecB.y - 60 // Top reach
+            // Absolute Bottom Corner (A + B + C)
+            itemsA.length * vecA.y + itemsB.length * vecB.y + itemsC.length * vecC.y,
+            // Account for tilted labels and titles
+            itemsA.length * vecA.y + itemsB.length * vecB.y - (Math.max(labelReachAY, labelReachBY, titleOffsetA, titleOffsetB) + 10),
+            itemsC.length * vecC.y + 40 // C labels bottom
         ];
 
         const minX = Math.min(...allX);
@@ -552,11 +567,11 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
         const minY_c = Math.min(...allY);
         const maxY_c = Math.max(...allY);
 
-        const totalW = (maxX - minX) + 80;
-        const totalH = (maxY_c - minY_c) + 40;
+        const totalW = (maxX - minX) + 10;
+        const totalH = (maxY_c - minY_c) + 10;
 
-        const cx = -minX + 40;
-        const cy = -minY_c + 20;
+        const cx = -minX + 5;
+        const cy = -minY_c + 5;
 
         return {
             width: totalW, height: totalH,
@@ -579,45 +594,78 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
                             return drawTopCell(ia, ib, symbol, mRowId, mColId, matrixAB);
                         })
                     ))}
+
                     {/* --- OUTER PERIMETER LABELS --- */}
 
                     {/* Top-Right Edge (Axis A) */}
-                    {itemsA.map((a, i) => {
-                        const x = (i + 0.5) * vecA.x + (itemsB.length + 0.5) * vecB.x;
-                        const y = (i + 0.5) * vecA.y + (itemsB.length + 0.5) * vecB.y;
+                    {(() => {
+                        const isLong = itemsA.some(a => a.label.length > 4);
+                        const labelRot = isLong ? 30 : rotA;
+                        const labelAnchor = isLong ? "end" : "middle";
+                        const edgeOffset = isLong ? 0.8 : 0.5;
+
                         return (
-                            <g key={`la-outer-${i}`} transform={`translate(${x}, ${y}) rotate(${rotA})`}>
-                                <text textAnchor="middle" fontSize={styles.fontSize * 0.8} fontWeight="bold" fill={styles.axisColor}>
-                                    {a.label} {a.weight !== undefined && <tspan fontSize={styles.fontSize * 0.6} fontWeight="normal" fill="#999" dx={2}>({a.weight})</tspan>}
-                                </text>
-                                {hasAnyYWeights && <text y={15} textAnchor="middle" fontSize={styles.fontSize * 0.7} fill="#666" fontWeight="bold">S: {scoresCA[i]}</text>}
-                            </g>
+                            <>
+                                {itemsA.map((a, i) => {
+                                    const x = (i + 0.5) * vecA.x + (itemsB.length + edgeOffset) * vecB.x;
+                                    const y = (i + 0.5) * vecA.y + (itemsB.length + edgeOffset) * vecB.y;
+                                    return (
+                                        <g key={`la-outer-${i}`} transform={`translate(${x}, ${y}) rotate(${labelRot})`}>
+                                            <text textAnchor={labelAnchor} fontSize={styles.fontSize * 0.8} fontWeight="bold" fill={styles.axisColor} dominantBaseline="middle">
+                                                {a.label} {a.weight !== undefined && <tspan fontSize={styles.fontSize * 0.6} fontWeight="normal" fill="#999" dx={2}>({a.weight})</tspan>}
+                                            </text>
+                                            {hasAnyYWeights && <text y={-15} textAnchor={labelAnchor} fontSize={styles.fontSize * 0.7} fill="#666" fontWeight="bold">S: {scoresCA[i]}</text>}
+                                        </g>
+                                    );
+                                })}
+                                {itemsA.length > 0 && (
+                                    <text
+                                        x={(itemsA.length / 2) * vecA.x + (itemsB.length + 2.0) * vecB.x}
+                                        y={(itemsA.length / 2) * vecA.y + (itemsB.length + 2.0) * vecB.y - titleOffsetA}
+                                        transform={`rotate(${rotA}, ${(itemsA.length / 2) * vecA.x + (itemsB.length + 2.0) * vecB.x}, ${(itemsA.length / 2) * vecA.y + (itemsB.length + 2.0) * vecB.y - titleOffsetA})`}
+                                        textAnchor="middle" fontSize={styles.fontSize * 0.9} fontWeight="bold" fill={styles.axisColor} pointerEvents="none"
+                                    >
+                                        {axisA.label}
+                                    </text>
+                                )}
+                            </>
                         );
-                    })}
-                    {itemsA.length > 0 && <text
-                        x={(itemsA.length / 2) * vecA.x + (itemsB.length + 1.8) * vecB.x}
-                        y={(itemsA.length / 2) * vecA.y + (itemsB.length + 1.8) * vecB.y}
-                        transform={`rotate(${rotA}, ${(itemsA.length / 2) * vecA.x + (itemsB.length + 1.8) * vecB.x}, ${(itemsA.length / 2) * vecA.y + (itemsB.length + 1.8) * vecB.y})`}
-                        textAnchor="middle" fontSize={styles.fontSize * 0.9} fontWeight="bold" fill={styles.axisColor} pointerEvents="none">{axisA.label}</text>}
+                    })()}
 
                     {/* Top-Left Edge (Axis B) */}
-                    {itemsB.map((b, i) => {
-                        const x = (itemsA.length + 0.5) * vecA.x + (i + 0.5) * vecB.x;
-                        const y = (itemsA.length + 0.5) * vecA.y + (i + 0.5) * vecB.y;
+                    {(() => {
+                        const isLong = itemsB.some(b => b.label.length > 4);
+                        const labelRot = isLong ? -30 : rotB;
+                        const labelAnchor = isLong ? "start" : "middle";
+                        const edgeOffset = isLong ? 0.8 : 0.5;
+
                         return (
-                            <g key={`lb-outer-${i}`} transform={`translate(${x}, ${y}) rotate(${rotB})`}>
-                                <text textAnchor="middle" fontSize={styles.fontSize * 0.8} fontWeight="bold" fill={styles.axisColor}>
-                                    {b.label} {b.weight !== undefined && <tspan fontSize={styles.fontSize * 0.6} fontWeight="normal" fill="#999" dx={2}>({b.weight})</tspan>}
-                                </text>
-                                {hasAnyYWeights && <text y={15} textAnchor="middle" fontSize={styles.fontSize * 0.7} fill="#666" fontWeight="bold">S: {scoresAB[i]}</text>}
-                            </g>
+                            <>
+                                {itemsB.map((b, i) => {
+                                    const x = (itemsA.length + edgeOffset) * vecA.x + (i + 0.5) * vecB.x;
+                                    const y = (itemsA.length + edgeOffset) * vecA.y + (i + 0.5) * vecB.y;
+                                    return (
+                                        <g key={`lb-outer-${i}`} transform={`translate(${x}, ${y}) rotate(${labelRot})`}>
+                                            <text textAnchor={labelAnchor} fontSize={styles.fontSize * 0.8} fontWeight="bold" fill={styles.axisColor} dominantBaseline="middle">
+                                                {b.label} {b.weight !== undefined && <tspan fontSize={styles.fontSize * 0.6} fontWeight="normal" fill="#999" dx={2}>({b.weight})</tspan>}
+                                            </text>
+                                            {hasAnyYWeights && <text y={-15} textAnchor={labelAnchor} fontSize={styles.fontSize * 0.7} fill="#666" fontWeight="bold">S: {scoresAB[i]}</text>}
+                                        </g>
+                                    );
+                                })}
+                                {itemsB.length > 0 && (
+                                    <text
+                                        x={(itemsA.length + 2.0) * vecA.x + (itemsB.length / 2) * vecB.x}
+                                        y={(itemsA.length + 2.0) * vecA.y + (itemsB.length / 2) * vecB.y - titleOffsetB}
+                                        transform={`rotate(${rotB}, ${(itemsA.length + 2.0) * vecA.x + (itemsB.length / 2) * vecB.x}, ${(itemsA.length + 2.0) * vecA.y + (itemsB.length / 2) * vecB.y - titleOffsetB})`}
+                                        textAnchor="middle" fontSize={styles.fontSize * 0.9} fontWeight="bold" fill={styles.axisColor} pointerEvents="none"
+                                    >
+                                        {axisB.label}
+                                    </text>
+                                )}
+                            </>
                         );
-                    })}
-                    {itemsB.length > 0 && <text
-                        x={(itemsA.length + 1.8) * vecA.x + (itemsB.length / 2) * vecB.x}
-                        y={(itemsA.length + 1.8) * vecA.y + (itemsB.length / 2) * vecB.y}
-                        transform={`rotate(${rotB}, ${(itemsA.length + 1.8) * vecA.x + (itemsB.length / 2) * vecB.x}, ${(itemsA.length + 1.8) * vecA.y + (itemsB.length / 2) * vecB.y})`}
-                        textAnchor="middle" fontSize={styles.fontSize * 0.9} fontWeight="bold" fill={styles.axisColor} pointerEvents="none">{axisB.label}</text>}
+                    })()}
 
 
                     {/* Left Vertical Edge (Axis C for Left Face) */}
@@ -630,7 +678,6 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
                             {hasAnyYWeights && <tspan x={(itemsB.length + 0.4) * vecB.x} dy={15} fontSize={styles.fontSize * 0.7} fill="#666" fontWeight="bold">S: {scoresBC[i]}</tspan>}
                         </text>
                     ))}
-                    {/* Removed Axis C Title on Left per user request "Bottom/Left does not have text labels" */}
 
 
                     {/* Left Face (B x C) */}
@@ -760,8 +807,8 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
         };
 
         const maxArmLen = Math.max(itemsN.length, itemsE.length, itemsS.length, itemsW.length);
-        const totalW = (maxArmLen * size + centerGap) * 2 + 60;
-        const totalH = (maxArmLen * size + centerGap) * 2 + 60;
+        const totalW = (maxArmLen * size + centerGap) * 2 + 20;
+        const totalH = (maxArmLen * size + centerGap) * 2 + 20;
 
         return {
             width: totalW, height: totalH,
@@ -898,16 +945,16 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             const { clientWidth, clientHeight } = containerRef.current;
             if (clientWidth === 0 || clientHeight === 0) return;
 
-            const padding = 40;
-            const titleHeight = 50;
+            const padding = 4;
+            const titleHeight = 0;
             const renderW = width;
-            const renderH = height + titleHeight;
+            const renderH = height;
 
             const scaleX = (clientWidth - padding) / renderW;
             const scaleY = (clientHeight - padding) / renderH;
             const fitScale = Math.min(scaleX, scaleY, 3);
             const x = (clientWidth - renderW * fitScale) / 2;
-            const y = (clientHeight - renderH * fitScale) / 2 + (titleHeight * fitScale) / 4;
+            const y = (clientHeight - renderH * fitScale) / 2;
 
             setTransform({ x, y, k: fitScale });
         }
@@ -1019,8 +1066,8 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
         tidyLayout: () => {
             if (containerRef.current && layout) {
                 const { clientWidth, clientHeight } = containerRef.current;
-                const fitScale = Math.min((clientWidth - 40) / width, (clientHeight - 40) / (height + 50), 3);
-                setTransform({ x: (clientWidth - width * fitScale) / 2, y: (clientHeight - (height + 50) * fitScale) / 2, k: fitScale });
+                const fitScale = Math.min((clientWidth - 4) / width, (clientHeight - 4) / height, 10);
+                setTransform({ x: (clientWidth - width * fitScale) / 2, y: (clientHeight - height * fitScale) / 2, k: fitScale });
             }
         }
     }));
@@ -1057,7 +1104,6 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             <div ref={containerRef} className="w-full h-full relative overflow-hidden bg-white">
                 <div style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.k})`, transformOrigin: '0 0', transition: isDragging ? 'none' : 'transform 0.1s ease-out' }} className="absolute top-0 left-0">
                     <div className="inline-block px-4 py-2 border border-transparent">
-                        <h2 className="font-bold mb-1 text-center" style={{ color: styles.axisColor, fontSize: `${styles.titleFontSize}px` }}>{data.title}</h2>
                         <svg ref={svgRef} width={width} height={height}>
                             {content}
                         </svg>

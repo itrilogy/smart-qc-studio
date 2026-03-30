@@ -536,7 +536,6 @@ const App: React.FC = () => {
 
   const [controlDsl, setControlDsl] = useState<string>(() => (isHeadless && headlessType === QCToolType.CONTROL && headlessDsl) ? headlessDsl : INITIAL_CONTROL_DSL);
   const [showParetoLine, setShowParetoLine] = useState(true);
-  const [matrixOrientation, setMatrixOrientation] = useState<'top-down' | 'bottom-up'>('top-down');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const params = new URLSearchParams(window.location.search);
     const t = params.get('theme');
@@ -639,7 +638,7 @@ const App: React.FC = () => {
             case QCToolType.SCATTER: return <ScatterDiagram ref={diagramRef} data={scatterData} styles={scatterStyles} />;
             case QCToolType.AFFINITY: return <AffinityDiagram ref={diagramRef} data={affinityData} styles={affinityStyles} />;
             case QCToolType.RELATION: return <RelationDiagram ref={diagramRef} nodes={relationNodes} links={relationLinks} styles={relationStyles} />;
-            case QCToolType.MATRIX: return matrixData ? <MatrixDiagram ref={diagramRef} data={matrixData} styles={matrixStyles} onCellClick={handleMatrixCellClick} orientation={matrixOrientation} /> : null;
+            case QCToolType.MATRIX: return matrixData ? <MatrixDiagram ref={diagramRef} data={matrixData} styles={matrixStyles} onCellClick={handleMatrixCellClick} /> : null;
             case QCToolType.MATRIX_PLOT: return matrixPlotData ? <MatrixPlotDiagram ref={diagramRef} data={matrixPlotData} styles={matrixPlotStyles} /> : null;
             case QCToolType.PDPC: return <PDPCDiagram ref={diagramRef} data={pdpcData} styles={pdpcStyles} onStylesChange={setPdpcStyles} />;
             case QCToolType.ARROW: return arrowData ? <ArrowDiagram ref={diagramRef} data={arrowData} styles={arrowStyles} /> : null;
@@ -853,18 +852,6 @@ const App: React.FC = () => {
                     <span className="text-[10px] font-black uppercase tracking-widest">透明 PDF</span>
                   </button>
                 </div>
-                {selectedTool === QCToolType.MATRIX && (
-                  <div className="flex gap-2 ml-4 bg-[var(--input-bg)] p-1.5 rounded-2xl border border-[var(--input-border)] items-center">
-                    <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-3 mr-1">视图</span>
-                    <button
-                      onClick={() => setMatrixOrientation(prev => prev === 'top-down' ? 'bottom-up' : 'top-down')}
-                      className={`p-3 shadow-sm rounded-xl text-[var(--text-main)] hover:shadow-md transition-all flex items-center gap-2 group border border-[var(--border-light)] ${matrixOrientation === 'bottom-up' ? 'bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800' : 'bg-[var(--card-bg)]'}`}
-                    >
-                      <Globe size={16} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">{matrixOrientation === 'top-down' ? '俯视' : '仰视'}</span>
-                    </button>
-                  </div>
-                )}
                 <div className="w-12 h-12 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl overflow-hidden shadow-2xl border-2 border-[var(--card-bg)] ring-8 ring-[var(--border-light)]">
                   <img src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=${selectedTool}`} alt="avatar" />
                 </div>
@@ -893,7 +880,7 @@ const App: React.FC = () => {
                   case QCToolType.RELATION:
                     return <RelationDiagram ref={diagramRef} nodes={relationNodes} links={relationLinks} styles={relationStyles} />;
                   case QCToolType.MATRIX:
-                    return matrixData ? <MatrixDiagram ref={diagramRef} data={matrixData} styles={matrixStyles} onCellClick={handleMatrixCellClick} orientation={matrixOrientation} /> : null;
+                    return matrixData ? <MatrixDiagram ref={diagramRef} data={matrixData} styles={matrixStyles} onCellClick={handleMatrixCellClick} /> : null;
                   case QCToolType.MATRIX_PLOT:
                     return matrixPlotData ? <MatrixPlotDiagram ref={diagramRef} data={matrixPlotData} styles={matrixPlotStyles} /> : null;
                   case QCToolType.PDPC:
