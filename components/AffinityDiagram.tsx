@@ -89,16 +89,17 @@ export const AffinityDiagram = forwardRef<AffinityDiagramRef, AffinityDiagramPro
                 if (!canvas) return;
                 const contentSize = calculateContentSize(data, finalStyles);
                 const exportCanvas = document.createElement('canvas');
-                exportCanvas.width = contentSize.width;
-                exportCanvas.height = contentSize.height;
+                exportCanvas.width = contentSize.width * scale;
+                exportCanvas.height = contentSize.height * scale;
                 const ctx = exportCanvas.getContext('2d')!;
+                ctx.scale(scale, scale);
 
                 // Clear first
-                ctx.clearRect(0, 0, exportCanvas.width, exportCanvas.height);
+                ctx.clearRect(0, 0, contentSize.width, contentSize.height);
 
                 if (!transparent) {
                     ctx.fillStyle = finalStyles.background || '#ffffff';
-                    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+                    ctx.fillRect(0, 0, contentSize.width, contentSize.height);
                 }
                 if (finalStyles.type === 'Label') {
                     renderLabelStyle(ctx, data, finalStyles, { width: contentSize.width, height: contentSize.height });

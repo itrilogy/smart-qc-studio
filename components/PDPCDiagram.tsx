@@ -71,7 +71,10 @@ const PDPCDiagram = forwardRef<PDPCDiagramRef, PDPCDiagramProps>(({ data, styles
         exportPNG: async (transparent = false, scale = 3) => {
             if (!graphRef.current || !containerRef.current) return;
 
-            const graphCanvas = await graphRef.current.toDataURL({ backgroundColor: transparent ? 'transparent' : '#ffffff' });
+            const graphCanvas = await graphRef.current.toDataURL({ 
+                backgroundColor: transparent ? 'transparent' : '#ffffff',
+                pixelRatio: scale
+            });
             const uiWidth = containerRef.current.clientWidth;
             const uiTitleHeight = titleRef.current?.offsetHeight || 0;
 
@@ -83,8 +86,8 @@ const PDPCDiagram = forwardRef<PDPCDiagramRef, PDPCDiagramProps>(({ data, styles
             const img = new Image();
             img.onload = () => {
                 // Calculate scale factor between G6 export and UI
-                const scale = img.width / uiWidth;
-                const exportTitleHeight = uiTitleHeight * scale;
+                const g6Scale = img.width / uiWidth;
+                const exportTitleHeight = uiTitleHeight * g6Scale;
 
                 canvas.width = img.width;
                 canvas.height = img.height + exportTitleHeight;
@@ -97,7 +100,7 @@ const PDPCDiagram = forwardRef<PDPCDiagramRef, PDPCDiagramProps>(({ data, styles
 
                 // Draw Title with proportional scaling
                 if (data.title) {
-                    const scaledFontSize = finalStyles.titleFontSize * scale;
+                    const scaledFontSize = finalStyles.titleFontSize * g6Scale;
                     ctx.fillStyle = '#1e293b';
                     ctx.font = `bold ${scaledFontSize}px sans-serif`;
                     ctx.textAlign = 'center';

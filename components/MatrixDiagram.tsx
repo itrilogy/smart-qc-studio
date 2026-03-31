@@ -1077,12 +1077,12 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement("canvas");
-                // 2x scale for high resolution
-                canvas.width = width * 2;
-                canvas.height = height * 2;
+                // Scale according to the parameter
+                canvas.width = width * scale;
+                canvas.height = height * scale;
                 const ctx = canvas.getContext("2d");
                 if (ctx) {
-                    ctx.scale(2, 2);
+                    ctx.scale(scale, scale);
                     if (!transparent) {
                         ctx.fillStyle = "#ffffff";
                         ctx.fillRect(0, 0, width, height);

@@ -32,7 +32,7 @@ const FishboneDiagram = forwardRef<FishboneDiagramRef, FishboneDiagramProps>(({ 
     },
     exportPNG: async (transparent = false, scale = 3) => {
       if (!graphRef.current) return;
-      const rawDataURL = await graphRef.current.toDataURL();
+      const rawDataURL = await graphRef.current.toDataURL({ pixelRatio: scale });
 
       if (transparent) {
         const link = document.createElement('a');

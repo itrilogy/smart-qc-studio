@@ -163,10 +163,10 @@ export const RadarDiagram = forwardRef<RadarDiagramRef, RadarDiagramProps>(({ da
         const url = URL.createObjectURL(svgBlob);
 
         img.onload = () => {
-            canvas.width = exportWidth * 2;
-            canvas.height = exportHeight * 2;
+            canvas.width = exportWidth * scale;
+            canvas.height = exportHeight * scale;
             if (ctx) {
-                ctx.scale(2, 2);
+                ctx.scale(scale, scale);
                 if (!transparent) {
                     ctx.fillStyle = '#ffffff';
                     ctx.fillRect(0, 0, exportWidth, exportHeight);
