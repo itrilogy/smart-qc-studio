@@ -72,39 +72,43 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
             return score;
         });
 
-        const startX = headerSize + 10;
-        const startY = headerSize + 10;
-        const width = startX + colItems.length * cellSize + 10;
-        const height = startY + rowItems.length * cellSize + (hasScores ? cellSize : 0) + 10;
+        // Render Bounds Calculation
+        const maxLenRow = Math.max(...rowItems.map(i => i.label.length), 0);
+        const maxLenCol = Math.max(...colItems.map(i => i.label.length), 0);
+
+        const startX = (maxLenRow * styles.fontSize * 0.8) + 20;
+        const startY = (maxLenCol * styles.fontSize * 0.7) + 60; // For -45 deg labels
+
+        const totalW = startX + colItems.length * cellSize + 40;
+        const totalH = startY + rowItems.length * cellSize + (hasScores ? cellSize : 0) + 40;
 
         return {
-            width, height,
+            width: totalW, height: totalH,
             content: (
-                <>
-                    <defs>
-                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-                            <path d="M0,0 L0,6 L9,3 z" fill={styles.axisColor} />
-                        </marker>
-                    </defs>
-
-                    {/* Column Headers */}
-                    <g transform={`translate(${startX}, ${startY - 10})`}>
-                        {colItems.map((item, i) => (
-                            <text key={item.id} x={i * cellSize + cellSize / 2} y={0} transform={`rotate(-45, ${i * cellSize + cellSize / 2}, 0)`} textAnchor="start" fontSize={styles.fontSize} fill={styles.axisColor} fontWeight="bold">{item.label}</text>
-                        ))}
-                        <text x={colItems.length * cellSize / 2} y={-80} textAnchor="middle" fontWeight="bold" fontSize={styles.fontSize + 2} fill={styles.axisColor}>{colAxis?.label}</text>
-                    </g>
-
-                    {/* Row Headers */}
-                    <g transform={`translate(${startX - 10}, ${startY})`}>
+                <g transform={`translate(${startX}, ${startY})`}>
+                    {/* Y-Axis (Row labels) */}
+                    <g transform={`translate(0, 0)`}>
                         {rowItems.map((item, i) => (
-                            <text key={item.id} x={0} y={i * cellSize + cellSize / 2 + 4} textAnchor="end" fontSize={styles.fontSize} fill={styles.axisColor} fontWeight="bold">{item.label}</text>
+                            <text key={item.id} x={-10} y={i * cellSize + cellSize / 2 + 4} textAnchor="end" fontSize={styles.fontSize} fill={styles.axisColor} fontWeight="bold">{item.label}</text>
                         ))}
-                        <text x={-80} y={rowItems.length * cellSize / 2} transform={`rotate(-90, ${-80}, ${rowItems.length * cellSize / 2})`} textAnchor="middle" fontWeight="bold" fontSize={styles.fontSize + 2} fill={styles.axisColor}>{rowAxis?.label}</text>
+                        {rowAxis && (
+                            <text x={-startX + 10} y={rowItems.length * cellSize / 2} transform={`rotate(-90, ${-startX + 10}, ${rowItems.length * cellSize / 2})`} textAnchor="middle" fontWeight="bold" fontSize={styles.fontSize + 2} fill={styles.axisColor}>{rowAxis.label}</text>
+                        )}
+                    </g>
+                    {/* X-Axis (Col labels) */}
+                    <g transform={`translate(0, 0)`}>
+                        {colItems.map((item, i) => (
+                            <text key={item.id} x={i * cellSize + cellSize / 2} y={-10} transform={`rotate(-45, ${i * cellSize + cellSize / 2}, -10)`} textAnchor="start" fontSize={styles.fontSize} fill={styles.axisColor} fontWeight="bold">
+                                {item.label}
+                            </text>
+                        ))}
+                        {colAxis && (
+                            <text x={colItems.length * cellSize / 2} y={-startY + 20} textAnchor="middle" fontWeight="bold" fontSize={styles.fontSize + 2} fill={styles.axisColor}>{colAxis.label}</text>
+                        )}
                     </g>
 
-                    {/* Grid */}
-                    <g transform={`translate(${startX}, ${startY})`}>
+                    {/* Grid & Cells */}
+                    <g>
                         {Array.from({ length: colItems.length + 1 }).map((_, i) => (
                             <line key={`v${i}`} x1={i * cellSize} y1={0} x2={i * cellSize} y2={rowItems.length * cellSize + (hasScores ? cellSize : 0)} stroke={styles.gridColor} strokeWidth={1} />
                         ))}
@@ -113,7 +117,6 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
                         ))}
                         {hasScores && <line x1={0} y1={rowItems.length * cellSize + cellSize} x2={colItems.length * cellSize} y2={rowItems.length * cellSize + cellSize} stroke={styles.gridColor} strokeWidth={1} />}
 
-                        {/* Cells */}
                         {matrixDef.cells.map((cell, i) => {
                             const rowIndex = rowItems.findIndex(r => r.id === cell.rowId);
                             const colIndex = colItems.findIndex(c => c.id === cell.colId);
@@ -126,7 +129,6 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
                                 </g>
                             );
                         })}
-                        {/* Empty L Interaction */}
                         {rowItems.map((row, rIndex) => (
                             colItems.map((col, cIndex) => {
                                 if ((matrixDef?.cells || []).some(c => c.rowId === row.id && c.colId === col.id)) return null;
@@ -136,16 +138,16 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
                                 );
                             })
                         ))}
-                        {/* Scores */}
                         {hasScores && colScores.map((score, i) => (
                             <text key={`s-${i}`} x={i * cellSize + cellSize / 2} y={rowItems.length * cellSize + cellSize / 2 + 5} textAnchor="middle" fontSize={styles.fontSize} fontWeight="bold" fill={styles.axisColor}>{score}</text>
                         ))}
                         {hasScores && <text x={-10} y={rowItems.length * cellSize + cellSize / 2 + 4} textAnchor="end" fontSize={styles.fontSize} fontWeight="bold" fill={styles.axisColor}>得 分</text>}
                     </g>
-                </>
+                </g>
             )
         };
     };
+
 
     const renderTType = () => {
         // Find Center Axis (A)
@@ -185,7 +187,7 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
         const leftWidth = leftItems.length * cellSize;
         const rightWidth = rightItems.length * cellSize;
         const mainHeight = centerItems.length * cellSize;
-        const headerHeight = 100;
+        const scoreAreaSize = 40;
 
         // Scoring Logic
         const hasCenterWeights = centerItems.some(item => item.weight !== undefined);
@@ -237,17 +239,66 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
 
         const hasAnyWeights = (styles.showScores ?? true) && (hasCenterWeights || leftItems.some(i => i.weight !== undefined) || rightItems.some(i => i.weight !== undefined));
 
-        const scoreAreaSize = 40;
-        const startX = leftWidth + 20;
-        const startY = headerHeight + 10;
+        // Render Bounds Calculation
+        const maxLenL = Math.max(...leftItems.map(i => i.label.length), 0);
+        const maxLenR = Math.max(...rightItems.map(i => i.label.length), 0);
+        const maxLenC = Math.max(...centerItems.map(i => i.label.length), 0);
 
-        const width = leftWidth + centerWidth + rightWidth + 20;
-        const height = startY + mainHeight + scoreAreaSize + 20;
+        // Reach factors for -45 degree rotation
+        const labelReachLX = (maxLenL * styles.fontSize * 0.7) + 20;
+        const labelReachLY = (maxLenL * styles.fontSize * 0.7) + 40;
+        const labelReachRX = (maxLenR * styles.fontSize * 0.7) + 20;
+        const labelReachRY = (maxLenR * styles.fontSize * 0.7) + 40;
+        const labelReachCY = 40; 
+
+        const centerLabelW = centerAxis.label.length * styles.fontSize * 0.8;
+        const leftLabelW = leftAxis?.label.length * styles.fontSize * 0.8 || 0;
+        const rightLabelW = rightAxis?.label.length * styles.fontSize * 0.8 || 0;
+        const centerItemLabelW = maxLenC * styles.fontSize * 0.8;
+
+        const allX = [
+            0,
+            -leftWidth,
+            centerWidth,
+            centerWidth + rightWidth,
+            -leftWidth + (leftItems.length > 0 ? -labelReachLX : 0),
+            centerWidth + rightWidth + (rightItems.length > 0 ? labelReachRX : 0),
+            centerWidth / 2 - centerLabelW / 2,
+            centerWidth / 2 + centerLabelW / 2,
+            centerWidth / 2 - centerItemLabelW / 2,
+            centerWidth / 2 + centerItemLabelW / 2,
+            leftAxis ? -leftWidth + leftWidth / 2 - leftLabelW / 2 : 0,
+            leftAxis ? -leftWidth + leftWidth / 2 + leftLabelW / 2 : 0,
+            rightAxis ? centerWidth + rightWidth / 2 - rightLabelW / 2 : centerWidth,
+            rightAxis ? centerWidth + rightWidth / 2 + rightLabelW / 2 : centerWidth
+        ];
+
+        const allY = [
+            0,
+            mainHeight + scoreAreaSize,
+            -labelReachLY - 20,
+            -labelReachRY - 20,
+            -80 // Title position
+        ];
+
+        const minX = Math.min(...allX);
+        const maxX = Math.max(...allX);
+        const minY = Math.min(...allY);
+        const maxY = Math.max(...allY);
+
+        const totalW = (maxX - minX) + 20;
+        const totalH = (maxY - minY) + 20;
+        const cx = -minX + 10;
+        const cy = -minY + 10;
+
+        // Grid Origin relative to translated group
+        const startX = 0; 
+        const startY = 0;
 
         return {
-            width, height,
+            width: totalW, height: totalH,
             content: (
-                <>
+                <g transform={`translate(${cx}, ${cy})`}>
                     {/* Center Axis (A) */}
                     <g transform={`translate(${startX}, ${startY})`}>
                         <text x={centerWidth / 2} y={-40} textAnchor="middle" fontWeight="bold" fontSize={styles.fontSize + 2} fill={styles.axisColor}>{centerAxis.label}</text>
@@ -267,7 +318,7 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
                         <g transform={`translate(${startX - leftWidth}, ${startY})`}>
                             <text x={leftWidth / 2} y={-80} textAnchor="middle" fontWeight="bold" fontSize={styles.fontSize + 2} fill={styles.axisColor}>{leftAxis.label}</text>
                             {leftItems.map((item, i) => (
-                                <text key={item.id} x={i * cellSize + cellSize / 2} y={-10} transform={`rotate(-45, ${i * cellSize + cellSize / 2}, -10)`} textAnchor="start" fontSize={styles.fontSize} fill={styles.axisColor}>
+                                <text key={item.id} x={i * cellSize + cellSize / 2} y={-10} transform={`rotate(-45, ${i * cellSize + cellSize / 2}, -10)`} textAnchor="start" fontSize={styles.fontSize * 0.9} fontWeight="bold" fill={styles.axisColor}>
                                     {item.label} {item.weight !== undefined && <tspan fontSize={styles.fontSize * 0.8} fontWeight="normal" fill="#999">[{item.weight}]</tspan>}
                                 </text>
                             ))}
@@ -306,7 +357,7 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
                         <g transform={`translate(${startX + centerWidth}, ${startY})`}>
                             <text x={rightWidth / 2} y={-80} textAnchor="middle" fontWeight="bold" fontSize={styles.fontSize + 2} fill={styles.axisColor}>{rightAxis.label}</text>
                             {rightItems.map((item, i) => (
-                                <text key={item.id} x={i * cellSize + cellSize / 2} y={-10} transform={`rotate(-45, ${i * cellSize + cellSize / 2}, -10)`} textAnchor="start" fontSize={styles.fontSize} fill={styles.axisColor}>
+                                <text key={item.id} x={i * cellSize + cellSize / 2} y={-10} transform={`rotate(-45, ${i * cellSize + cellSize / 2}, -10)`} textAnchor="start" fontSize={styles.fontSize * 0.9} fontWeight="bold" fill={styles.axisColor}>
                                     {item.label} {item.weight !== undefined && <tspan fontSize={styles.fontSize * 0.8} fontWeight="normal" fill="#999">[{item.weight}]</tspan>}
                                 </text>
                             ))}
@@ -340,7 +391,7 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
                             ))}
                         </g>
                     )}
-                </>
+                </g>
             )
         };
     };
@@ -807,13 +858,46 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
         };
 
         const maxArmLen = Math.max(itemsN.length, itemsE.length, itemsS.length, itemsW.length);
-        const totalW = (maxArmLen * size + centerGap) * 2 + 20;
-        const totalH = (maxArmLen * size + centerGap) * 2 + 20;
+        
+        const maxLenN = Math.max(...itemsN.map(i => i.label.length), 0);
+        const maxLenS = Math.max(...itemsS.map(i => i.label.length), 0);
+        const maxLenW = Math.max(...itemsW.map(i => i.label.length), 0);
+        const maxLenE = Math.max(...itemsE.map(i => i.label.length), 0);
+
+        const reachN = (maxLenN * styles.fontSize * 0.5) + (hasAnyXWeights ? 20 : 0);
+        const reachS = (maxLenS * styles.fontSize * 0.5) + (hasAnyXWeights ? 20 : 0);
+        const reachW = (maxLenW * styles.fontSize * 0.6);
+        const reachE = (maxLenE * styles.fontSize * 0.6);
+
+        const gridReach = maxArmLen * size + centerGap;
+        
+        const allX = [
+            -gridReach, 
+            gridReach,
+            -gridReach - reachW,
+            gridReach + reachE
+        ];
+        const allY = [
+            -gridReach,
+            gridReach,
+            -gridReach - reachN,
+            gridReach + reachS
+        ];
+
+        const minX = Math.min(...allX);
+        const maxX = Math.max(...allX);
+        const minY = Math.min(...allY);
+        const maxY = Math.max(...allY);
+
+        const totalW = (maxX - minX) + 40;
+        const totalH = (maxY - minY) + 40;
+        const cx = (totalW / 2) - ((maxX + minX) / 2);
+        const cy = (totalH / 2) - ((maxY + minY) / 2);
 
         return {
             width: totalW, height: totalH,
             content: (
-                <g transform={`translate(${totalW / 2}, ${totalH / 2})`}>
+                <g transform={`translate(${cx}, ${cy})`}>
                     {/* North Axis (Up) */}
                     {itemsN.map((item, i) => (
                         <g key={item.id} transform={`translate(0, ${-centerGap - i * size - size / 2})`}>
@@ -880,14 +964,21 @@ export const MatrixDiagram = forwardRef<MatrixDiagramRef, MatrixDiagramProps>(({
 
         const hasAnyCWeights = (styles.showScores ?? true) && items.some(i => i.weight !== undefined);
 
-        // Diagonal Grid logic:
-        const totalW = n * size;
-        const totalH = (n / 2) * size + 60;
+        // Render Bounds Calculation
+        const maxLen = Math.max(...items.map(i => i.label.length), 0);
+        const labelReachY = (maxLen * styles.fontSize * 0.8) + (hasAnyCWeights ? 30 : 10);
+        const gridH = (n / 2) * size;
+
+        const totalW = n * size + 40;
+        const totalH = gridH + labelReachY + 40;
+
+        const cx = 20 + size / 2;
+        const cy = totalH - labelReachY - 10;
 
         return {
             width: totalW, height: totalH,
             content: (
-                <g transform={`translate(${size / 2}, ${totalH - 40})`}>
+                <g transform={`translate(${cx}, ${cy})`}>
                     {/* Items label along the base */}
                     {items.map((item, i) => (
                         <g key={item.id} transform={`translate(${i * size}, 0)`}>

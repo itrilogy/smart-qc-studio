@@ -99,14 +99,19 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
         // Transform data for G6
         // --- MULTI-ROOT LOGIC ---
         // 1. Calculate Out-Degree to identify Symptoms (Sinks: Out-Degree = 0)
+        // Filter out 'root' which is now reserved for title only
+        const validNodes = nodes.filter(n => n.id !== 'root');
         const outDegree = new Map<string, number>();
-        nodes.forEach(n => outDegree.set(n.id, 0));
+        validNodes.forEach(n => outDegree.set(n.id, 0));
+        
         links.forEach(l => {
-            outDegree.set(l.source, (outDegree.get(l.source) || 0) + 1);
+            if (l.source !== l.target && l.source !== 'root' && l.target !== 'root') {
+                outDegree.set(l.source, (outDegree.get(l.source) || 0) + 1);
+            }
         });
 
         // 2. Create G6 Nodes
-        const g6Nodes = nodes.map(node => {
+        const g6Nodes = validNodes.map(node => {
             const isSymptom = (outDegree.get(node.id) || 0) === 0;
             
             let fill = finalStyles.middleColor;
@@ -157,9 +162,9 @@ const RelationDiagram = forwardRef<RelationDiagramRef, RelationDiagramProps>(({ 
             };
         });
 
-        // 3. Transform User Links (Filter out self-references)
+        // 3. Transform User Links (Filter out self-references and title nodes)
         const g6Edges = links
-            .filter(link => link.source !== link.target && link.target !== 'root') // Remove 'root' fallback and self-refs
+            .filter(link => link.source !== link.target && link.source !== 'root' && link.target !== 'root')
             .map(link => ({
                 source: link.source,
                 target: link.target,

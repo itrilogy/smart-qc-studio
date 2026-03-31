@@ -174,10 +174,10 @@ Layout: Horizontal
 #### 详细指令表
 | 指令 | 作用 | 示例 | 默认值 |
 | :--- | :--- | :--- | :--- |
-| `Title:` | 主要症结（根节点） | `Title: 客服满意度提升` | `关联图` |
+| `Title:` | 定义图表主标题（不参与拓扑图逻辑） | `Title: 客服满意度提升` | `关联图` |
 | `Layout:` | 布局模式 | `Centralized`/`Directional`/`Free` | `Directional` |
 | `Node:` | 定义因素节点 | `Node: m1, 服务响应慢` | - |
-| `Rel:` | 定义因果指向 | `Rel: e1 -> m1` | - |
+| `Rel:` | 定义因果指向（严禁自引用） | `Rel: e1 -> m1` | - |
 | `Color[Root]:` | 根节点背景色 | `Color[Root]: #dbeafe` | - |
 | `Color[Middle]:` | 中间因素背景色 | `Color[Middle]: #f3e8ff` | - |
 | `Color[End]:` | 末端因素背景色 | `Color[End]: #fff1f2` | - |
@@ -187,9 +187,9 @@ Layout: Horizontal
 
 #### 逻辑特性
 - **方向性**：`source -> target` 表示 source 是 target 的原因。
-- **自动分类**：入度为 0 的节点被视为“末端因素 (End)”；有入有出的节点为“中间因素 (Middle)”。
-- **虚根连接**：系统会自动将顶级因素连接至 `Title` 所定义的根节点。
-- **循环检测**：关联图不允许存在闭环路径（A -> B -> A），否则系统会给出错误提示。
+- **自动分类**：系统将自动识别出度 (Out-Degree) 为 0 的节点作为“主要症结 (Sinks)”，渲染为**矩形**；其余因素渲染为**椭圆**。
+- **禁止自引用**：严禁定义 `Rel: A -> A`。
+- **无感根节点**：不再自动生成名为 `root` 的虚拟中央节点。
 
 #### 实战范例
 ```relation
